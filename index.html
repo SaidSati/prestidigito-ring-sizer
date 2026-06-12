@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Prestidígito ✦ O Tamanho Perfeito — medidor mágico de anel</title>
+<meta name="description" content="Descubra seu tamanho de anel com um passe de mágica: calibre a tela com uma carta de baralho e revele seu aro em três atos.">
+<meta property="og:title" content="Prestidígito ✦ O Tamanho Perfeito">
+<meta property="og:description" content="Escolha uma carta, apoie o dedo… e o seu tamanho de anel será revelado. Smartrings para mágicos.">
+<meta name="theme-color" content="#0b0608">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="88">🎩</text></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0b0608;
+  --ink2:#140a10;
+  --gold:#d4af5a;
+  --gold-hi:#f0d68d;
+  --gold-lo:#8a6e36;
+  --carmine:#8e1626;
+  --carmine-deep:#4a0a14;
+  --cream:#f3e7c9;
+  --cream-dim:#cdbb95;
+  --hairline:rgba(212,175,90,.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:radial-gradient(120% 90% at 50% 0%, #1a0d14 0%, var(--ink) 55%, #060304 100%);
+  color:var(--cream);
+  font-family:"Playfair Display",Georgia,serif;
+  height:100dvh;
+  overflow:hidden;
+  touch-action:manipulation;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+::selection{background:var(--carmine);color:var(--cream)}
+
+/* ───────── fundo: cartas flutuantes + vinheta ───────── */
+#bg{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+#bg::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(90% 70% at 50% 45%, transparent 55%, rgba(0,0,0,.55) 100%)}
+.float-card{position:absolute;opacity:.08;filter:saturate(.7)}
+.float-card svg{display:block;width:100%;height:100%}
+@keyframes drift1{0%{transform:translate(0,0) rotate(-14deg)}50%{transform:translate(14px,-26px) rotate(-6deg)}100%{transform:translate(0,0) rotate(-14deg)}}
+@keyframes drift2{0%{transform:translate(0,0) rotate(11deg)}50%{transform:translate(-18px,20px) rotate(19deg)}100%{transform:translate(0,0) rotate(11deg)}}
+@keyframes drift3{0%{transform:translate(0,0) rotate(-7deg)}50%{transform:translate(10px,24px) rotate(2deg)}100%{transform:translate(0,0) rotate(-7deg)}}
+.fc1{width:90px;height:126px;top:6%;left:-18px;animation:drift1 26s ease-in-out infinite}
+.fc2{width:70px;height:98px;top:14%;right:-12px;animation:drift2 31s ease-in-out infinite}
+.fc3{width:110px;height:154px;bottom:8%;right:6%;animation:drift3 24s ease-in-out infinite}
+.fc4{width:60px;height:84px;bottom:18%;left:4%;animation:drift2 36s ease-in-out infinite}
+
+/* ───────── cortinas ───────── */
+.curt{position:fixed;top:0;bottom:0;width:52vw;z-index:90;pointer-events:none;
+  background:
+    repeating-linear-gradient(90deg, #6d1020 0 26px, #4a0a14 26px 54px, #7c1224 54px 78px),
+    #5a0d19;
+  box-shadow:inset 0 -50px 80px rgba(0,0,0,.6);
+  transition:transform .68s cubic-bezier(.77,0,.18,1);
+}
+.curt::after{content:"";position:absolute;top:0;bottom:0;width:10px;
+  background:linear-gradient(180deg,var(--gold-hi),var(--gold) 30%,var(--gold-lo));opacity:.85}
+#curtL{left:0;transform:translateX(-103%)}
+#curtL::after{right:0}
+#curtR{right:0;transform:translateX(103%)}
+#curtR::after{left:0}
+body.cc #curtL,body.cc #curtR{transform:translateX(0)}
+
+/* ───────── estrutura de telas ───────── */
+main{position:relative;z-index:1;height:100dvh;max-width:540px;margin:0 auto}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:max(10px,env(safe-area-inset-top)) 0 env(safe-area-inset-bottom)}
+.screen.active{display:flex}
+.scrolly{overflow-y:auto;overscroll-behavior:contain}
+
+.act-badge{font-size:11px;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);
+  text-align:center;padding:6px 0 2px;font-weight:600}
+.act-badge::before,.act-badge::after{content:"— ✦ —";letter-spacing:0;margin:0 10px;color:var(--gold-lo)}
+
+h1.brand{font-family:"Cinzel Decorative",serif;font-weight:900;text-align:center;
+  font-size:clamp(30px,9vw,44px);line-height:1.05;margin-top:6px;
+  background:linear-gradient(180deg,var(--gold-hi) 10%,var(--gold) 55%,var(--gold-lo) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 2px 10px rgba(212,175,90,.25))}
+.subbrand{text-align:center;font-style:italic;color:var(--cream-dim);font-size:14px;letter-spacing:.14em}
+.ornament{text-align:center;color:var(--gold);opacity:.9;font-size:15px;letter-spacing:.5em;margin:10px 0}
+
+.mc{font-style:italic;text-align:center;color:var(--cream);font-size:clamp(15px,4.2vw,18px);
+  line-height:1.55;padding:0 26px}
+.mc em{color:var(--gold-hi);font-style:italic}
+
+.instr{text-align:center;color:var(--cream-dim);font-size:13.5px;line-height:1.45;padding:2px 18px 6px}
+.instr b{color:var(--gold-hi);font-weight:600}
+
+/* ───────── botões ───────── */
+.btn{font-family:"Playfair Display",serif;font-size:16px;font-weight:700;letter-spacing:.06em;
+  border-radius:999px;padding:14px 26px;cursor:pointer;border:none;
+  transition:transform .15s ease,box-shadow .2s ease,filter .2s ease;touch-action:manipulation}
+.btn:active{transform:scale(.97)}
+.btn-gold{color:#241503;
+  background:linear-gradient(180deg,var(--gold-hi),var(--gold) 55%,#b08a3e);
+  box-shadow:0 4px 18px rgba(212,175,90,.35), inset 0 1px 0 rgba(255,255,255,.5)}
+.btn-gold:hover{filter:brightness(1.06)}
+.btn-ghost{color:var(--gold);background:transparent;border:1px solid var(--gold-lo)}
+.btn-ghost:hover{border-color:var(--gold);box-shadow:0 0 12px rgba(212,175,90,.18)}
+.btn-link{background:none;border:none;color:var(--cream-dim);font-family:inherit;font-size:13.5px;
+  font-style:italic;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px}
+.btn-link:hover{color:var(--gold-hi)}
+.btnrow{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 24px}
+
+/* ───────── palco (área de medição) ───────── */
+.stage{position:relative;flex:1;min-height:120px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.hair-v,.hair-h{position:absolute;pointer-events:none}
+.hair-v{top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--gold) 12%,var(--gold) 88%,transparent);
+  box-shadow:0 0 7px rgba(212,175,90,.5)}
+.hair-h{left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold) 12%,var(--gold) 88%,transparent);
+  box-shadow:0 0 7px rgba(212,175,90,.5)}
+.hair-fixed{opacity:.5}
+.edge-tag{position:absolute;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);
+  pointer-events:none;white-space:nowrap}
+@keyframes pulseGlow{0%,100%{opacity:.85}50%{opacity:.45}}
+.hair-live{animation:pulseGlow 2.2s ease-in-out infinite}
+
+/* painel de controles */
+.panel{position:relative;z-index:5;background:rgba(11,6,8,.82);backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);border-top:1px solid rgba(212,175,90,.3);
+  padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+.panel .row{display:flex;align-items:center;gap:12px;margin:6px 0}
+.readout{font-variant-numeric:tabular-nums;color:var(--gold-hi);font-size:14px;min-width:86px;text-align:right;font-weight:600}
+input[type=range]{flex:1;appearance:none;-webkit-appearance:none;height:30px;background:transparent;touch-action:pan-x}
+input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;
+  background:linear-gradient(90deg,var(--gold-lo),var(--gold))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-11.5px;
+  border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold-hi),var(--gold) 60%,var(--gold-lo));
+  border:1px solid #5d4a22;box-shadow:0 2px 8px rgba(0,0,0,.6)}
+input[type=range]::-moz-range-track{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--gold-lo),var(--gold))}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,var(--gold-hi),var(--gold) 60%,var(--gold-lo));border:1px solid #5d4a22}
+.fine{display:flex;align-items:center;justify-content:center;gap:14px}
+.fine .btn-step{width:46px;height:46px;border-radius:50%;font-size:24px;line-height:1;color:var(--gold-hi);
+  background:rgba(212,175,90,.1);border:1px solid var(--gold-lo);cursor:pointer;
+  font-family:Georgia,serif;transition:background .15s}
+.fine .btn-step:active{background:rgba(212,175,90,.3)}
+.fine .fine-label{font-size:11px;color:var(--cream-dim);letter-spacing:.1em;text-transform:uppercase;text-align:center}
+.scale-chip{text-align:center;font-size:11.5px;color:var(--cream-dim);font-variant-numeric:tabular-nums;margin-top:2px}
+.scale-chip b{color:var(--gold)}
+
+/* ───────── ato 1: carta de calibração ───────── */
+#calCard{position:absolute;left:14px;bottom:0;will-change:width,height;
+  filter:drop-shadow(0 6px 22px rgba(0,0,0,.65))}
+#calCard svg{display:block;width:100%;height:100%}
+.anchor-mark{position:absolute;left:6px;bottom:2px;color:var(--gold-hi);font-size:15px;pointer-events:none;
+  text-shadow:0 0 8px rgba(212,175,90,.8);z-index:4}
+.obj-toggle{display:flex;justify-content:center;gap:8px;padding:4px 0 2px}
+.chip{font-family:inherit;font-size:12px;letter-spacing:.05em;color:var(--cream-dim);background:transparent;
+  border:1px solid rgba(212,175,90,.35);border-radius:999px;padding:6px 13px;cursor:pointer;transition:all .2s}
+.chip.on{color:#241503;background:linear-gradient(180deg,var(--gold-hi),var(--gold));border-color:var(--gold);font-weight:700}
+
+/* ───────── ato 2: escolha de método ───────── */
+.methods{display:flex;flex-direction:column;gap:14px;padding:10px 26px;margin:auto 0}
+.method-card{position:relative;text-align:left;font-family:inherit;color:var(--cream);cursor:pointer;
+  background:linear-gradient(160deg,rgba(142,22,38,.25),rgba(20,10,16,.6));
+  border:1px solid rgba(212,175,90,.4);border-radius:14px;padding:18px 18px 16px;
+  transition:transform .15s,border-color .2s,box-shadow .2s}
+.method-card:hover,.method-card:focus-visible{border-color:var(--gold);box-shadow:0 0 18px rgba(212,175,90,.2);transform:translateY(-2px)}
+.method-card .m-ico{font-size:26px;margin-bottom:6px;display:block}
+.method-card .m-title{display:block;font-family:"Cinzel Decorative",serif;font-size:17px;color:var(--gold-hi);letter-spacing:.04em}
+.method-card .m-desc{display:block;font-size:13.5px;color:var(--cream-dim);font-style:italic;margin-top:4px;line-height:1.45}
+.method-card .m-badge{position:absolute;top:12px;right:14px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--gold);border:1px solid var(--gold-lo);border-radius:999px;padding:3px 9px}
+
+/* ───────── ato 2: dedo ───────── */
+.gline{position:absolute;top:0;bottom:0;width:34px;margin-left:-17px;cursor:ew-resize;touch-action:none;z-index:3}
+.gline::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1.5px;margin-left:-.75px;
+  background:linear-gradient(180deg,var(--gold-hi),var(--gold) 30%,var(--gold) 70%,var(--gold-hi));
+  box-shadow:0 0 9px rgba(212,175,90,.65)}
+.gline .knob{position:absolute;left:50%;transform:translateX(-50%) rotate(45deg);width:15px;height:15px;
+  background:linear-gradient(135deg,var(--gold-hi),var(--gold-lo));border:1px solid #5d4a22;
+  box-shadow:0 0 10px rgba(212,175,90,.7)}
+.gline .knob.kt{top:8px}.gline .knob.kb{bottom:8px}
+.finger-hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:120px;height:66%;
+  border:1.5px dashed rgba(212,175,90,.28);border-radius:60px;pointer-events:none;
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:14px;
+  color:rgba(212,175,90,.55);font-size:11.5px;font-style:italic;text-align:center;transition:opacity .3s}
+
+/* ───────── ato 2: anel ───────── */
+#ringCircle{position:absolute;border:1.6px solid var(--gold);border-radius:50%;pointer-events:none;
+  box-shadow:0 0 12px rgba(212,175,90,.55), inset 0 0 12px rgba(212,175,90,.4)}
+#ringCircle::after{content:"";position:absolute;inset:-7px;border:1px dashed rgba(212,175,90,.25);border-radius:50%}
+.cross{position:absolute;pointer-events:none;color:rgba(212,175,90,.5);font-size:13px;transform:translate(-50%,-50%)}
+
+/* ───────── ato 3: resultado ───────── */
+.reveal-wrap{position:relative;display:flex;justify-content:center;padding:8px 0 4px;perspective:900px}
+.flipper{position:relative;width:168px;height:235px;transform-style:preserve-3d;
+  transition:transform 1.15s cubic-bezier(.25,.8,.25,1)}
+.flipper.flipped{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px}
+.face svg{display:block;width:100%;height:100%}
+.face-front{filter:drop-shadow(0 10px 26px rgba(0,0,0,.7))}
+.face-back{transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:linear-gradient(165deg,#fdf6e4,#ecd9a8);color:#2d1a05;border-radius:10px;
+  border:5px solid transparent;
+  background-clip:padding-box;box-shadow:0 0 0 2px var(--gold-lo), 0 10px 26px rgba(0,0,0,.7)}
+.face-back .rb-label{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#7c5b22}
+.face-back .rb-aro{font-family:"Playfair Display",serif;font-weight:900;font-size:66px;line-height:1;color:#4a0a14;font-variant-numeric:lining-nums}
+.face-back .rb-sub{font-size:12px;color:#6b4f1d;font-style:italic;text-align:center;padding:0 12px;line-height:1.4}
+.face-back .rb-orn{color:#a8842f;font-size:13px;letter-spacing:.4em;margin-top:5px}
+@keyframes puff{0%{transform:translate(-50%,-30%) scale(.3);opacity:0}25%{opacity:.55}100%{transform:translate(-50%,-90%) scale(2.4);opacity:0}}
+.puff{position:absolute;left:50%;top:60%;width:130px;height:130px;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(circle,rgba(220,190,120,.32),rgba(220,190,120,0) 65%);filter:blur(14px)}
+.revealed .puff{animation:puff 2.4s ease-out forwards}
+.revealed .puff:nth-child(2){animation-delay:.25s}
+.revealed .puff:nth-child(3){animation-delay:.5s}
+@keyframes twk{0%,100%{opacity:.08;transform:scale(.7)}50%{opacity:.95;transform:scale(1.15)}}
+.spark{position:absolute;color:var(--gold-hi);pointer-events:none;animation:twk 2.6s ease-in-out infinite}
+.res-grid{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;padding:10px 20px 2px}
+.res-chip{border:1px solid rgba(212,175,90,.4);border-radius:12px;padding:9px 15px;text-align:center;min-width:88px;
+  background:rgba(212,175,90,.06)}
+.res-chip .rc-v{font-size:21px;font-weight:700;color:var(--gold-hi);font-variant-numeric:tabular-nums}
+.res-chip .rc-k{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--cream-dim);margin-top:2px}
+details.convtable{margin:10px 26px;border:1px solid rgba(212,175,90,.3);border-radius:12px;overflow:hidden}
+details.convtable summary{cursor:pointer;padding:11px 16px;font-size:13.5px;color:var(--gold);list-style:none;text-align:center;letter-spacing:.06em}
+details.convtable summary::-webkit-details-marker{display:none}
+details.convtable[open] summary{border-bottom:1px solid rgba(212,175,90,.25)}
+.convtable table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.convtable th{color:var(--gold);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;padding:8px 4px;font-weight:600}
+.convtable td{text-align:center;padding:5.5px 4px;color:var(--cream-dim);border-top:1px solid rgba(212,175,90,.12)}
+.convtable tr.hit td{color:#241503;background:linear-gradient(90deg,rgba(212,175,90,.92),rgba(240,214,141,.92));font-weight:700}
+.fineprint{text-align:center;font-size:11px;color:rgba(205,187,149,.55);padding:8px 30px 16px;line-height:1.6}
+
+/* ───────── modais, avisos, toast ───────── */
+.overlay{position:fixed;inset:0;z-index:120;display:none;align-items:center;justify-content:center;
+  background:rgba(5,2,3,.78);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);padding:26px}
+.overlay.show{display:flex}
+.dialog{max-width:380px;background:linear-gradient(170deg,#1c0e15,#0d0609);border:1px solid var(--gold-lo);
+  border-radius:16px;padding:24px 22px;text-align:center;box-shadow:0 18px 60px rgba(0,0,0,.8)}
+.dialog h3{font-family:"Cinzel Decorative",serif;color:var(--gold-hi);font-size:19px;margin-bottom:10px}
+.dialog p{font-size:14.5px;font-style:italic;color:var(--cream-dim);line-height:1.6;margin-bottom:16px}
+.dialog .btnrow{padding:0}
+#zoomWarn{z-index:200}
+#toast{position:fixed;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translate(-50%,18px);
+  background:rgba(20,10,16,.95);border:1px solid var(--gold);color:var(--gold-hi);border-radius:999px;
+  padding:11px 22px;font-size:14px;font-style:italic;z-index:300;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+.checklist{margin:14px 30px 4px;border:1px solid rgba(212,175,90,.3);border-radius:14px;padding:14px 18px;
+  background:rgba(212,175,90,.05);font-size:13.5px;line-height:1.7;color:var(--cream-dim)}
+.checklist b{color:var(--gold-hi);font-weight:600}
+.checklist .ck{color:var(--gold);margin-right:8px}
+
+footer{text-align:center;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(205,187,149,.4);padding:10px 0 4px}
+
+@media (min-width:700px){
+  .mc{font-size:18px}
+  .methods{flex-direction:row}
+  .method-card{flex:1}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ arte da carta (verso ornamental original) ════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+  <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#f0d68d"/><stop offset=".5" stop-color="#c89b46"/><stop offset="1" stop-color="#96712e"/>
+  </linearGradient>
+  <radialGradient id="gCarm" cx="50%" cy="42%" r="85%">
+    <stop offset="0" stop-color="#84142400"/><stop offset="0" stop-color="#841424"/>
+    <stop offset=".62" stop-color="#5a0d19"/><stop offset="1" stop-color="#380710"/>
+  </radialGradient>
+  <pattern id="lat" width="24" height="24" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <path d="M0 12 H24 M12 0 V24" stroke="#d4af5a" stroke-width=".55" opacity=".2"/>
+    <circle cx="12" cy="12" r="1" fill="#d4af5a" opacity=".25"/>
+  </pattern>
+  <g id="cnrFl">
+    <path d="M20 62 C20 36 36 20 62 20" fill="none" stroke="url(#gGold)" stroke-width="2" stroke-linecap="round"/>
+    <path d="M24 76 C24 42 42 24 76 24" fill="none" stroke="#d4af5a" stroke-width=".8" opacity=".65"/>
+    <path d="M62 20 q12 -1 15 9 q-9 -4 -15 1" fill="none" stroke="url(#gGold)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M20 62 q-1 12 9 15 q-4 -9 1 -15" fill="none" stroke="url(#gGold)" stroke-width="1.6" stroke-linecap="round"/>
+    <circle cx="30" cy="30" r="3.2" fill="none" stroke="#d4af5a" stroke-width="1.1"/>
+    <circle cx="30" cy="30" r="1" fill="#f0d68d"/>
+  </g>
+  <g id="arb">
+    <path d="M125 102 c22 6 26 26 10 36 c14 -1 24 -13 22 -28" fill="none" stroke="#d4af5a" stroke-width="1.5" stroke-linecap="round" opacity=".85"/>
+    <circle cx="125" cy="102" r="2" fill="#d4af5a"/>
+  </g>
+  <symbol id="cardback" viewBox="0 0 250 350" preserveAspectRatio="none">
+    <rect x="1.5" y="1.5" width="247" height="347" rx="14" fill="url(#gCarm)" stroke="url(#gGold)" stroke-width="3"/>
+    <rect x="10" y="10" width="230" height="330" rx="9" fill="none" stroke="url(#gGold)" stroke-width="1.4"/>
+    <rect x="15.5" y="15.5" width="219" height="319" rx="6" fill="url(#lat)" stroke="#d4af5a" stroke-width=".6" opacity=".9"/>
+    <use href="#cnrFl"/>
+    <use href="#cnrFl" transform="translate(250,0) scale(-1,1)"/>
+    <use href="#cnrFl" transform="translate(0,350) scale(1,-1)"/>
+    <use href="#cnrFl" transform="translate(250,350) scale(-1,-1)"/>
+    <circle cx="125" cy="175" r="60" fill="#420913"/>
+    <circle cx="125" cy="175" r="60" fill="none" stroke="url(#gGold)" stroke-width="2.2"/>
+    <circle cx="125" cy="175" r="52" fill="none" stroke="#d4af5a" stroke-width=".7" opacity=".75"/>
+    <use href="#arb"/>
+    <use href="#arb" transform="rotate(90 125 175)"/>
+    <use href="#arb" transform="rotate(180 125 175)"/>
+    <use href="#arb" transform="rotate(270 125 175)"/>
+    <circle cx="125" cy="180" r="24" fill="none" stroke="url(#gGold)" stroke-width="7.5"/>
+    <circle cx="125" cy="180" r="24" fill="none" stroke="#f4e2a8" stroke-width="1" opacity=".5"/>
+    <path d="M125 138 l5 10 10 5 -10 5 -5 10 -5 -10 -10 -5 10 -5 z" fill="#f0d68d"/>
+    <path d="M150 152 l2.4 4.8 4.8 2.4 -4.8 2.4 -2.4 4.8 -2.4 -4.8 -4.8 -2.4 4.8 -2.4 z" fill="#d4af5a" opacity=".8"/>
+    <path d="M100 152 l2.4 4.8 4.8 2.4 -4.8 2.4 -2.4 4.8 -2.4 -4.8 -4.8 -2.4 4.8 -2.4 z" fill="#d4af5a" opacity=".8"/>
+  </symbol>
+</defs>
+</svg>
+
+<div id="bg" aria-hidden="true">
+  <div class="float-card fc1"><svg viewBox="0 0 250 350"><use href="#cardback"/></svg></div>
+  <div class="float-card fc2"><svg viewBox="0 0 250 350"><use href="#cardback"/></svg></div>
+  <div class="float-card fc3"><svg viewBox="0 0 250 350"><use href="#cardback"/></svg></div>
+  <div class="float-card fc4"><svg viewBox="0 0 250 350"><use href="#cardback"/></svg></div>
+</div>
+<div class="curt" id="curtL" aria-hidden="true"></div>
+<div class="curt" id="curtR" aria-hidden="true"></div>
+
+<main>
+
+<!-- ════════ ABERTURA ════════ -->
+<section class="screen scrolly active" id="s-intro">
+  <div style="margin:auto 0;padding:18px 0">
+    <p class="subbrand" style="letter-spacing:.42em">✦ PRESTIDÍGITO ✦</p>
+    <h1 class="brand">O Tamanho<br>Perfeito</h1>
+    <p class="subbrand">smartrings para mágicos</p>
+    <p class="ornament">❦</p>
+    <p class="mc">Aproxime-se, aproxime-se… Hoje, diante de seus próprios olhos,
+      <em>seu dedo revelará seu segredo</em> — em três atos, sem cartas marcadas.</p>
+    <div class="checklist">
+      <div><span class="ck">✦</span>Uma <b>carta de baralho</b> comum, tamanho poker (63,5 × 88,9 mm) — ou um <b>cartão de banco</b>.</div>
+      <div><span class="ck">✦</span><b>Zoom do navegador em 100%</b> — sem truques de lente. No computador: <b>Ctrl/Cmd + 0</b>.</div>
+      <div><span class="ck">✦</span>Três minutos e um pouco de fé no impossível.</div>
+    </div>
+    <div class="btnrow" style="margin-top:8px">
+      <button class="btn btn-gold" id="btnStart">Escolha uma carta… ✦ Começar</button>
+      <button class="btn btn-ghost" id="btnSkipCal" hidden>Já calibrei — ir direto à medição</button>
+    </div>
+    <footer>Prestidígito ✦ MMXXVI</footer>
+  </div>
+</section>
+
+<!-- ════════ ATO I — A CARTA ════════ -->
+<section class="screen" id="s-cal">
+  <div class="act-badge">Ato I · A Carta</div>
+  <p class="instr">Encoste a carta <b>física</b> na tela: canto inferior esquerdo na marca <b>✦</b>.
+    Ajuste até <b>todas as bordas coincidirem</b> com as linhas douradas.</p>
+  <div class="obj-toggle" role="group" aria-label="Objeto de calibração">
+    <button class="chip on" id="objCard">🂠 Carta poker</button>
+    <button class="chip" id="objBank">💳 Cartão de banco</button>
+  </div>
+  <div class="stage" id="calStage">
+    <div class="hair-v hair-fixed" id="calGuideL"></div>
+    <div class="hair-v hair-live" id="calGuideR"></div>
+    <div class="hair-h hair-live" id="calGuideT"></div>
+    <span class="edge-tag" id="tagR" style="transform:rotate(90deg);transform-origin:left top">borda direita ▸</span>
+    <span class="edge-tag" id="tagT">▴ borda superior</span>
+    <div id="calCard"><svg viewBox="0 0 250 350" preserveAspectRatio="none"><use href="#cardback"/></svg></div>
+    <span class="anchor-mark">✦ alinhe o canto aqui</span>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <span style="font-size:11px;color:var(--cream-dim);letter-spacing:.1em">MENOR</span>
+      <input type="range" id="calSlider" min="160" max="600" step="1" aria-label="Tamanho da carta virtual">
+      <span style="font-size:11px;color:var(--cream-dim);letter-spacing:.1em">MAIOR</span>
+    </div>
+    <div class="fine">
+      <button class="btn-step" id="calMinus" aria-label="Diminuir 1 pixel">−</button>
+      <div class="fine-label">ajuste fino<br>(também: gesto de pinça)</div>
+      <button class="btn-step" id="calPlus" aria-label="Aumentar 1 pixel">+</button>
+    </div>
+    <div class="scale-chip" id="calScale">escala: — px/mm</div>
+    <div class="btnrow" style="padding:8px 0 0">
+      <button class="btn btn-gold" id="btnCalDone">As bordas coincidem ✦</button>
+      <button class="btn-link" id="btnCalBack">voltar à abertura</button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ATO II — ESCOLHA ════════ -->
+<section class="screen" id="s-method">
+  <div class="act-badge">Ato II · A Revelação</div>
+  <p class="mc" style="margin-top:14px">A tela agora conhece o mundo real.<br><em>Escolha um método… qualquer método.</em></p>
+  <div class="methods">
+    <button class="method-card" id="mFinger">
+      <span class="m-badge">rápido</span>
+      <span class="m-ico">☝️</span>
+      <span class="m-title">O Dedo</span>
+      <span class="m-desc">Apoie o dedo na tela, entre duas linhas douradas, e eu adivinharei sua largura.</span>
+    </button>
+    <button class="method-card" id="mRing">
+      <span class="m-badge">mais preciso</span>
+      <span class="m-ico">💍</span>
+      <span class="m-title">O Anel</span>
+      <span class="m-desc">Tem um anel que já lhe serve? Deite-o sobre a tela — ele contará o segredo.</span>
+    </button>
+  </div>
+  <div class="btnrow">
+    <button class="btn-link" id="btnMethodBack">recalibrar a carta</button>
+  </div>
+</section>
+
+<!-- ════════ ATO II — DEDO ════════ -->
+<section class="screen" id="s-finger">
+  <div class="act-badge">Ato II · A Revelação</div>
+  <p class="instr">Apoie o dedo na tela — <b>na base</b>, onde o anel descansa — e aproxime as linhas
+    até <b>apenas tocarem</b> a pele de cada lado, sem apertar.</p>
+  <div class="stage" id="fingerStage">
+    <div class="finger-hint" id="fingerHint"><span>o dedo<br>repousa aqui</span></div>
+    <div class="gline" id="gl1"><span class="knob kt"></span><span class="knob kb"></span></div>
+    <div class="gline" id="gl2"><span class="knob kt"></span><span class="knob kb"></span></div>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <input type="range" id="fingerSlider" min="8" max="30" step="0.05" aria-label="Largura entre as linhas em milímetros">
+      <span class="readout" id="fingerReadout">— mm</span>
+    </div>
+    <div class="fine">
+      <button class="btn-step" id="fingerMinus" aria-label="Diminuir 0,1 milímetro">−</button>
+      <div class="fine-label">ajuste fino ±0,1 mm<br>(ou arraste as linhas)</div>
+      <button class="btn-step" id="fingerPlus" aria-label="Aumentar 0,1 milímetro">+</button>
+    </div>
+    <div class="btnrow" style="padding:8px 0 0">
+      <button class="btn btn-gold" id="btnFingerDone">Revelar meu tamanho ✦</button>
+      <button class="btn-link" id="btnFingerBack">trocar de método</button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ATO II — ANEL ════════ -->
+<section class="screen" id="s-ring">
+  <div class="act-badge">Ato II · A Revelação</div>
+  <p class="instr">Com o aparelho <b>deitado na mesa</b>, pouse o anel sobre o alvo e ajuste o círculo
+    até preencher exatamente o <b>contorno interno</b> do anel.</p>
+  <div class="stage" id="ringStage">
+    <span class="cross" id="ringCross">✛</span>
+    <div id="ringCircle"></div>
+  </div>
+  <div class="panel">
+    <div class="row">
+      <input type="range" id="ringSlider" min="8" max="30" step="0.05" aria-label="Diâmetro do círculo em milímetros">
+      <span class="readout" id="ringReadout">— mm</span>
+    </div>
+    <div class="fine">
+      <button class="btn-step" id="ringMinus" aria-label="Diminuir 0,1 milímetro">−</button>
+      <div class="fine-label">ajuste fino ±0,1 mm<br>(ou arraste a borda do círculo)</div>
+      <button class="btn-step" id="ringPlus" aria-label="Aumentar 0,1 milímetro">+</button>
+    </div>
+    <div class="btnrow" style="padding:8px 0 0">
+      <button class="btn btn-gold" id="btnRingDone">Revelar meu tamanho ✦</button>
+      <button class="btn-link" id="btnRingBack">trocar de método</button>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ATO III — O PRESTÍGIO ════════ -->
+<section class="screen scrolly" id="s-result">
+  <div class="act-badge">Ato III · O Prestígio</div>
+  <p class="mc" id="resMc" style="padding-top:6px">Senhoras e senhores… <em>o seu número.</em></p>
+  <div class="reveal-wrap" id="revealWrap">
+    <div class="puff"></div><div class="puff"></div><div class="puff"></div>
+    <div class="flipper" id="flipper">
+      <div class="face face-front"><svg viewBox="0 0 250 350"><use href="#cardback"/></svg></div>
+      <div class="face face-back">
+        <div class="rb-label">Aro Brasil</div>
+        <div class="rb-aro" id="rbAro">—</div>
+        <div class="rb-sub" id="rbSub">…</div>
+        <div class="rb-orn">✦ ❦ ✦</div>
+      </div>
+    </div>
+  </div>
+  <div class="res-grid">
+    <div class="res-chip"><div class="rc-v" id="rcUS">—</div><div class="rc-k">Tam. US</div></div>
+    <div class="res-chip"><div class="rc-v" id="rcDia">—</div><div class="rc-k">Ø interno</div></div>
+    <div class="res-chip"><div class="rc-v" id="rcCirc">—</div><div class="rc-k">Circunferência</div></div>
+  </div>
+  <div class="btnrow" style="padding-top:16px">
+    <a class="btn btn-gold" id="btnOrder" href="#" style="text-decoration:none;text-align:center">Encomendar meu smartring ✦</a>
+    <button class="btn btn-ghost" id="btnShare">Copiar / compartilhar resultado</button>
+  </div>
+  <details class="convtable">
+    <summary>📜 O grimório das conversões (tabela completa)</summary>
+    <table id="convBody"></table>
+  </details>
+  <div class="btnrow" style="flex-direction:row;justify-content:center;gap:4px;padding-top:2px">
+    <button class="btn-link" id="btnAgain">medir novamente</button>
+    <span style="color:var(--gold-lo)">✦</span>
+    <button class="btn-link" id="btnRecal">recalibrar</button>
+  </div>
+  <p class="fineprint">Aro Brasil = circunferência interna em milímetros − 40 · Tamanho US conforme padrão ANSI:
+    Ø (mm) = 11,63 + 0,8128 × número · Forjado para dedos que fazem mágica — Prestidígito ✦</p>
+</section>
+
+</main>
+
+<!-- ════════ avisos ════════ -->
+<div class="overlay" id="sanityModal" role="dialog" aria-modal="true" aria-labelledby="sanityTitle">
+  <div class="dialog">
+    <h3 id="sanityTitle">Alto lá! 🎩</h3>
+    <p id="sanityText">Hmm…</p>
+    <div class="btnrow">
+      <button class="btn btn-gold" id="sanRecal">Recalibrar a carta</button>
+      <button class="btn btn-ghost" id="sanRetry">Medir de novo</button>
+      <button class="btn-link" id="sanForce">confio no impossível — continuar</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="zoomWarn" role="alertdialog" aria-modal="true">
+  <div class="dialog">
+    <h3>Sem truques de lente! 🔍</h3>
+    <p>A tela está com zoom. Belisque para <b>desfazer o zoom (100%)</b> — a mágica exige a escala verdadeira.</p>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* ═══════════════ Prestidígito — O Tamanho Perfeito ═══════════════
+   Calibração: o usuário iguala uma carta virtual a uma carta física
+   (poker: 63,5 × 88,9 mm). A escala px→mm sai de  ppm = alturaPx / 88,9.
+   Toda medição posterior é apenas px / ppm.                          */
+
+const OBJECTS = {
+  card: { w: 63.5,  h: 88.9, name: 'carta poker' },
+  bank: { w: 53.98, h: 85.6, name: 'cartão de banco' } // ISO/IEC 7810 ID-1, em pé
+};
+const LS_KEY    = 'prestidigito.calibracao.v1';
+const ORDER_URL = d => 'mailto:pedidos@prestidigito.com.br?subject=' +
+  encodeURIComponent('Encomenda de smartring — ' + d.resumo) + '&body=' +
+  encodeURIComponent('Quero encomendar meu smartring Prestidígito.\n\n' + d.texto + '\n');
+
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const mm1 = v => v.toFixed(1).replace('.', ',');
+const mm2 = v => v.toFixed(2).replace('.', ',');
+
+let ppm = null;              // pixels CSS por milímetro
+let calObj = OBJECTS.card;   // objeto de calibração ativo
+let cardH = 340;             // altura atual da carta virtual, em px
+let lastResult = null;
+
+/* ───────── telas e cortinas ───────── */
+const BADGES = { 's-intro': '', 's-cal': '', 's-method': '', 's-finger': '', 's-ring': '', 's-result': '' };
+let curScreen = 's-intro', transitioning = false;
+
+function goTo(id, instant) {
+  if (transitioning || id === curScreen) return;
+  if (instant) { swap(id); return; }
+  transitioning = true;
+  document.body.classList.add('cc');
+  setTimeout(() => {
+    swap(id);
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      document.body.classList.remove('cc');
+      setTimeout(() => { transitioning = false; }, 700);
+    }));
+  }, 700);
+}
+function swap(id) {
+  $('#' + curScreen).classList.remove('active');
+  $('#' + id).classList.add('active');
+  curScreen = id;
+  if (id === 's-cal')    layoutCal();
+  if (id === 's-finger') layoutFinger();
+  if (id === 's-ring')   layoutRing();
+  if (id === 's-result') playReveal();
+}
+
+/* ───────── toast ───────── */
+let toastT = null;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ───────── segurar botão = repetir ───────── */
+function bindHold(el, fn) {
+  let iv = null, to = null;
+  const stop = () => { clearTimeout(to); clearInterval(iv); iv = to = null; };
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault(); fn();
+    to = setTimeout(() => { iv = setInterval(fn, 110); }, 420);
+  });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => el.addEventListener(ev, stop));
+}
+
+/* ═══════════════ ATO I — calibração ═══════════════ */
+const calStage = $('#calStage'), calCard = $('#calCard'),
+      calSlider = $('#calSlider'), calScale = $('#calScale');
+const ANX = 14; // px da borda esquerda do palco até a âncora
+let calW = 0, calStageH = 0;
+
+function layoutCal() {
+  const r = calStage.getBoundingClientRect();
+  calW = r.width; calStageH = r.height;
+  const maxH = Math.max(220, calStageH - 6);
+  calSlider.min = 150;
+  calSlider.max = Math.round(maxH);
+  cardH = clamp(cardH, 150, maxH);
+  applyCal();
+}
+function applyCal() {
+  const w = cardH * (calObj.w / calObj.h);
+  calCard.style.height = cardH + 'px';
+  calCard.style.width  = w + 'px';
+  $('#calGuideL').style.left   = ANX + 'px';
+  $('#calGuideR').style.left   = (ANX + w) + 'px';
+  $('#calGuideT').style.bottom = cardH + 'px';
+  $('#tagR').style.left = (ANX + w + 6) + 'px';
+  $('#tagR').style.top  = '8px';
+  $('#tagT').style.left = (ANX + 10) + 'px';
+  $('#tagT').style.bottom = (cardH + 5) + 'px';
+  calSlider.value = Math.round(cardH);
+  calScale.innerHTML = 'escala atual: <b>' + mm2(cardH / calObj.h) + ' px/mm</b> · ' +
+    calObj.name + ' = ' + mm1(calObj.w) + ' × ' + mm1(calObj.h) + ' mm';
+}
+function setCardH(h) { cardH = clamp(h, 150, parseFloat(calSlider.max)); applyCal(); }
+
+calSlider.addEventListener('input', () => setCardH(parseFloat(calSlider.value)));
+bindHold($('#calMinus'), () => setCardH(cardH - 1));
+bindHold($('#calPlus'),  () => setCardH(cardH + 1));
+
+$('#objCard').addEventListener('click', () => setObj('card'));
+$('#objBank').addEventListener('click', () => setObj('bank'));
+function setObj(key) {
+  calObj = OBJECTS[key];
+  $('#objCard').classList.toggle('on', key === 'card');
+  $('#objBank').classList.toggle('on', key === 'bank');
+  applyCal();
+}
+
+/* pinça e arrasto de borda no palco de calibração */
+const calPtrs = new Map();
+let pinchD0 = 0, pinchH0 = 0, edgeMode = null;
+calStage.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  calStage.setPointerCapture(e.pointerId);
+  calPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (calPtrs.size === 1) {
+    const r = calStage.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    const w = cardH * (calObj.w / calObj.h);
+    if (Math.abs(x - (ANX + w)) < 30) edgeMode = 'right';
+    else if (Math.abs((r.height - y) - cardH) < 30) edgeMode = 'top';
+    else edgeMode = null;
+  } else if (calPtrs.size === 2) {
+    edgeMode = null;
+    const [a, b] = [...calPtrs.values()];
+    pinchD0 = Math.hypot(a.x - b.x, a.y - b.y);
+    pinchH0 = cardH;
+  }
+});
+calStage.addEventListener('pointermove', e => {
+  if (!calPtrs.has(e.pointerId)) return;
+  calPtrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (calPtrs.size === 2 && pinchD0 > 0) {
+    const [a, b] = [...calPtrs.values()];
+    setCardH(pinchH0 * Math.hypot(a.x - b.x, a.y - b.y) / pinchD0);
+  } else if (calPtrs.size === 1 && edgeMode) {
+    const r = calStage.getBoundingClientRect();
+    if (edgeMode === 'right') setCardH((e.clientX - r.left - ANX) / (calObj.w / calObj.h));
+    else setCardH(r.height - (e.clientY - r.top));
+  }
+});
+['pointerup', 'pointercancel'].forEach(ev => calStage.addEventListener(ev, e => {
+  calPtrs.delete(e.pointerId); pinchD0 = 0; edgeMode = null;
+}));
+
+$('#btnCalDone').addEventListener('click', () => {
+  ppm = cardH / calObj.h;
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify({
+      ppm, dpr: window.devicePixelRatio || 1, ts: Date.now(), obj: calObj.name
+    }));
+  } catch (_) {}
+  toast('Calibrado: ' + mm2(ppm) + ' px/mm ✦ a tela agora vê em milímetros');
+  goTo('s-method');
+});
+$('#btnCalBack').addEventListener('click', () => goTo('s-intro'));
+
+/* ═══════════════ ATO II — dedo ═══════════════ */
+const fingerStage = $('#fingerStage'), gl1 = $('#gl1'), gl2 = $('#gl2'),
+      fingerSlider = $('#fingerSlider'), fingerReadout = $('#fingerReadout');
+let fx1 = 0, fx2 = 0, fStageW = 0;
+
+function layoutFinger() {
+  const r = fingerStage.getBoundingClientRect();
+  fStageW = r.width;
+  if (!fx1 && !fx2) {
+    const half = (17 / 2) * ppm;
+    fx1 = fStageW / 2 - half; fx2 = fStageW / 2 + half;
+  }
+  applyFinger();
+}
+function applyFinger() {
+  const minGap = 5 * ppm, maxGap = 32 * ppm;
+  fx1 = clamp(fx1, 4, fStageW - 4 - minGap);
+  fx2 = clamp(fx2, fx1 + minGap, Math.min(fStageW - 4, fx1 + maxGap));
+  gl1.style.left = fx1 + 'px';
+  gl2.style.left = fx2 + 'px';
+  const mm = (fx2 - fx1) / ppm;
+  fingerReadout.textContent = mm1(mm) + ' mm';
+  fingerSlider.value = mm.toFixed(2);
+  const hint = $('#fingerHint');
+  hint.style.width = Math.max(44, fx2 - fx1 - 14) + 'px';
+  hint.style.left = ((fx1 + fx2) / 2) + 'px';
+  hint.style.opacity = mm < 12 ? 0 : '';
+}
+function setFingerGap(mm) {
+  const c = (fx1 + fx2) / 2, half = (mm * ppm) / 2;
+  fx1 = c - half; fx2 = c + half; applyFinger();
+}
+fingerSlider.addEventListener('input', () => setFingerGap(parseFloat(fingerSlider.value)));
+bindHold($('#fingerMinus'), () => setFingerGap((fx2 - fx1) / ppm - 0.1));
+bindHold($('#fingerPlus'),  () => setFingerGap((fx2 - fx1) / ppm + 0.1));
+
+[gl1, gl2].forEach(line => {
+  line.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation();
+    line.setPointerCapture(e.pointerId);
+    const move = ev => {
+      const r = fingerStage.getBoundingClientRect();
+      const x = ev.clientX - r.left;
+      if (line === gl1) fx1 = x; else fx2 = x;
+      applyFinger();
+    };
+    const up = () => {
+      line.removeEventListener('pointermove', move);
+      line.removeEventListener('pointerup', up);
+      line.removeEventListener('pointercancel', up);
+    };
+    line.addEventListener('pointermove', move);
+    line.addEventListener('pointerup', up);
+    line.addEventListener('pointercancel', up);
+  });
+});
+
+$('#btnFingerDone').addEventListener('click', () => finish((fx2 - fx1) / ppm, 'dedo'));
+$('#btnFingerBack').addEventListener('click', () => goTo('s-method'));
+
+/* ═══════════════ ATO II — anel ═══════════════ */
+const ringStage = $('#ringStage'), ringCircle = $('#ringCircle'),
+      ringSlider = $('#ringSlider'), ringReadout = $('#ringReadout');
+let ringD = 17; // mm
+
+function layoutRing() { applyRing(); }
+function applyRing() {
+  const r = ringStage.getBoundingClientRect();
+  const d = ringD * ppm;
+  const cx = r.width / 2, cy = r.height / 2;
+  ringCircle.style.width = ringCircle.style.height = d + 'px';
+  ringCircle.style.left = (cx - d / 2) + 'px';
+  ringCircle.style.top  = (cy - d / 2) + 'px';
+  $('#ringCross').style.left = cx + 'px';
+  $('#ringCross').style.top  = cy + 'px';
+  ringReadout.textContent = mm1(ringD) + ' mm';
+  ringSlider.value = ringD.toFixed(2);
+}
+function setRingD(mm) { ringD = clamp(mm, 6, 32); applyRing(); }
+ringSlider.addEventListener('input', () => setRingD(parseFloat(ringSlider.value)));
+bindHold($('#ringMinus'), () => setRingD(ringD - 0.1));
+bindHold($('#ringPlus'),  () => setRingD(ringD + 0.1));
+
+ringStage.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  const r = ringStage.getBoundingClientRect();
+  const cx = r.width / 2, cy = r.height / 2;
+  const dist = Math.hypot(e.clientX - r.left - cx, e.clientY - r.top - cy);
+  if (Math.abs(dist - (ringD * ppm) / 2) > 34) return;
+  ringStage.setPointerCapture(e.pointerId);
+  const move = ev => {
+    const dd = Math.hypot(ev.clientX - r.left - cx, ev.clientY - r.top - cy);
+    setRingD((dd * 2) / ppm);
+  };
+  const up = () => {
+    ringStage.removeEventListener('pointermove', move);
+    ringStage.removeEventListener('pointerup', up);
+    ringStage.removeEventListener('pointercancel', up);
+  };
+  ringStage.addEventListener('pointermove', move);
+  ringStage.addEventListener('pointerup', up);
+  ringStage.addEventListener('pointercancel', up);
+});
+
+$('#btnRingDone').addEventListener('click', () => finish(ringD, 'anel'));
+$('#btnRingBack').addEventListener('click', () => goTo('s-method'));
+
+/* ═══════════════ ATO III — o prestígio ═══════════════ */
+function sizesFrom(dMm) {
+  const circ = Math.PI * dMm;
+  const aroExact = circ - 40;
+  const us = (dMm - 11.63) / 0.8128;
+  return { d: dMm, circ, aro: Math.round(aroExact), aroExact, usHalf: Math.round(us * 2) / 2 };
+}
+function usLabel(u) {
+  if (u < 1 || u > 16) return '—';
+  const i = Math.floor(u);
+  return u % 1 ? i + '½' : String(i);
+}
+
+function finish(dMm, method) {
+  if (dMm < 13 || dMm > 24) {
+    $('#sanityText').innerHTML =
+      'Medi <b>Ø ' + mm1(dMm) + ' mm</b>. Hmm… ou você é um <i>gigante de circo</i>, ' +
+      'ou a carta escapou da manga durante a calibração. Dedos mortais ficam entre 13 e 24 mm — ' +
+      'que tal conferirmos o truque?';
+    $('#sanityModal').classList.add('show');
+    $('#sanForce').onclick = () => { $('#sanityModal').classList.remove('show'); showResult(dMm, method); };
+    $('#sanRetry').onclick = () => { $('#sanityModal').classList.remove('show'); };
+    $('#sanRecal').onclick = () => { $('#sanityModal').classList.remove('show'); goTo('s-cal'); };
+    return;
+  }
+  showResult(dMm, method);
+}
+
+function showResult(dMm, method) {
+  const s = sizesFrom(dMm);
+  lastResult = s;
+  $('#rbAro').textContent = s.aro;
+  $('#rbSub').textContent = 'medido pelo ' + method + ' · aro exato ' + mm1(s.aroExact);
+  $('#rcUS').textContent  = usLabel(s.usHalf);
+  $('#rcDia').textContent  = mm1(s.d) + ' mm';
+  $('#rcCirc').textContent = mm1(s.circ) + ' mm';
+  buildTable(s.aro);
+  const texto = 'Aro Brasil ' + s.aro + ' · US ' + usLabel(s.usHalf) +
+    ' · Ø ' + mm1(s.d) + ' mm · circunferência ' + mm1(s.circ) + ' mm';
+  $('#btnOrder').href = ORDER_URL({ resumo: 'Aro ' + s.aro, texto });
+  goTo('s-result');
+}
+
+function playReveal() {
+  const f = $('#flipper'), w = $('#revealWrap');
+  f.classList.remove('flipped');
+  w.classList.remove('revealed');
+  w.querySelectorAll('.spark').forEach(el => el.remove());
+  setTimeout(() => {
+    w.classList.add('revealed');
+    f.classList.add('flipped');
+    for (let i = 0; i < 14; i++) {
+      const sp = document.createElement('span');
+      sp.className = 'spark';
+      sp.textContent = '✦';
+      sp.style.cssText = 'left:' + (8 + (i * 67) % 84) + '%;top:' + (4 + (i * 41) % 88) + '%;' +
+        'font-size:' + (8 + (i * 5) % 12) + 'px;animation-delay:' + ((i * .37) % 2.2) + 's';
+      w.appendChild(sp);
+    }
+  }, 950);
+}
+
+function buildTable(hitAro) {
+  const rows = ['<tr><th>Aro BR</th><th>Ø (mm)</th><th>Circunf. (mm)</th><th>US</th></tr>'];
+  for (let aro = 8; aro <= 32; aro++) {
+    const circ = aro + 40, d = circ / Math.PI;
+    const us = Math.round(((d - 11.63) / 0.8128) * 2) / 2;
+    rows.push('<tr' + (aro === hitAro ? ' class="hit"' : '') + '><td>' + aro + '</td><td>' +
+      mm1(d) + '</td><td>' + mm1(circ) + '</td><td>' + usLabel(us) + '</td></tr>');
+  }
+  $('#convBody').innerHTML = rows.join('');
+}
+
+$('#btnShare').addEventListener('click', async () => {
+  if (!lastResult) return;
+  const s = lastResult;
+  const text = '🎩✨ Meu tamanho de anel: Aro ' + s.aro + ' (Brasil) · US ' + usLabel(s.usHalf) +
+    ' · Ø ' + mm1(s.d) + ' mm · circunferência ' + mm1(s.circ) + ' mm — revelado por Prestidígito ✦ ' +
+    location.href;
+  if (navigator.share) {
+    try { await navigator.share({ text }); return; } catch (_) { /* usuário cancelou */ }
+  }
+  try { await navigator.clipboard.writeText(text); toast('Copiado para a manga… digo, área de transferência ✦'); }
+  catch (_) { toast('Não consegui copiar — anote: Aro ' + s.aro); }
+});
+$('#btnAgain').addEventListener('click', () => goTo('s-method'));
+$('#btnRecal').addEventListener('click', () => goTo('s-cal'));
+
+/* ═══════════════ fluxo inicial e proteções ═══════════════ */
+$('#btnStart').addEventListener('click', () => goTo('s-cal'));
+$('#btnMethodBack').addEventListener('click', () => goTo('s-cal'));
+$('#mFinger').addEventListener('click', () => goTo('s-finger'));
+$('#mRing').addEventListener('click', () => goTo('s-ring'));
+
+(function restoreCalibration() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(LS_KEY)); } catch (_) {}
+  if (!saved || !(saved.ppm > 0)) return;
+  const skip = $('#btnSkipCal');
+  skip.hidden = false;
+  const when = new Date(saved.ts).toLocaleDateString('pt-BR');
+  skip.textContent = 'Já calibrei (' + when + ') — ir direto à medição';
+  skip.addEventListener('click', () => {
+    ppm = saved.ppm;
+    if ((window.devicePixelRatio || 1) !== saved.dpr)
+      toast('A tela mudou desde a última calibração — recomendo recalibrar ✦');
+    goTo('s-method');
+  });
+})();
+
+/* zoom de navegador/pinça quebra a escala física: vigiar e avisar */
+if (window.visualViewport) {
+  const watch = () => $('#zoomWarn').classList.toggle('show', window.visualViewport.scale > 1.02);
+  window.visualViewport.addEventListener('resize', watch);
+  watch();
+}
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('gesturechange', e => e.preventDefault());
+document.addEventListener('dblclick', e => e.preventDefault());
+window.addEventListener('resize', () => {
+  if (curScreen === 's-cal') layoutCal();
+  if (curScreen === 's-finger') layoutFinger();
+  if (curScreen === 's-ring') layoutRing();
+});
+</script>
+</body>
+</html>
