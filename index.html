@@ -238,6 +238,12 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .zoom-warn{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-180%);background:var(--ink);color:var(--bg);border-radius:var(--r);padding:11px 16px;font-size:12.5px;z-index:250;transition:transform .35s;box-shadow:4px 4px 0 rgba(12,12,13,.3);max-width:92vw;text-align:center}
 .zoom-warn.show{transform:translateX(-50%) translateY(0)}
 
+.result-hero{position:relative}
+#revealFx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+.reveal-card{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;perspective:700px;transition:transform .7s cubic-bezier(.55,0,.3,1),opacity .55s ease}
+.reveal-card svg{width:120px;height:168px;color:#fff;background:#0c0c0d;border-radius:10px;padding:36px;box-shadow:0 16px 36px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.22)}
+.reveal-card.gone{transform:rotateY(88deg) translateX(46%) scale(.92);opacity:0;pointer-events:none}
+.card-guide{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:64%;border:2px dashed rgba(255,255,255,.5);border-radius:8px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;color:rgba(255,255,255,.55);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;z-index:3}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media (min-width:481px){
   body{padding:0;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(0deg,transparent 0 39px,var(--line-2) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,var(--line-2) 39px 40px),var(--paper-2)}
@@ -279,7 +285,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
         <button class="btn btn-primary btn-block" id="btnMeasure">Measure my size →</button>
         <button class="btn btn-outline btn-block" id="btnTryOn">Try it on (AR)</button>
       </div>
-      <p class="fineline"><button class="link" id="btnWhat" style="padding:6px">What it does</button><span style="color:var(--line)">·</span><button class="link" id="btnAdvanced" style="padding:6px">Precise methods</button></p>
+      <p class="fineline"><button class="link" id="btnWhat" style="padding:6px">What it does</button><span style="color:var(--line)">·</span><button class="link" id="btnDemo" style="padding:6px">▶ Demo</button><span style="color:var(--line)">·</span><button class="link" id="btnAdvanced" style="padding:6px">Precise</button></p>
     </div>
   </div>
 </section>
@@ -290,10 +296,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <div class="stage-head"><h2 class="title">Camera sizing</h2><p class="body" id="camStep" style="margin-top:6px">Lay a <b>playing card</b> and your finger flat on a table. First, line the two marks up with the <b>long edge of the card</b>.</p></div>
   <div class="stage-wrap" id="camStage">
     <video id="camVid" playsinline muted></video>
+    <div class="card-guide" id="cardGuide" aria-hidden="true"><span>fit your card in here</span></div>
     <div class="cam-pill" id="camPill">Align to the card</div>
     <div class="drag-v" id="cm0"><span class="h"></span></div>
     <div class="drag-v" id="cm1"><span class="h"></span></div>
-    <div class="cam-controls"><button class="cam-btn" id="camFreeze">Freeze</button></div>
+    <div class="cam-controls"><button class="cam-btn on" id="camCardType">🂠 Playing card</button><button class="cam-btn" id="camFreeze">Freeze</button></div>
     <div class="cam-fail" id="camFail" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg><div id="camFailMsg">Camera unavailable. Use a precise method instead.</div><button class="btn btn-outline btn-sm" id="camFailAdv">Precise methods</button></div>
   </div>
   <div class="panel">
@@ -391,9 +398,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <section class="screen" id="s-result">
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Result</span><span class="step-dots"><i class="done"></i><i class="done"></i><i class="on"></i></span></div>
   <div class="result-hero">
+    <canvas id="revealFx" aria-hidden="true"></canvas>
     <p class="eyebrow">Your size</p>
     <div class="size-ring"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="none" stroke="var(--line)" stroke-width="1.5"/><circle id="srArc" cx="100" cy="100" r="92" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="butt" transform="rotate(-90 100 100)" stroke-dasharray="578" stroke-dashoffset="578"/></svg>
-      <div class="sr-num"><span class="sr-k">US Size</span><span class="sr-v" id="rUSbig">—</span><span class="sr-range" id="rRange"></span></div></div>
+      <div class="sr-num"><span class="sr-k">US Size</span><span class="sr-v" id="rUSbig">—</span><span class="sr-range" id="rRange"></span></div>
+      <div class="reveal-card" id="revealCard" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#mark"/></svg></div></div>
     <div class="conf mid" id="confBadge"><span class="dot"></span><span id="confText">—</span></div>
   </div>
   <div class="sys-grid"><div class="sys"><div class="sv" id="rDia">—</div><div class="sk">Inner Ø (mm)</div></div><div class="sys"><div class="sv" id="rCirc">—</div><div class="sk">Circumference (mm)</div></div></div>
@@ -492,7 +501,7 @@ function onEnter(id){
   if (id!=='s-camera') camMeasure.stop();
   if (id!=='s-ar') arTryOn.stop();
   if (id==='s-intro') startGauge(); else stopGauge();
-  if (id==='s-camera') primeCamera(()=>camMeasure.start());
+  if (id==='s-camera'){ if(camMeasure.isDemo()) camMeasure.start(); else primeCamera(()=>camMeasure.start()); }
   if (id==='s-ar') primeCamera(()=>arTryOn.start());
   if (id==='s-cal') layoutCal();
   if (id==='s-ring') layoutRing();
@@ -518,30 +527,48 @@ async function openCamera(video, facing){
 }
 function stopStream(s){ if(s) s.getTracks().forEach(t=>t.stop()); }
 
-/* GAUGE */
+/* GAUGE — real product floating with a light-sweep, precision rings behind */
 const gauge=(()=>{ const cv=$('#gauge'),ctx=cv.getContext('2d'); let W=0,H=0,raf=0,t0=0,running=false;
+  const ring=new Image(); let rReady=false; ring.onload=()=>{ rReady=true; if(!running && cur==='s-intro') render(1500); }; ring.src=RING_IMG;
+  const oc=document.createElement('canvas'), octx=oc.getContext('2d');
   function resize(){ const r=cv.getBoundingClientRect(),DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0); }
   function hex(cx,cy,r){ ctx.beginPath(); for(let i=0;i<6;i++){const a=(-90+i*60)*Math.PI/180,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);i?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.closePath(); }
-  function render(t){ ctx.clearRect(0,0,W,H); const cx=W/2,cy=H*0.34,R=Math.min(W*0.5,H*0.42)*0.62; ctx.strokeStyle='#0c0c0d';
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(t*0.00006);ctx.translate(-cx,-cy);ctx.globalAlpha=.10;ctx.lineWidth=1.5;hex(cx,cy,R*1.42);ctx.stroke();ctx.restore();
-    ctx.globalAlpha=.16;ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,R*1.16,0,7);ctx.stroke();
-    ctx.globalAlpha=.30;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
-    for(let i=0;i<72;i++){const a=(i/72)*Math.PI*2,major=i%6===0,r0=R*1.16,r1=r0-(major?12:6),sweep=((t*0.00045)%(Math.PI*2)),d=Math.abs(((a-sweep)+Math.PI*3)%(Math.PI*2)-Math.PI);
-      ctx.globalAlpha=d<0.5?.9:(major?.5:.22);ctx.lineWidth=d<0.5?2:1;ctx.beginPath();ctx.moveTo(cx+r0*Math.cos(a),cy+r0*Math.sin(a));ctx.lineTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));ctx.stroke();}
-    const sa=(t*0.00045)%(Math.PI*2);ctx.globalAlpha=.5;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*1.12*Math.cos(sa),cy+R*1.12*Math.sin(sa));ctx.stroke();
-    const bs=1+0.02*Math.sin(t*0.002);ctx.globalAlpha=.92;ctx.lineWidth=2.5;hex(cx,cy,R*0.5*bs);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,R*0.28*bs,0,7);ctx.stroke();ctx.globalAlpha=1; }
+  function precision(t,cx,cy,R){ ctx.strokeStyle='#0c0c0d';
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(t*0.00005);ctx.translate(-cx,-cy);ctx.globalAlpha=.07;ctx.lineWidth=1.5;hex(cx,cy,R*1.95);ctx.stroke();ctx.restore();
+    ctx.globalAlpha=.12;ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,R*1.5,0,7);ctx.stroke();
+    ctx.globalAlpha=.07;ctx.beginPath();ctx.arc(cx,cy,R*1.78,0,7);ctx.stroke();
+    for(let i=0;i<72;i++){const a=(i/72)*Math.PI*2,major=i%6===0,r0=R*1.5,r1=r0-(major?10:5),sweep=((t*0.0004)%(Math.PI*2)),d=Math.abs(((a-sweep)+Math.PI*3)%(Math.PI*2)-Math.PI);
+      ctx.globalAlpha=d<0.5?.55:(major?.18:.08);ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx+r0*Math.cos(a),cy+r0*Math.sin(a));ctx.lineTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));ctx.stroke();}
+    ctx.globalAlpha=1; }
+  function drawRing(t,cx,cy,w){ if(!rReady)return; const h=w*(ring.height/ring.width),DPR=Math.min(2,devicePixelRatio||1);
+    oc.width=Math.ceil(w*DPR); oc.height=Math.ceil(h*DPR); octx.setTransform(DPR,0,0,DPR,0,0); octx.clearRect(0,0,w,h);
+    octx.drawImage(ring,0,0,w,h);
+    octx.save(); octx.globalCompositeOperation='source-atop';
+    const sx=((t*0.00028)%1)*(w*1.7)-w*0.35, g=octx.createLinearGradient(sx-w*0.22,0,sx+w*0.22,h);
+    g.addColorStop(0,'rgba(255,255,255,0)'); g.addColorStop(.5,'rgba(255,255,255,0.55)'); g.addColorStop(1,'rgba(255,255,255,0)');
+    octx.fillStyle=g; octx.fillRect(0,0,w,h); octx.restore();
+    const bob=Math.sin(t*0.0016)*6, tilt=Math.sin(t*0.0011)*0.05;
+    ctx.save(); ctx.translate(cx,cy+bob); ctx.rotate(tilt);
+    ctx.shadowColor='rgba(0,0,0,0.18)'; ctx.shadowBlur=26; ctx.shadowOffsetY=16;
+    ctx.drawImage(oc,-w/2,-h/2,w,h); ctx.restore(); }
+  function render(t){ ctx.clearRect(0,0,W,H); const cx=W/2,cy=H*0.33,R=Math.min(W*0.5,H*0.42)*0.6;
+    precision(t,cx,cy,R); drawRing(t,cx,cy,Math.min(W*0.6,250)); }
   function frame(ts){ if(!running)return; if(!t0)t0=ts; render(ts-t0); raf=requestAnimationFrame(frame); }
   return { start(){ resize(); if(running)return; running=true; if(REDUCE){render(1500);running=false;return;} t0=0; raf=requestAnimationFrame(frame); }, stop(){ running=false; cancelAnimationFrame(raf); }, resize(){ resize(); } };
 })();
 function startGauge(){ gauge.start(); } function stopGauge(){ gauge.stop(); }
 
-/* CAMERA MEASURE (rear) */
-const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0'),c1=$('#cm1');
-  let stream=null,W=0,x0=0,x1=0,step='scale',ppmCam=null,frozen=false;
+/* CAMERA MEASURE (rear) + card guide + stage Demo */
+const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0'),c1=$('#cm1'),guide=$('#cardGuide');
+  const CT={card:{long:88.9,short:63.5,label:'🂠 Playing card'},bank:{long:85.6,short:53.98,label:'💳 Credit card'}};
+  let stream=null,W=0,x0=0,x1=0,step='scale',ppmCam=null,frozen=false,cardType='card',demoMode=false,demoToken=0;
+  let cardLong=CT.card.long,cardShort=CT.card.short;
+  function sizeGuide(){ const gw=W*0.64; guide.style.width=gw+'px'; guide.style.height=(gw*cardShort/cardLong)+'px'; }
   function place(){ x0=clamp(x0,8,W-8); x1=clamp(x1,x0+10,W-8); c0.style.left=x0+'px'; c1.style.left=x1+'px';
-    if(step==='scale'){ ppmCam=Math.abs(x1-x0)/CARD_LONG_MM; $('#camRead').textContent=Math.round(Math.abs(x1-x0)); $('#camUnit').textContent='px card edge'; }
+    guide.style.display = step==='scale' ? 'flex':'none';
+    if(step==='scale'){ ppmCam=Math.abs(x1-x0)/cardLong; $('#camRead').textContent=Math.round(Math.abs(x1-x0)); $('#camUnit').textContent='px card edge'; }
     else { $('#camRead').textContent=fmt1(Math.abs(x1-x0)/(ppmCam||1)); $('#camUnit').textContent='mm finger width'; } }
-  function layout(){ const r=stage.getBoundingClientRect(); W=r.width; if(!x0&&!x1){ x0=W*0.28; x1=W*0.72; } place(); }
+  function layout(){ const r=stage.getBoundingClientRect(); W=r.width; sizeGuide(); if(!x0&&!x1){ const gw=W*0.64,gl=(W-gw)/2; x0=gl; x1=gl+gw; } place(); }
   function bind(el){ el.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();el.setPointerCapture(e.pointerId);
     const mv=ev=>{ const r=stage.getBoundingClientRect(); const x=ev.clientX-r.left; if(el===c0)x0=x;else x1=x; place(); };
     const up=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);};
@@ -549,6 +576,7 @@ const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0')
   bind(c0); bind(c1);
   hold($('#camMinus'),()=>{ const c=(x0+x1)/2,g=Math.abs(x1-x0)-0.2*(ppmCam||4); x0=c-g/2;x1=c+g/2; place(); });
   hold($('#camPlus'), ()=>{ const c=(x0+x1)/2,g=Math.abs(x1-x0)+0.2*(ppmCam||4); x0=c-g/2;x1=c+g/2; place(); });
+  $('#camCardType').addEventListener('click',()=>{ cardType=cardType==='card'?'bank':'card'; cardLong=CT[cardType].long; cardShort=CT[cardType].short; $('#camCardType').textContent=CT[cardType].label; sizeGuide(); place(); });
   $('#camAction').addEventListener('click',()=>{ buzz(6);
     if(step==='scale'){ if(!(ppmCam>0)){toast('Align the marks to the card first');return;} step='finger';
       $('#camStep').innerHTML='Now line the two marks to the <b>sides of your finger</b>, at the base where the ring sits.';
@@ -559,18 +587,28 @@ const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0')
   $('#camAdv').addEventListener('click',()=>go('s-cal'));
   $('#camFailAdv').addEventListener('click',()=>go('s-cal'));
   function fail(){ $('#camFail').hidden=false; $('#camFailMsg').textContent=(location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable. Allow camera access, or use a precise method.':'Camera needs HTTPS. Use a precise method instead.'; }
-  return { async start(){ step='scale';frozen=false;ppmCam=null;x0=0;x1=0;
-      $('#camStep').innerHTML='Lay a <b>playing card</b> and your finger flat on a table. First, line the two marks up with the <b>long edge of the card</b>.';
-      $('#camPill').textContent='Align to the card';$('#camAction').textContent='Set scale →';$('#camFreeze').textContent='Freeze';$('#camFreeze').classList.remove('on'); layout();
+  function animTo(tx0,tx1,ms,cb){ const tok=demoToken,s0=x0,s1=x1,t0=performance.now();
+    (function st(){ if(tok!==demoToken)return; const k=Math.min(1,(performance.now()-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2; x0=s0+(tx0-s0)*e; x1=s1+(tx1-s1)*e; place(); if(k<1)requestAnimationFrame(st); else cb&&cb(); })(); }
+  function runDemo(){ const tok=++demoToken; $('#camFail').hidden=true; step='scale'; const gw=W*0.64,gl=(W-gw)/2;
+    x0=W*0.12; x1=W*0.88; place(); $('#camStep').innerHTML='<b>Demo</b> — sit back and watch the trick.'; $('#camPill').textContent='DEMO · Pick a card… any card';
+    setTimeout(()=>{ if(tok!==demoToken)return; animTo(gl,gl+gw,950,()=>{ ppmCam=gw/cardLong; $('#camPill').textContent='DEMO · Watch closely…';
+      setTimeout(()=>{ if(tok!==demoToken)return; step='finger'; place(); const presetD=17.0+Math.random()*1.7,fpx=presetD*ppmCam,c=W/2;
+        animTo(c-fpx/2,c+fpx/2,950,()=>{ $('#camPill').textContent='DEMO · Your size — revealed ✦'; setTimeout(()=>{ if(tok!==demoToken)return; demoMode=false; show(presetD,'camera'); },750); }); },650);
+    }); },900); }
+  return { async start(){ step='scale';frozen=false;ppmCam=null;x0=0;x1=0; $('#camCardType').textContent=CT[cardType].label;
+      $('#camAction').textContent='Set scale →';$('#camFreeze').textContent='Freeze';$('#camFreeze').classList.remove('on'); layout();
+      if(demoMode){ runDemo(); return; }
+      $('#camStep').innerHTML='Lay a <b>playing card</b> and your finger flat on a table. First, fit the card in the guide and line the two marks to its <b>long edge</b>.';
+      $('#camPill').textContent='Align to the card';
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
       try{ stream=await openCamera(vid,'environment'); $('#camFail').hidden=true; setTimeout(layout,300); }catch(e){ fail(); } },
-    stop(){ stopStream(stream); stream=null; }, layout };
+    stop(){ demoToken++; stopStream(stream); stream=null; }, layout, isDemo(){ return demoMode; }, demo(){ demoMode=true; go('s-camera'); } };
 })();
 
 /* AR TRY-ON (rear, canvas composite, smoothed, contact shadow, snapshot) */
 const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas'),ctx=cv.getContext('2d');
   let stream=null,raf=0,running=false,mode='auto',finger=3,sizeMul=1,rotDeg=0;
-  let DPR=1,W=0,H=0,landmarker=null,loading=false,haveHand=false,snapPending=false;
+  let DPR=1,W=0,H=0,landmarker=null,loading=false,haveHand=false,snapPending=false,lock=0,wasLocked=false,sparks=[];
   let manual={x:0.5,y:0.5}; let s={x:0,y:0,w:0,a:0,init:false};
   const ringImg=new Image(); let ringReady=false; ringImg.onload=()=>ringReady=true; ringImg.src=RING_IMG;
   const PAIR={1:[5,6],2:[9,10],3:[13,14],4:[17,18]};
@@ -582,11 +620,15 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
       if(mode==='auto')$('#arPill').textContent='Show your hand';
     }catch(e){ landmarker=null; toast('Auto tracking off — use Manual'); setMode('manual'); } loading=false; }
   function cover(){ const vw=vid.videoWidth||1280, vh=vid.videoHeight||720, sc=Math.max(W/vw,H/vh); return {sc,dx:(W-vw*sc)/2,dy:(H-vh*sc)/2,vw,vh}; }
-  function drawRing(cx,cy,w,ang){ if(!ringReady)return; const h=w*(ringImg.height/ringImg.width);
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(ang);
-    const g=ctx.createRadialGradient(0,h*0.24,0,0,h*0.24,w*0.55); g.addColorStop(0,'rgba(0,0,0,0.38)'); g.addColorStop(1,'rgba(0,0,0,0)');
+  function drawRing(cx,cy,w,ang,alpha){ if(!ringReady)return; const h=w*(ringImg.height/ringImg.width);
+    ctx.save(); ctx.globalAlpha=alpha; ctx.translate(cx,cy); ctx.rotate(ang);
+    const g=ctx.createRadialGradient(0,h*0.24,0,0,h*0.24,w*0.55); g.addColorStop(0,'rgba(0,0,0,'+(0.38*alpha)+')'); g.addColorStop(1,'rgba(0,0,0,0)');
     ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(0,h*0.26,w*0.52,h*0.20,0,0,7); ctx.fill();
     ctx.drawImage(ringImg,-w/2,-h*0.5,w,h); ctx.restore(); }
+  function spawnSparks(cx,cy){ for(let i=0;i<16;i++){ const a=Math.random()*7,sp=1.5+Math.random()*3.5; sparks.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:0,max:24+Math.random()*16,r:1.5+Math.random()*2}); } buzz(20); }
+  function drawSparks(){ for(const p of sparks){ if(p.life>=p.max)continue; p.life++; p.x+=p.vx;p.y+=p.vy;p.vx*=0.92;p.vy*=0.92; const k=1-p.life/p.max,rr=p.r*(0.6+k*1.6);
+      ctx.strokeStyle='rgba(255,255,255,'+(0.95*k)+')'; ctx.lineWidth=1.4; ctx.beginPath(); ctx.moveTo(p.x-rr,p.y);ctx.lineTo(p.x+rr,p.y);ctx.moveTo(p.x,p.y-rr);ctx.lineTo(p.x,p.y+rr); ctx.stroke(); }
+    sparks=sparks.filter(p=>p.life<p.max); }
   function watermark(){ const x=18,y=H-18,r=11; ctx.save(); ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=6; ctx.fillStyle='#fff';
     ctx.beginPath(); for(let i=0;i<6;i++){const a=(-90+i*60)*Math.PI/180,px=x+r*Math.cos(a),py=y-9+r*Math.sin(a);i?ctx.lineTo(px,py):ctx.moveTo(px,py);} ctx.closePath(); ctx.fill();
     ctx.font='800 16px Archivo, sans-serif'; ctx.textBaseline='middle'; ctx.fillText('OBVIOUS', x+r+8, y-9); ctx.restore(); }
@@ -594,18 +636,24 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
     s.x+=(tx-s.x)*k; s.y+=(ty-s.y)*k; s.w+=(tw-s.w)*k; let da=ta-s.a; while(da>Math.PI)da-=2*Math.PI; while(da<-Math.PI)da+=2*Math.PI; s.a+=da*k; }
   function frame(ts){ if(!running)return; ctx.setTransform(DPR,0,0,DPR,0,0); ctx.clearRect(0,0,W,H);
     if(vid.readyState>=2){ const c=cover(); ctx.drawImage(vid,c.dx,c.dy,c.vw*c.sc,c.vh*c.sc); }
-    let placed=false,tx,ty,tw,ta;
-    if(mode==='auto'&&landmarker&&vid.readyState>=2){ let res=null; try{ res=landmarker.detectForVideo(vid,ts); }catch(_){}
+    let tx=W/2,ty=H*0.46,tw=W*0.34,ta=0,ghost=true;
+    if(mode==='manual'){ tx=manual.x*W; ty=manual.y*H; tw=W*0.34*sizeMul; ta=rotDeg*Math.PI/180; ghost=false; }
+    else if(landmarker&&vid.readyState>=2){ let res=null; try{ res=landmarker.detectForVideo(vid,ts); }catch(_){}
       if(res&&res.landmarks&&res.landmarks[0]){ haveHand=true; const lm=res.landmarks[0],c=cover(),M=p=>({x:c.dx+p.x*c.vw*c.sc,y:c.dy+p.y*c.vh*c.sc});
         const [a,b]=PAIR[finger],mcp=M(lm[a]),pip=M(lm[b]),i5=M(lm[5]),i17=M(lm[17]);
         tx=mcp.x+(pip.x-mcp.x)*0.42; ty=mcp.y+(pip.y-mcp.y)*0.42;
         tw=Math.max(60,Math.hypot(i5.x-i17.x,i5.y-i17.y)*0.45*sizeMul*1.7);
-        ta=Math.atan2(pip.y-mcp.y,pip.x-mcp.x)-Math.PI/2+rotDeg*Math.PI/180; placed=true; }
+        ta=Math.atan2(pip.y-mcp.y,pip.x-mcp.x)-Math.PI/2+rotDeg*Math.PI/180; ghost=false; }
       else haveHand=false; }
-    if(mode==='manual'){ tx=manual.x*W; ty=manual.y*H; tw=W*0.34*sizeMul; ta=rotDeg*Math.PI/180; placed=true; }
-    if(placed){ smooth(tx,ty,tw,ta); drawRing(s.x,s.y,s.w,s.a); }
+    smooth(tx,ty,tw,ta);
+    lock += ((ghost?0:1)-lock)*0.15;
+    const alpha = ghost?0.32:(0.32+0.68*Math.min(1,lock));
+    if(ringReady) drawRing(s.x,s.y,s.w,s.a,alpha);
+    if(!ghost && lock>0.55 && !wasLocked){ wasLocked=true; spawnSparks(s.x,s.y); }
+    if(ghost) wasLocked=false;
+    drawSparks();
     if(snapPending){ snapPending=false; watermark(); cv.toBlob(saveSnap,'image/png'); }
-    if(mode==='auto'&&landmarker){ $('#arPill').style.opacity=haveHand?0:1; if(!haveHand)$('#arPill').textContent='Show your hand to the camera'; }
+    if(mode==='auto'){ $('#arPill').style.opacity=ghost?1:0; if(ghost)$('#arPill').textContent=landmarker?'Show your hand — the ring will appear':'Loading tracking…'; }
     raf=requestAnimationFrame(frame); }
   function saveSnap(blob){ if(!blob){toast('Could not capture');return;} const f=new File([blob],'obvious-tryon.png',{type:'image/png'});
     $('#snapFlash').classList.remove('go'); void $('#snapFlash').offsetWidth; $('#snapFlash').classList.add('go'); buzz(15);
@@ -627,7 +675,7 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
   $('#arBack2').addEventListener('click',()=>go(lastResult?'s-result':'s-intro'));
   $('#arMeasureCta').addEventListener('click',()=>go('s-camera'));
   function fail(){ $('#arFail').hidden=false; $('#arFailMsg').textContent=(location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable.':'Camera needs HTTPS.'; }
-  return { async start(){ resize(); running=true; s.init=false; $('#arFail').hidden=true; setMode('auto'); $('#arPill').textContent='Starting camera…'; $('#arPill').style.opacity=1;
+  return { async start(){ resize(); running=true; s.init=false; lock=0; wasLocked=false; sparks=[]; $('#arFail').hidden=true; setMode('auto'); $('#arPill').textContent='Starting camera…'; $('#arPill').style.opacity=1;
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
       try{ stream=await openCamera(vid,'environment'); }catch(e){ fail(); return; }
       loadLM(); raf=requestAnimationFrame(frame); },
@@ -735,11 +783,25 @@ function show(dMM,method){ const circ=circOf(dMM); lastResult={d:dMM,circ,us:usO
   $('#btnWhats').href='https://wa.me/'+CONFIG.whatsapp+'?text='+('Hi! I\'d like to order an OBVIOUS smart ring.%0A%0AMy size:%0A'+encodeURIComponent(sum));
   $('#btnInsta').href=CONFIG.instagram;
   go('s-result'); }
-function animateResult(){ const arc=$('#srArc'),C=578; arc.style.transition='none'; arc.style.strokeDashoffset=C;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{ arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.3,.8,.3,1)'; arc.style.strokeDashoffset=C*0.16; }));
-  if(REDUCE||!lastResult)return; const el=$('#rUSbig'),final=el.textContent,seq=['4','12','7','9','5','11','6','8','10']; let i=0; el.classList.add('flip');
-  const iv=setInterval(()=>{ el.textContent=seq[i%seq.length]; i++; },65);
-  setTimeout(()=>{ clearInterval(iv); el.textContent=final; el.classList.remove('flip'); },620); }
+function revealBurst(){ const cv=$('#revealFx'); if(!cv)return; const ctx=cv.getContext('2d'),r=cv.getBoundingClientRect(),DPR=Math.min(2,devicePixelRatio||1);
+  if(!r.width)return; cv.width=r.width*DPR;cv.height=r.height*DPR;ctx.setTransform(DPR,0,0,DPR,0,0); const W=r.width,H=r.height,cx=W/2,cy=H*0.46;
+  const ps=[]; for(let i=0;i<30;i++){ const a=Math.random()*7,sp=1+Math.random()*3.2,smoke=i<14;
+    ps.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(smoke?1.1:0),life:0,max:smoke?(45+Math.random()*25):(30+Math.random()*22),smoke,r:smoke?(8+Math.random()*14):(2.2+Math.random()*2)}); }
+  let f=0; (function step(){ ctx.clearRect(0,0,W,H); let alive=false;
+    for(const p of ps){ if(p.life>=p.max)continue; alive=true; p.life++; p.x+=p.vx;p.y+=p.vy; p.vy+=p.smoke?-0.015:0.05; p.vx*=0.97;p.vy*=0.98; const k=1-p.life/p.max;
+      if(p.smoke){ ctx.fillStyle='rgba(118,118,126,'+(0.16*k)+')'; ctx.beginPath();ctx.arc(p.x,p.y,p.r*(1.8-k)+4,0,7);ctx.fill(); }
+      else { ctx.strokeStyle='rgba(12,12,13,'+(0.85*k)+')'; ctx.lineWidth=1.3; const rr=p.r*(0.8+k*1.4); ctx.beginPath(); ctx.moveTo(p.x-rr,p.y);ctx.lineTo(p.x+rr,p.y);ctx.moveTo(p.x,p.y-rr);ctx.lineTo(p.x,p.y+rr); ctx.stroke(); } }
+    f++; if(alive&&f<100)requestAnimationFrame(step); else ctx.clearRect(0,0,W,H); })(); }
+function animateResult(){ const arc=$('#srArc'),C=578,card=$('#revealCard'),el=$('#rUSbig'),final=el.textContent;
+  arc.style.transition='none'; arc.style.strokeDashoffset=C;
+  if(REDUCE){ if(card)card.classList.add('gone'); arc.style.transition='stroke-dashoffset .4s'; arc.style.strokeDashoffset=C*0.16; return; }
+  if(card)card.classList.remove('gone');
+  setTimeout(()=>{ if(card)card.classList.add('gone'); buzz([12,40,18]); revealBurst();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.3,.8,.3,1)'; arc.style.strokeDashoffset=C*0.16; }));
+    if(!lastResult)return; const seq=['4','12','7','9','5','11','6','8','10']; let i=0; el.classList.add('flip');
+    const iv=setInterval(()=>{ el.textContent=seq[i%seq.length]; i++; },60);
+    setTimeout(()=>{ clearInterval(iv); el.textContent=final; el.classList.remove('flip'); },560);
+  },520); }
 function buildConv(hit){ const rows=['<tr><th>US</th><th>Ø mm</th><th>Circ. mm</th></tr>'];
   for(let u=4;u<=13;u+=0.5){ const d=dFromUS(u),c=circOf(d); rows.push('<tr'+(u===hit?' class="hit"':'')+'><td>'+usLabel(u)+'</td><td>'+fmt1(d)+'</td><td>'+fmt1(c)+'</td></tr>'); }
   $('#convTable').innerHTML=rows.join(''); }
@@ -756,6 +818,7 @@ $('#btnTryOn2').addEventListener('click',()=>go('s-ar'));
 $('#btnMeasure').addEventListener('click',()=>go('s-camera'));
 $('#btnTryOn').addEventListener('click',()=>go('s-ar'));
 $('#btnAdvanced').addEventListener('click',()=>go('s-cal'));
+$('#btnDemo').addEventListener('click',()=>camMeasure.demo());
 $('#btnWhat').addEventListener('click',()=>$('#whatSheet').classList.add('show'));
 $('#whatClose').addEventListener('click',()=>$('#whatSheet').classList.remove('show'));
 $('#whatSheet').addEventListener('click',e=>{ if(e.target===$('#whatSheet'))$('#whatSheet').classList.remove('show'); });
