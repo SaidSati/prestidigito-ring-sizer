@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>OBVIOUS — Medidor de Anel · smartrings forjados</title>
-<meta name="description" content="Descubra o tamanho exato do seu anel pela tela, com precisão industrial. OBVIOUS Enterprises — smartrings.">
-<meta name="theme-color" content="#0a0a0c">
+<title>OBVIOUS — Ring Sizer · smart rings</title>
+<meta name="description" content="Find your exact ring size from your phone, with precision. OBVIOUS Enterprises — smart rings.">
+<meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="OBVIOUS">
-<meta property="og:title" content="OBVIOUS — Medidor de Anel">
-<meta property="og:description" content="O tamanho exato do seu anel, forjado pela tela.">
+<meta property="og:title" content="OBVIOUS — Ring Sizer">
+<meta property="og:description" content="Your exact ring size, measured from your phone.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -20,314 +20,289 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0a0c;
-  --bg2:#0f0f12;
-  --surf:#16161b;
-  --surf-2:#1f1f26;
-  --text:#ece8e1;
-  --dim:#9c958a;
-  --dim-2:#6a655d;
-  --ember:#ff5a1f;
-  --ember-hi:#ffae4d;
-  --ember-deep:#c41a08;
-  --hot:#fff1cf;
-  --line:rgba(236,232,225,.12);
-  --line-2:rgba(236,232,225,.06);
-  --ok:#5fb87a;
-  --warn:#e0452c;
-  --shadow:0 2px 6px rgba(0,0,0,.4),0 18px 50px rgba(0,0,0,.5);
-  --r:6px;
+  --bg:#ffffff;
+  --ink:#0c0c0d;
+  --ink-soft:#33333a;
+  --dim:#6e6e76;
+  --dim-2:#a6a6ad;
+  --paper:#f3f3f4;
+  --paper-2:#e9e9ec;
+  --line:rgba(12,12,13,.14);
+  --line-2:rgba(12,12,13,.07);
+  --hard:#0c0c0d;
+  --stage:#0a0a0b;
+  --stage-soft:#15151a;
+  --on-stage:#ffffff;
+  --r:4px;
   --safe-b:env(safe-area-inset-bottom);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{height:100%}
 body{
-  background:var(--bg);color:var(--text);
+  background:var(--bg);color:var(--ink);
   font-family:"Space Grotesk",system-ui,sans-serif;
   height:100dvh;overflow:hidden;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
   -webkit-tap-highlight-color:transparent;touch-action:manipulation;
 }
-::selection{background:var(--ember);color:#000}
+::selection{background:var(--ink);color:var(--bg)}
 .display{font-family:"Archivo",sans-serif}
 
-/* ── layout base ── */
 #app{position:relative;height:100dvh;max-width:480px;margin:0 auto;background:var(--bg);overflow:hidden}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .45s ease}
-.screen.active{display:flex;opacity:1}
-.screen.leaving{opacity:0}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transform:translateY(8px);
+  transition:opacity .4s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
+.screen.active{display:flex;opacity:1;transform:none}
+.screen.leaving{opacity:0;transform:translateY(-8px)}
 .scrolly{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 #s-result>*,#s-method>*{flex:0 0 auto}
 
 /* ── topbar ── */
 .topbar{display:flex;align-items:center;justify-content:space-between;
-  padding:max(14px,env(safe-area-inset-top)) 20px 10px;flex:0 0 auto;position:relative;z-index:3}
+  padding:max(14px,env(safe-area-inset-top)) 20px 12px;flex:0 0 auto;position:relative;z-index:3}
 .wordmark{display:flex;align-items:center;gap:9px;font-family:"Archivo",sans-serif;
-  font-weight:800;font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:var(--text)}
-.wordmark svg{width:23px;height:23px;display:block}
-.wordmark .sub{font-weight:500;font-size:9px;letter-spacing:.28em;color:var(--dim-2);font-family:"Space Grotesk"}
+  font-weight:900;font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.wordmark svg{width:22px;height:22px;display:block}
 .step-dots{display:flex;gap:5px;align-items:center}
-.step-dots i{width:18px;height:3px;background:var(--line);transition:all .35s}
-.step-dots i.on{background:var(--ember)}
-.step-dots i.done{background:var(--ember-deep)}
-.tb-link{font-size:11px;color:var(--dim);background:none;border:1px solid var(--line);cursor:pointer;
-  font-family:inherit;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;transition:all .2s}
-.tb-link:hover{border-color:var(--ember);color:var(--ember-hi)}
+.step-dots i{width:16px;height:3px;background:var(--line);transition:all .35s}
+.step-dots i.on{background:var(--ink)}
+.step-dots i.done{background:var(--dim-2)}
+.tb-link{font-size:11px;color:var(--ink);background:none;border:1.5px solid var(--ink);cursor:pointer;
+  font-family:inherit;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;transition:all .15s}
+.tb-link:hover{background:var(--ink);color:var(--bg)}
 
-/* ── tipografia ── */
-.eyebrow{font-size:10.5px;letter-spacing:.32em;text-transform:uppercase;color:var(--ember);font-weight:600}
-h1.hero-h{font-family:"Archivo",sans-serif;font-weight:900;line-height:.92;text-transform:uppercase;
-  font-size:clamp(46px,15vw,72px);letter-spacing:-.02em;color:var(--text)}
+/* ── type ── */
+.eyebrow{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);font-weight:600}
+h1.hero-h{font-family:"Archivo",sans-serif;font-weight:900;line-height:.9;text-transform:uppercase;
+  font-size:clamp(50px,16vw,78px);letter-spacing:-.025em;color:var(--ink)}
 h2.title{font-family:"Archivo",sans-serif;font-weight:800;font-size:clamp(26px,7vw,34px);
   line-height:1;letter-spacing:-.01em;text-transform:uppercase}
-.lead{font-size:15.5px;line-height:1.55;color:var(--dim)}
-.body{font-size:14px;line-height:1.6;color:var(--dim)}
-.body b{color:var(--text);font-weight:600}
+.lead{font-size:15.5px;line-height:1.5;color:var(--ink-soft)}
+.body{font-size:14px;line-height:1.55;color:var(--dim)}
+.body b{color:var(--ink);font-weight:600}
 .center{text-align:center}
 
-/* ── botões ── */
+/* ── buttons ── */
 .btn{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;letter-spacing:.08em;
-  text-transform:uppercase;border:none;border-radius:var(--r);padding:17px 24px;cursor:pointer;
-  display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;
-  transition:transform .12s,box-shadow .25s,background .2s,color .2s,filter .2s}
-.btn:active{transform:translateY(1px)}
-.btn-molten,.btn-primary,.btn-gold{color:#1a0500;
-  background:linear-gradient(180deg,var(--ember-hi),var(--ember) 55%,var(--ember-deep));
-  box-shadow:0 0 0 1px rgba(255,90,31,.4),0 8px 30px rgba(255,70,20,.34),inset 0 1px 0 rgba(255,240,207,.5)}
-.btn-molten:hover,.btn-primary:hover,.btn-gold:hover{filter:brightness(1.08)}
-.btn-outline{background:transparent;color:var(--text);border:1px solid var(--line)}
-.btn-outline:hover{border-color:var(--ember);color:var(--ember-hi)}
+  text-transform:uppercase;border:1.5px solid var(--ink);border-radius:var(--r);padding:16px 24px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;background:var(--bg);color:var(--ink);
+  transition:transform .12s,box-shadow .18s,background .18s,color .18s}
+.btn:active{transform:translate(2px,2px);box-shadow:none!important}
+.btn-primary,.btn-molten,.btn-gold{background:var(--ink);color:var(--bg);box-shadow:4px 4px 0 var(--ink)}
+.btn-primary:hover,.btn-molten:hover,.btn-gold:hover{box-shadow:6px 6px 0 var(--ink);transform:translate(-1px,-1px)}
+.btn-outline{background:var(--bg);color:var(--ink)}
+.btn-outline:hover{background:var(--paper)}
 .btn-block{width:100%}
 .btn-sm{padding:11px 16px;font-size:12px}
-.link{background:none;border:none;color:var(--dim);font-family:inherit;font-size:12px;letter-spacing:.08em;
-  text-transform:uppercase;cursor:pointer;padding:9px;transition:color .2s}
-.link:hover{color:var(--ember-hi)}
+.link{background:none;border:none;color:var(--dim);font-family:inherit;font-size:12px;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;cursor:pointer;padding:9px;transition:color .15s;text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--ink)}
 .btnrow{display:flex;flex-direction:column;gap:10px}
 
-/* ════════ INTRO / FORJA ════════ */
+/* ════════ INTRO ════════ */
 #s-intro{overflow:hidden}
-#lava{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
+#gauge{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
 .intro-inner{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
-.intro-inner::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62%;z-index:-1;
-  background:linear-gradient(180deg,transparent,rgba(10,10,12,.72) 42%,var(--bg) 92%)}
+.intro-inner::before{content:"";position:absolute;left:0;right:0;bottom:0;height:60%;z-index:-1;
+  background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.82) 44%,var(--bg) 90%)}
 .hero{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 24px 6px;gap:14px}
-.hero-spacer{flex:1;min-height:90px}
-.feat-row{display:flex;gap:18px;flex-wrap:wrap}
-.feat{display:flex;gap:9px;align-items:flex-start;flex:1;min-width:130px}
-.feat .fi{flex:0 0 auto;color:var(--ember);margin-top:1px}
+.hero-spacer{flex:1;min-height:80px}
+.feat-row{display:flex;gap:16px;flex-wrap:wrap}
+.feat{display:flex;gap:9px;align-items:flex-start;flex:1;min-width:120px}
+.feat .fi{flex:0 0 auto;color:var(--ink);margin-top:1px}
 .feat .fi svg{width:16px;height:16px}
-.feat .ft{font-size:11.5px;line-height:1.35;color:var(--dim)}
-.feat .ft b{color:var(--text);font-weight:600;display:block;letter-spacing:.02em}
+.feat .ft{font-size:11px;line-height:1.35;color:var(--dim)}
+.feat .ft b{color:var(--ink);font-weight:700;display:block;letter-spacing:.02em;text-transform:uppercase;font-size:10.5px}
 .intro-foot{padding:14px 24px calc(18px + var(--safe-b));position:relative;z-index:2}
-.fineline{font-size:11px;color:var(--dim-2);text-align:center;margin-top:11px;letter-spacing:.04em}
+.fineline{font-size:11px;color:var(--dim-2);text-align:center;margin-top:11px;letter-spacing:.03em}
 
-/* ════════ STAGE (palco de medição) ════════ */
+/* ════════ STAGE ════════ */
 .stage-head{padding:4px 24px 12px;flex:0 0 auto}
-.stage-wrap{position:relative;flex:1;min-height:160px;margin:0 14px;border-radius:8px;overflow:hidden;
-  background:radial-gradient(120% 90% at 50% 8%,#1c1410,#0b0a0c 72%);
-  box-shadow:inset 0 2px 30px rgba(0,0,0,.7);border:1px solid rgba(255,90,31,.14);
+.stage-wrap{position:relative;flex:1;min-height:160px;margin:0 14px;border-radius:var(--r);overflow:hidden;
+  background:var(--stage);border:1.5px solid var(--ink);
   touch-action:none;user-select:none;-webkit-user-select:none}
-.stage-note{position:absolute;left:0;right:0;bottom:11px;text-align:center;color:rgba(255,174,77,.45);
-  font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none}
+.stage-note{position:absolute;left:0;right:0;bottom:11px;text-align:center;color:rgba(255,255,255,.4);
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none}
 
-/* guias incandescentes */
-.guide-v{position:absolute;top:0;bottom:0;width:1px;background:var(--ember);box-shadow:0 0 9px rgba(255,90,31,.8)}
-.guide-h{position:absolute;left:0;right:0;height:1px;background:var(--ember);box-shadow:0 0 9px rgba(255,90,31,.8)}
-.guide-fixed{opacity:.4}
+.guide-v{position:absolute;top:0;bottom:0;width:1px;background:var(--on-stage);box-shadow:0 0 6px rgba(255,255,255,.5)}
+.guide-h{position:absolute;left:0;right:0;height:1px;background:var(--on-stage);box-shadow:0 0 6px rgba(255,255,255,.5)}
+.guide-fixed{opacity:.35}
 
-/* ── painel de controle ── */
+/* ── control panel ── */
 .panel{flex:0 0 auto;padding:14px 22px calc(14px + var(--safe-b))}
-.readout-big{font-family:"Archivo",sans-serif;font-weight:800;font-size:34px;color:var(--text);
+.readout-big{font-family:"Archivo",sans-serif;font-weight:800;font-size:34px;color:var(--ink);
   text-align:center;font-variant-numeric:lining-nums tabular-nums;letter-spacing:0}
-.readout-big small{font-size:12px;color:var(--dim);font-family:"Space Grotesk";font-weight:500;
-  letter-spacing:.1em;text-transform:uppercase}
+.readout-big small{font-size:12px;color:var(--dim);font-family:"Space Grotesk";font-weight:500;letter-spacing:.1em;text-transform:uppercase}
 .slider-row{display:flex;align-items:center;gap:13px;margin:8px 0 4px}
-.slider-row .cap{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim-2)}
+.slider-row .cap{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim-2)}
 input[type=range]{flex:1;appearance:none;-webkit-appearance:none;height:30px;background:transparent;touch-action:pan-x}
 input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;margin-top:-11px;border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,var(--ember-hi),var(--ember) 60%,var(--ember-deep));
-  box-shadow:0 0 12px rgba(255,90,31,.7),0 2px 6px rgba(0,0,0,.5)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;margin-top:-11px;
+  background:var(--ink);border:2px solid var(--bg);box-shadow:0 0 0 1.5px var(--ink)}
 input[type=range]::-moz-range-track{height:2px;background:var(--line)}
-input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;border:none;
-  background:radial-gradient(circle at 35% 30%,var(--ember-hi),var(--ember) 60%,var(--ember-deep));box-shadow:0 0 12px rgba(255,90,31,.7)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--ink);border:2px solid var(--bg);box-shadow:0 0 0 1.5px var(--ink)}
 .fine{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:6px}
-.step-btn{width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surf);
-  color:var(--text);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.step-btn:active{background:var(--surf-2)}
-.step-btn:hover{border-color:var(--ember);color:var(--ember-hi)}
+.step-btn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--ink);background:var(--bg);
+  color:var(--ink);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.step-btn:active{background:var(--ink);color:var(--bg)}
 .fine-cap{font-size:10.5px;color:var(--dim);text-align:center;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;min-width:118px}
 .chiprow{display:flex;justify-content:center;gap:8px;margin:2px 0 10px;flex-wrap:wrap}
-.chip{font-family:inherit;font-size:12px;color:var(--dim);background:var(--surf);border:1px solid var(--line);
-  border-radius:var(--r);padding:8px 14px;cursor:pointer;transition:all .18s;display:inline-flex;gap:6px;align-items:center}
-.chip.on{color:#1a0500;background:var(--ember);border-color:var(--ember);font-weight:600}
-.scale-note{text-align:center;font-size:11px;color:var(--dim-2);margin-top:2px;font-variant-numeric:tabular-nums;
-  letter-spacing:.04em}
-.scale-note b{color:var(--ember-hi);font-weight:600}
+.chip{font-family:inherit;font-size:12px;color:var(--dim);background:var(--bg);border:1.5px solid var(--line);
+  border-radius:var(--r);padding:8px 14px;cursor:pointer;transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.chip.on{color:var(--bg);background:var(--ink);border-color:var(--ink);font-weight:600}
+.scale-note{text-align:center;font-size:11px;color:var(--dim-2);margin-top:2px;font-variant-numeric:tabular-nums;letter-spacing:.03em}
+.scale-note b{color:var(--ink);font-weight:600}
 
-/* calibração: cartão virtual */
+/* calibration card */
 #calObj{position:absolute;left:16px;top:50%;transform:translateY(-50%);will-change:width,height;
-  border-radius:7px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.6)}
-#calObj .cardface{position:absolute;inset:0;border-radius:7px;background:linear-gradient(135deg,#2a2018,#141016);overflow:hidden}
-.cardface .cf-line{position:absolute;height:1px;background:rgba(255,174,77,.22)}
-.cardface .cf-chip{position:absolute;left:11%;top:30%;width:15%;height:18%;border-radius:3px;
-  background:linear-gradient(135deg,var(--ember-hi),var(--ember-deep));opacity:.85}
-.cardface .cf-mono{position:absolute;right:9%;bottom:10%;color:rgba(255,174,77,.8);
-  font-family:"Archivo",sans-serif;font-weight:800;font-size:13px}
-.anchor-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--ember-hi);
-  box-shadow:0 0 12px var(--ember);z-index:5}
+  border-radius:5px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+#calObj .cardface{position:absolute;inset:0;border-radius:5px;background:linear-gradient(135deg,#2a2a30,#15151a);overflow:hidden}
+.cardface .cf-line{position:absolute;height:1px;background:rgba(255,255,255,.2)}
+.cardface .cf-chip{position:absolute;left:11%;top:30%;width:15%;height:18%;border-radius:2px;background:rgba(255,255,255,.55)}
+.cardface .cf-mono{position:absolute;right:9%;bottom:10%;color:rgba(255,255,255,.85);font-family:"Archivo",sans-serif;font-weight:900;font-size:13px}
+.anchor-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--on-stage);box-shadow:0 0 10px rgba(255,255,255,.9);z-index:5}
 
-/* ── método: cartões ── */
+/* ── methods ── */
 .methods{display:flex;flex-direction:column;gap:11px;padding:4px 24px}
-.method{display:flex;gap:14px;align-items:center;text-align:left;font-family:inherit;color:var(--text);
-  background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:16px;cursor:pointer;
-  transition:transform .14s,border-color .2s,background .2s;position:relative;overflow:hidden}
-.method::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--ember);
-  transform:scaleY(0);transform-origin:bottom;transition:transform .25s}
-.method:hover{border-color:rgba(255,90,31,.4);transform:translateX(3px)}
-.method:hover::before{transform:scaleY(1)}
-.method .m-ico{flex:0 0 auto;width:46px;height:46px;border-radius:6px;background:var(--surf-2);
-  display:flex;align-items:center;justify-content:center;color:var(--ember)}
+.method{display:flex;gap:14px;align-items:center;text-align:left;font-family:inherit;color:var(--ink);
+  background:var(--bg);border:1.5px solid var(--ink);border-radius:var(--r);padding:16px;cursor:pointer;
+  transition:transform .12s,box-shadow .18s;position:relative}
+.method:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+.method .m-ico{flex:0 0 auto;width:46px;height:46px;border-radius:4px;background:var(--ink);
+  display:flex;align-items:center;justify-content:center;color:var(--bg)}
 .method .m-ico svg{width:24px;height:24px}
 .m-body{flex:1;min-width:0;display:flex;flex-direction:column}
 .method .m-tt{display:block;font-family:"Archivo",sans-serif;font-size:18px;font-weight:800;line-height:1.05;text-transform:uppercase}
 .method .m-ds{display:block;font-size:12px;color:var(--dim);line-height:1.4;margin-top:4px}
-.method .m-tag{display:inline-block;align-self:flex-start;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--ember);font-weight:600;margin-bottom:4px}
+.method .m-tag{display:inline-block;align-self:flex-start;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);font-weight:700;margin-bottom:4px;border-bottom:1.5px solid var(--ink);padding-bottom:1px}
+.method .m-tag.muted{color:var(--dim-2);border-color:var(--line)}
 .method .m-arrow{flex:0 0 auto;color:var(--dim-2);font-size:18px}
 .precision-meter{display:flex;gap:3px;margin-top:9px}
 .precision-meter i{width:16px;height:3px;background:var(--line)}
-.precision-meter i.f{background:var(--ember)}
+.precision-meter i.f{background:var(--ink)}
 
-/* dedo: linhas arrastáveis */
+/* finger */
 .drag-v{position:absolute;top:0;bottom:0;width:40px;margin-left:-20px;cursor:ew-resize;touch-action:none;z-index:4}
-.drag-v::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1.5px;margin-left:-.75px;
-  background:var(--ember);box-shadow:0 0 10px rgba(255,90,31,.85)}
-.drag-v .h{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;
-  background:rgba(255,90,31,.14);border:1px solid var(--ember);display:flex;align-items:center;justify-content:center}
-.drag-v .h::after{content:"";width:11px;height:11px;border-left:1px solid var(--ember-hi);border-right:1px solid var(--ember-hi)}
+.drag-v::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1.5px;margin-left:-.75px;background:var(--on-stage);box-shadow:0 0 8px rgba(255,255,255,.7)}
+.drag-v .h{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.14);border:1.5px solid var(--on-stage);display:flex;align-items:center;justify-content:center}
+.drag-v .h::after{content:"";width:11px;height:11px;border-left:1px solid var(--on-stage);border-right:1px solid var(--on-stage)}
 .finger-ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:74%;
-  border:1.5px dashed rgba(255,174,77,.2);border-radius:50px;pointer-events:none;display:flex;
-  align-items:flex-end;justify-content:center;padding-bottom:16px;color:rgba(255,174,77,.4);font-size:11px;
-  text-transform:uppercase;letter-spacing:.08em;text-align:center;transition:opacity .3s}
+  border:1.5px dashed rgba(255,255,255,.22);border-radius:50px;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:16px;color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;letter-spacing:.08em;text-align:center;transition:opacity .3s}
 
-/* anel: círculo */
-#ringC{position:absolute;border:1.5px solid var(--ember);border-radius:50%;pointer-events:none;
-  box-shadow:0 0 0 .5px rgba(0,0,0,.5),0 0 16px rgba(255,90,31,.55),inset 0 0 18px rgba(255,90,31,.2)}
-#ringC::before{content:"";position:absolute;inset:50% auto auto 50%;width:5px;height:5px;margin:-2.5px;
-  border-radius:50%;background:var(--ember-hi);box-shadow:0 0 8px var(--ember)}
+/* ring */
+#ringC{position:absolute;border:1.5px solid var(--on-stage);border-radius:50%;pointer-events:none;
+  box-shadow:0 0 0 .5px rgba(0,0,0,.5),0 0 14px rgba(255,255,255,.4),inset 0 0 14px rgba(255,255,255,.15)}
+#ringC::before{content:"";position:absolute;inset:50% auto auto 50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:var(--on-stage);box-shadow:0 0 7px rgba(255,255,255,.8)}
 .ring-cross{position:absolute;width:18px;height:18px;pointer-events:none;transform:translate(-50%,-50%)}
-.ring-cross::before,.ring-cross::after{content:"";position:absolute;background:rgba(255,174,77,.3)}
+.ring-cross::before,.ring-cross::after{content:"";position:absolute;background:rgba(255,255,255,.3)}
 .ring-cross::before{left:50%;top:0;bottom:0;width:1px;margin-left:-.5px}
 .ring-cross::after{top:50%;left:0;right:0;height:1px;margin-top:-.5px}
 
-/* régua (tira de papel) */
+/* ruler */
 .ruler{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);height:120px}
-.ruler .track{position:absolute;left:18px;right:18px;top:50%;height:54px;transform:translateY(-50%);
-  border-top:1px solid rgba(255,90,31,.45);border-bottom:1px solid rgba(255,90,31,.45)}
-.ruler .tick{position:absolute;bottom:50%;width:1px;background:rgba(255,174,77,.4)}
+.ruler .track{position:absolute;left:18px;right:18px;top:50%;height:54px;transform:translateY(-50%);border-top:1px solid rgba(255,255,255,.45);border-bottom:1px solid rgba(255,255,255,.45)}
+.ruler .tick{position:absolute;bottom:50%;width:1px;background:rgba(255,255,255,.4)}
 .caliper{position:absolute;top:0;bottom:0;width:34px;margin-left:-17px;cursor:ew-resize;touch-action:none;z-index:4}
-.caliper::before{content:"";position:absolute;top:14px;bottom:14px;left:50%;width:2px;margin-left:-1px;
-  background:var(--ember);box-shadow:0 0 9px rgba(255,90,31,.8)}
-.caliper .cap{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;
-  background:rgba(255,90,31,.16);border:1px solid var(--ember)}
+.caliper::before{content:"";position:absolute;top:14px;bottom:14px;left:50%;width:2px;margin-left:-1px;background:var(--on-stage);box-shadow:0 0 8px rgba(255,255,255,.7)}
+.caliper .cap{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.16);border:1.5px solid var(--on-stage)}
 
-/* ════════ RESULTADO ════════ */
+/* ════════ RESULT ════════ */
 #s-result{overflow-y:auto;overscroll-behavior:contain}
 .result-hero{padding:16px 24px 8px;text-align:center}
 .size-ring{position:relative;width:200px;height:200px;margin:6px auto 4px}
 .size-ring svg{position:absolute;inset:0;width:100%;height:100%}
 .size-ring .sr-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.size-ring .sr-k{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ember);font-weight:600}
-.size-ring .sr-v{font-family:"Archivo",sans-serif;font-size:88px;font-weight:900;line-height:.85;color:var(--text);
-  font-variant-numeric:lining-nums}
-.size-ring .sr-range{font-size:11px;color:var(--dim);margin-top:3px;letter-spacing:.04em}
+.size-ring .sr-k{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);font-weight:600}
+.size-ring .sr-v{font-family:"Archivo",sans-serif;font-size:80px;font-weight:900;line-height:.85;color:var(--ink);font-variant-numeric:lining-nums}
+.size-ring .sr-range{font-size:11px;color:var(--dim);margin-top:4px;letter-spacing:.04em}
 .conf{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--dim);margin-top:8px;
-  border:1px solid var(--line);border-radius:var(--r);padding:6px 12px;letter-spacing:.04em;text-transform:uppercase}
-.conf .dot{width:7px;height:7px;border-radius:50%}
-.conf.high .dot{background:var(--ok)}.conf.mid .dot{background:var(--ember)}.conf.low .dot{background:var(--warn)}
+  border:1.5px solid var(--line);border-radius:var(--r);padding:6px 12px;letter-spacing:.04em;text-transform:uppercase}
+.conf .dot{width:8px;height:8px;border-radius:50%}
+.conf.high .dot{background:var(--ink)}.conf.mid .dot{background:var(--dim-2)}.conf.low .dot{background:transparent;border:1.5px solid var(--ink)}
 .sys-grid{display:flex;gap:9px;padding:14px 22px 4px}
-.sys{flex:1;text-align:center;background:var(--surf);border:1px solid var(--line);border-radius:7px;padding:13px 4px}
-.sys .sv{font-family:"Archivo",sans-serif;font-size:25px;font-weight:800;color:var(--text);font-variant-numeric:lining-nums tabular-nums}
+.sys{flex:1;text-align:center;background:var(--bg);border:1.5px solid var(--ink);border-radius:var(--r);padding:14px 6px}
+.sys .sv{font-family:"Archivo",sans-serif;font-size:25px;font-weight:800;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 .sys .sk{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim-2);margin-top:4px}
-.guidance,.conv{margin:14px 22px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surf)}
-.guidance summary,.conv summary{cursor:pointer;list-style:none;padding:15px 16px;display:flex;align-items:center;
-  justify-content:space-between;font-family:"Archivo",sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.02em;color:var(--text)}
+.guidance,.conv{margin:14px 22px 0;border:1.5px solid var(--ink);border-radius:var(--r);overflow:hidden;background:var(--bg)}
+.guidance summary,.conv summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
+  font-family:"Archivo",sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
 .guidance summary::-webkit-details-marker,.conv summary::-webkit-details-marker{display:none}
-.guidance summary .x,.conv summary .x{color:var(--ember);transition:transform .25s;font-weight:400}
+.guidance summary .x,.conv summary .x{color:var(--ink);transition:transform .25s;font-weight:400}
 .guidance[open] summary .x,.conv[open] summary .x{transform:rotate(45deg)}
 .guidance .gbody{padding:0 16px 14px}
 .gtip{display:flex;gap:11px;padding:9px 0;border-top:1px solid var(--line-2);font-size:12.5px;line-height:1.5;color:var(--dim)}
 .gtip:first-child{border-top:none}
-.gtip b{color:var(--text);font-weight:600}
-.gtip .gi{flex:0 0 auto;color:var(--ember);margin-top:1px}
+.gtip b{color:var(--ink);font-weight:600}
+.gtip .gi{flex:0 0 auto;color:var(--ink);margin-top:1px}
 .conv table{width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
-.conv th{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim-2);font-weight:600;padding:8px 4px;border-bottom:1px solid var(--line)}
+.conv th{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim-2);font-weight:600;padding:8px 4px;border-bottom:1.5px solid var(--ink)}
 .conv td{text-align:center;padding:6px 4px;color:var(--dim);border-bottom:1px solid var(--line-2)}
-.conv tr.hit td{background:var(--ember);color:#1a0500;font-weight:700}
-.order{margin:18px 22px 0;padding:20px 18px;background:linear-gradient(160deg,var(--surf-2),var(--surf));
-  border:1px solid rgba(255,90,31,.22);border-radius:8px;text-align:center}
-.order h3{font-family:"Archivo",sans-serif;font-weight:800;font-size:21px;text-transform:uppercase;margin-bottom:4px}
-.order p{font-size:12.5px;color:var(--dim);margin-bottom:15px;line-height:1.5}
+.conv tr.hit td{background:var(--ink);color:var(--bg);font-weight:700}
+.order{margin:18px 22px 0;padding:20px 18px;background:var(--ink);color:var(--bg);border-radius:var(--r);text-align:center}
+.order h3{font-family:"Archivo",sans-serif;font-weight:800;font-size:21px;text-transform:uppercase;margin-bottom:4px;color:var(--bg)}
+.order p{font-size:12.5px;color:rgba(255,255,255,.6);margin-bottom:15px;line-height:1.5}
+.order .btn-primary{background:var(--bg);color:var(--ink);box-shadow:4px 4px 0 rgba(255,255,255,.25);border-color:var(--bg)}
+.order .btn-outline{background:transparent;color:var(--bg);border-color:rgba(255,255,255,.4)}
+.order .btn-outline:hover{background:rgba(255,255,255,.1)}
 .result-foot{padding:18px 22px calc(22px + var(--safe-b));text-align:center}
 .disclaimer{font-size:10.5px;color:var(--dim-2);line-height:1.6;margin-top:14px;padding:0 4px;letter-spacing:.02em}
 
 /* ════════ overlays / toast ════════ */
 .overlay{position:fixed;inset:0;z-index:120;display:none;align-items:flex-end;justify-content:center;
-  background:rgba(5,4,4,.66);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+  background:rgba(12,12,13,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
 .overlay.show{display:flex}
-.sheet{width:100%;max-width:480px;background:var(--surf);border-top:1px solid rgba(255,90,31,.25);
-  border-radius:14px 14px 0 0;padding:22px 22px calc(24px + var(--safe-b));box-shadow:0 -10px 40px rgba(0,0,0,.5);
-  animation:sheetUp .32s cubic-bezier(.2,.8,.2,1)}
+.sheet{width:100%;max-width:480px;background:var(--bg);border-top:2px solid var(--ink);border-radius:var(--r) var(--r) 0 0;
+  padding:22px 22px calc(24px + var(--safe-b));box-shadow:0 -10px 40px rgba(0,0,0,.3);animation:sheetUp .3s cubic-bezier(.2,.8,.2,1)}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet .grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px}
 .sheet h3{font-family:"Archivo",sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;margin-bottom:10px;text-align:center}
 .sheet p{font-size:13.5px;color:var(--dim);line-height:1.6;text-align:center;margin-bottom:16px}
-.sheet p b{color:var(--text)}
-.ios-step{display:flex;align-items:center;gap:12px;text-align:left;background:var(--bg);border:1px solid var(--line);
-  border-radius:6px;padding:13px;margin-bottom:10px;font-size:13px;color:var(--dim);line-height:1.4}
-.ios-step b{color:var(--text)}
-.ios-step .n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--ember);color:#1a0500;
-  font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
-.ios-step svg{flex:0 0 auto;width:20px;height:20px;color:var(--ember-hi)}
+.sheet p b{color:var(--ink)}
+.ios-step{display:flex;align-items:center;gap:12px;text-align:left;background:var(--paper);border:1.5px solid var(--ink);border-radius:var(--r);
+  padding:13px;margin-bottom:10px;font-size:13px;color:var(--ink-soft);line-height:1.4}
+.ios-step b{color:var(--ink)}
+.ios-step .n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.ios-step svg{flex:0 0 auto;width:20px;height:20px;color:var(--ink)}
 #toast{position:fixed;left:50%;bottom:calc(26px + var(--safe-b));transform:translate(-50%,16px);
-  background:var(--surf-2);border:1px solid rgba(255,90,31,.3);color:var(--ember-hi);border-radius:var(--r);
-  padding:12px 20px;font-size:13px;letter-spacing:.02em;z-index:300;opacity:0;pointer-events:none;
-  transition:opacity .3s,transform .3s;max-width:90vw;box-shadow:var(--shadow);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  background:var(--ink);color:var(--bg);border-radius:var(--r);padding:12px 20px;font-size:13px;letter-spacing:.02em;z-index:300;
+  opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;max-width:90vw;box-shadow:4px 4px 0 rgba(12,12,13,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #toast.show{opacity:1;transform:translate(-50%,0)}
-#installBar{position:fixed;left:50%;transform:translateX(-50%) translateY(140%);bottom:calc(14px + var(--safe-b));
-  width:min(440px,92vw);background:var(--surf-2);border:1px solid rgba(255,90,31,.3);border-radius:10px;padding:13px 14px;
-  display:flex;align-items:center;gap:12px;z-index:200;box-shadow:var(--shadow);transition:transform .4s}
+#installBar{position:fixed;left:50%;transform:translateX(-50%) translateY(160%);bottom:calc(14px + var(--safe-b));
+  width:min(440px,92vw);background:var(--bg);border:2px solid var(--ink);border-radius:var(--r);padding:13px 14px;
+  display:flex;align-items:center;gap:12px;z-index:200;box-shadow:6px 6px 0 var(--ink);transition:transform .4s}
 #installBar.show{transform:translateX(-50%) translateY(0)}
-#installBar .ib-i{flex:0 0 auto;width:34px;height:34px}
+#installBar .ib-i{flex:0 0 auto;width:32px;height:32px}
 #installBar .ib-t{flex:1;font-size:12px;line-height:1.35;color:var(--dim)}
-#installBar .ib-t b{font-family:"Archivo";font-weight:800;font-size:13px;text-transform:uppercase;color:var(--text);display:block;letter-spacing:.04em}
+#installBar .ib-t b{font-family:"Archivo";font-weight:800;font-size:13px;text-transform:uppercase;color:var(--ink);display:block;letter-spacing:.04em}
 #installBar .ib-x{background:none;border:none;color:var(--dim-2);font-size:20px;cursor:pointer;padding:2px 6px}
 .zoom-warn{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%) translateY(-180%);
-  background:var(--warn);color:#fff;border-radius:8px;padding:11px 16px;font-size:12.5px;z-index:250;
-  transition:transform .35s;box-shadow:var(--shadow);max-width:92vw;text-align:center}
+  background:var(--ink);color:var(--bg);border-radius:var(--r);padding:11px 16px;font-size:12.5px;z-index:250;transition:transform .35s;
+  box-shadow:4px 4px 0 rgba(12,12,13,.3);max-width:92vw;text-align:center}
 .zoom-warn.show{transform:translateX(-50%) translateY(0)}
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media (min-width:481px){
   body{padding:0;display:flex;align-items:center;justify-content:center;
-    background:radial-gradient(120% 130% at 50% -10%,#1a0f0a,#050506 70%)}
-  #app{flex:0 0 auto;width:438px;height:min(880px,100dvh);border-radius:24px;overflow:hidden;
-    border:1px solid rgba(255,90,31,.18);box-shadow:0 0 90px rgba(255,70,20,.12),0 30px 80px rgba(0,0,0,.7)}
+    background:
+      repeating-linear-gradient(0deg,transparent 0 39px,var(--line-2) 39px 40px),
+      repeating-linear-gradient(90deg,transparent 0 39px,var(--line-2) 39px 40px),
+      var(--paper-2)}
+  #app{flex:0 0 auto;width:438px;height:min(880px,100dvh);overflow:hidden;
+    border:2px solid var(--ink);box-shadow:16px 16px 0 var(--ink)}
+}
+/* installed on desktop (standalone, wide): fill window with a centered, framed column */
+@media (display-mode:standalone) and (min-width:481px){
+  body{background:var(--bg)}
+  #app{width:min(440px,100vw);height:100dvh;border:none;box-shadow:none;border-left:1.5px solid var(--line);border-right:1.5px solid var(--line)}
 }
 </style>
 </head>
 <body>
 
-<!-- símbolos SVG -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <linearGradient id="ember" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="#ffd27a"/><stop offset=".5" stop-color="#ff5a1f"/><stop offset="1" stop-color="#c41a08"/>
-  </linearGradient>
   <symbol id="mark" viewBox="0 0 48 48">
-    <path fill-rule="evenodd" fill="url(#ember)"
+    <path fill-rule="evenodd" fill="currentColor"
       d="M24 2 L43.05 13 L43.05 35 L24 46 L4.95 35 L4.95 13 Z
          M24 13.4 A10.6 10.6 0 1 0 24 34.6 A10.6 10.6 0 1 0 24 13.4 Z"/>
   </symbol>
@@ -335,51 +310,51 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
 
 <div id="app">
 
-<!-- ════════ INTRO / FORJA ════════ -->
+<!-- ════════ INTRO ════════ -->
 <section class="screen active" id="s-intro">
-  <canvas id="lava" aria-hidden="true"></canvas>
+  <canvas id="gauge" aria-hidden="true"></canvas>
   <div class="intro-inner">
     <div class="topbar">
-      <span class="wordmark"><svg><use href="#mark"/></svg> OBVIOUS</span>
-      <button class="tb-link" id="introInstall" hidden>Instalar</button>
+      <span class="wordmark" style="color:var(--ink)"><svg><use href="#mark"/></svg> OBVIOUS</span>
+      <button class="tb-link" id="introInstall" hidden>Install</button>
     </div>
     <div class="hero">
       <div class="hero-spacer"></div>
-      <p class="eyebrow">Obvious Enterprises · Smartrings</p>
-      <h1 class="hero-h">Forjado<br>em fogo.</h1>
-      <p class="lead">Descubra o tamanho exato do seu anel pela tela — preciso como o aço, rápido como brasa.</p>
+      <p class="eyebrow">Obvious Enterprises · Smart Rings</p>
+      <h1 class="hero-h">Your<br>exact fit.</h1>
+      <p class="lead">Find your ring size from your phone — precise, instant, no tape measure.</p>
       <div class="feat-row">
         <div class="feat"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M3 10h18"/></svg></span>
-          <span class="ft"><b>Calibração ISO</b>cartão de banco</span></div>
+          <span class="ft"><b>ISO calibration</b>bank card</span></div>
         <div class="feat"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg></span>
-          <span class="ft"><b>3 métodos</b>precisão cruzada</span></div>
+          <span class="ft"><b>3 methods</b>cross-checked</span></div>
         <div class="feat"><span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 12h14M12 5v14"/><circle cx="12" cy="12" r="9"/></svg></span>
-          <span class="ft"><b>Offline</b>instalável</span></div>
+          <span class="ft"><b>Offline</b>installable</span></div>
       </div>
     </div>
     <div class="intro-foot">
       <div class="btnrow">
-        <button class="btn btn-molten btn-block" id="btnBegin">Iniciar medição →</button>
-        <button class="btn btn-outline btn-block" id="btnSkip" hidden>Já calibrei — medir agora</button>
+        <button class="btn btn-primary btn-block" id="btnBegin">Start measuring →</button>
+        <button class="btn btn-outline btn-block" id="btnSkip" hidden>I'm calibrated — measure now</button>
       </div>
-      <p class="fineline">Deixe o zoom do navegador em 100%. Leva 2 minutos.</p>
+      <p class="fineline">Set your browser zoom to 100% first. Takes 2 minutes.</p>
     </div>
   </div>
 </section>
 
-<!-- ════════ CALIBRAÇÃO ════════ -->
+<!-- ════════ CALIBRATION ════════ -->
 <section class="screen" id="s-cal">
   <div class="topbar">
-    <span class="wordmark"><svg><use href="#mark"/></svg> Calibrar</span>
+    <span class="wordmark"><svg><use href="#mark"/></svg> Calibrate</span>
     <span class="step-dots"><i class="on"></i><i></i><i></i></span>
   </div>
   <div class="stage-head">
-    <h2 class="title">Encoste o cartão</h2>
-    <p class="body" style="margin-top:6px">Apoie um <b>cartão de banco</b> na tela, canto na brasa, e ajuste até as <b>bordas coincidirem</b>. É isto que ensina a tela a medir em milímetros.</p>
+    <h2 class="title">Place your card</h2>
+    <p class="body" style="margin-top:6px">Lay a <b>bank or credit card</b> on the screen, corner on the dot, and resize until the <b>edges line up</b>. This teaches the screen to measure in millimeters.</p>
   </div>
-  <div class="chiprow" role="group" aria-label="Objeto de referência">
-    <button class="chip on" id="objBank">💳 Cartão de banco</button>
-    <button class="chip" id="objCard">🂠 Carta de baralho</button>
+  <div class="chiprow" role="group" aria-label="Reference object">
+    <button class="chip on" id="objBank">💳 Credit card</button>
+    <button class="chip" id="objCard">🂠 Playing card</button>
   </div>
   <div class="stage-wrap" id="calStage">
     <div class="guide-v guide-fixed" id="cgL"></div>
@@ -393,236 +368,235 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bor
       <div class="cf-mono">O</div>
     </div></div>
     <div class="anchor-dot" id="anchor"></div>
-    <span class="stage-note">arraste a borda · pinça · ou ± abaixo</span>
+    <span class="stage-note">drag the edge · pinch · or ± below</span>
   </div>
   <div class="panel">
     <div class="slider-row">
       <span class="cap">−</span>
-      <input type="range" id="calSlider" aria-label="Tamanho do cartão virtual">
+      <input type="range" id="calSlider" aria-label="Virtual card size">
       <span class="cap">+</span>
     </div>
     <div class="fine">
-      <button class="step-btn" id="calMinus" aria-label="Diminuir">−</button>
-      <span class="fine-cap">ajuste fino<br>±0,2 mm</span>
-      <button class="step-btn" id="calPlus" aria-label="Aumentar">+</button>
+      <button class="step-btn" id="calMinus" aria-label="Decrease">−</button>
+      <span class="fine-cap">fine tune<br>±0.2 mm</span>
+      <button class="step-btn" id="calPlus" aria-label="Increase">+</button>
     </div>
-    <p class="scale-note" id="calScale">escala: <b>—</b></p>
+    <p class="scale-note" id="calScale">scale: <b>—</b></p>
     <div class="btnrow" style="margin-top:12px">
-      <button class="btn btn-molten btn-block" id="btnCalDone">Bordas coincidem — continuar</button>
+      <button class="btn btn-primary btn-block" id="btnCalDone">Edges match — continue</button>
     </div>
   </div>
 </section>
 
-<!-- ════════ MÉTODO ════════ -->
+<!-- ════════ METHOD ════════ -->
 <section class="screen scrolly" id="s-method">
   <div class="topbar">
-    <span class="wordmark"><svg><use href="#mark"/></svg> Medir</span>
+    <span class="wordmark"><svg><use href="#mark"/></svg> Measure</span>
     <span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span>
   </div>
-  <div class="stage-head"><h2 class="title">Escolha o método</h2>
-    <p class="body" style="margin-top:6px">Quanto mais barras, mais preciso. O <b>anel que já serve</b> é o mais exato.</p></div>
+  <div class="stage-head"><h2 class="title">Choose a method</h2>
+    <p class="body" style="margin-top:6px">More bars, more precise. A <b>ring you already own</b> is the most accurate.</p></div>
   <div class="methods">
     <button class="method" id="mRing">
       <span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M9.5 5l2.5-2.5L14.5 5"/></svg></span>
-      <span class="m-body"><span class="m-tag">mais preciso</span><span class="m-tt">Um anel que serve</span><span class="m-ds">Pouse-o na tela e ajuste o círculo ao diâmetro interno.</span>
+      <span class="m-body"><span class="m-tag">most accurate</span><span class="m-tt">A ring you own</span><span class="m-ds">Lay it on the screen and match the circle to the inner diameter.</span>
         <span class="precision-meter"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></span>
       <span class="m-arrow">→</span>
     </button>
     <button class="method" id="mStrip">
       <span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9h16v6H4z"/><path d="M8 9v3M12 9v4M16 9v3"/></svg></span>
-      <span class="m-body"><span class="m-tag">recomendado</span><span class="m-tt">Tira de papel</span><span class="m-ds">Envolva o dedo, marque, e meça a tira na régua calibrada.</span>
+      <span class="m-body"><span class="m-tag">recommended</span><span class="m-tt">Paper strip</span><span class="m-ds">Wrap your finger, mark it, then measure the strip on the calibrated ruler.</span>
         <span class="precision-meter"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></span>
       <span class="m-arrow">→</span>
     </button>
     <button class="method" id="mFinger">
       <span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21V11l-2.5 1.5M9 11l4-7 1.5 1 -2 5h4l1 1.5-1.5 9"/></svg></span>
-      <span class="m-body"><span class="m-tag" style="color:var(--dim-2)">estimativa</span><span class="m-tt">O próprio dedo</span><span class="m-ds">Apoie o dedo e ajuste duas linhas às laterais. Rápido, menos exato.</span>
+      <span class="m-body"><span class="m-tag muted">estimate</span><span class="m-tt">Your finger</span><span class="m-ds">Rest your finger and match two lines to its sides. Fast, less exact.</span>
         <span class="precision-meter"><i class="f"></i><i class="f"></i><i></i><i></i></span></span>
       <span class="m-arrow">→</span>
     </button>
   </div>
   <div class="center" style="padding:18px 0 calc(20px + var(--safe-b))">
-    <button class="link" id="mBack">recalibrar a tela</button>
+    <button class="link" id="mBack">recalibrate screen</button>
   </div>
 </section>
 
-<!-- ════════ ANEL ════════ -->
+<!-- ════════ RING ════════ -->
 <section class="screen" id="s-ring">
-  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Anel</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Ajuste ao anel</h2>
-    <p class="body" style="margin-top:6px">Com o celular <b>na mesa</b>, pouse o anel sobre o alvo e ajuste o círculo ao <b>contorno interno</b>.</p></div>
+  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Ring</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
+  <div class="stage-head"><h2 class="title">Match the ring</h2>
+    <p class="body" style="margin-top:6px">With the phone <b>flat on a table</b>, lay the ring over the target and size the circle to the <b>inner edge</b>.</p></div>
   <div class="stage-wrap" id="ringStage">
     <span class="ring-cross" id="ringCross"></span>
     <div id="ringC"></div>
-    <span class="stage-note">arraste a borda · pinça · ou ±</span>
+    <span class="stage-note">drag the circle edge · pinch · or ±</span>
   </div>
   <div class="panel">
-    <div class="readout-big"><span id="ringRead">—</span> <small>mm Ø interno</small></div>
-    <div class="slider-row"><span class="cap">menor</span><input type="range" id="ringSlider" min="12" max="24" step="0.05" aria-label="Diâmetro"><span class="cap">maior</span></div>
-    <div class="fine"><button class="step-btn" id="ringMinus">−</button><span class="fine-cap">±0,05 mm</span><button class="step-btn" id="ringPlus">+</button></div>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-molten btn-block" id="btnRingDone">Revelar o tamanho</button>
-      <button class="link" id="ringBack">trocar de método</button></div>
+    <div class="readout-big"><span id="ringRead">—</span> <small>mm inner Ø</small></div>
+    <div class="slider-row"><span class="cap">min</span><input type="range" id="ringSlider" min="12" max="24" step="0.05" aria-label="Diameter"><span class="cap">max</span></div>
+    <div class="fine"><button class="step-btn" id="ringMinus">−</button><span class="fine-cap">±0.05 mm</span><button class="step-btn" id="ringPlus">+</button></div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnRingDone">Reveal my size</button>
+      <button class="link" id="ringBack">switch method</button></div>
   </div>
 </section>
 
-<!-- ════════ TIRA ════════ -->
+<!-- ════════ STRIP ════════ -->
 <section class="screen" id="s-strip">
-  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Tira</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Meça a tira</h2>
-    <p class="body" style="margin-top:6px">Envolva a base do dedo com uma tira de papel, marque onde encontra, e <b>alinhe as duas linhas</b> ao começo e à marca.</p></div>
+  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Strip</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
+  <div class="stage-head"><h2 class="title">Measure the strip</h2>
+    <p class="body" style="margin-top:6px">Wrap a paper strip around the base of your finger, mark where it meets, then <b>line up both markers</b> to the start and the mark.</p></div>
   <div class="stage-wrap" id="stripStage">
     <div class="ruler" id="ruler"><div class="track" id="rulerTrack"></div></div>
     <div class="caliper" id="cal0"><span class="cap"></span></div>
     <div class="caliper" id="cal1"><span class="cap"></span></div>
-    <span class="stage-note">arraste as duas linhas até a tira · ou ±</span>
+    <span class="stage-note">drag both lines to the strip · or ±</span>
   </div>
   <div class="panel">
-    <div class="readout-big"><span id="stripRead">—</span> <small>mm circunferência</small></div>
-    <div class="fine"><button class="step-btn" id="stripMinus">−</button><span class="fine-cap">abertura<br>±0,2 mm</span><button class="step-btn" id="stripPlus">+</button></div>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-molten btn-block" id="btnStripDone">Revelar o tamanho</button>
-      <button class="link" id="stripBack">trocar de método</button></div>
+    <div class="readout-big"><span id="stripRead">—</span> <small>mm circumference</small></div>
+    <div class="fine"><button class="step-btn" id="stripMinus">−</button><span class="fine-cap">opening<br>±0.2 mm</span><button class="step-btn" id="stripPlus">+</button></div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnStripDone">Reveal my size</button>
+      <button class="link" id="stripBack">switch method</button></div>
   </div>
 </section>
 
-<!-- ════════ DEDO ════════ -->
+<!-- ════════ FINGER ════════ -->
 <section class="screen" id="s-finger">
-  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Dedo</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Apoie o dedo</h2>
-    <p class="body" style="margin-top:6px">Na <b>base do dedo</b>, onde o anel descansa. Aproxime as linhas até <b>tocarem a pele</b>, sem comprimir.</p></div>
+  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Finger</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
+  <div class="stage-head"><h2 class="title">Rest your finger</h2>
+    <p class="body" style="margin-top:6px">At the <b>base of the finger</b>, where the ring sits. Close the lines until they <b>just touch the skin</b>, without pressing.</p></div>
   <div class="stage-wrap" id="fingerStage">
-    <div class="finger-ghost" id="fingerGhost"><span>o dedo<br>repousa aqui</span></div>
+    <div class="finger-ghost" id="fingerGhost"><span>your finger<br>rests here</span></div>
     <div class="drag-v" id="dv0"><span class="h"></span></div>
     <div class="drag-v" id="dv1"><span class="h"></span></div>
-    <span class="stage-note">arraste as linhas · ou ±</span>
+    <span class="stage-note">drag the lines · or ±</span>
   </div>
   <div class="panel">
-    <div class="readout-big"><span id="fingerRead">—</span> <small>mm largura</small></div>
-    <div class="fine"><button class="step-btn" id="fingerMinus">−</button><span class="fine-cap">±0,1 mm</span><button class="step-btn" id="fingerPlus">+</button></div>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-molten btn-block" id="btnFingerDone">Revelar o tamanho</button>
-      <button class="link" id="fingerBack">trocar de método</button></div>
+    <div class="readout-big"><span id="fingerRead">—</span> <small>mm width</small></div>
+    <div class="fine"><button class="step-btn" id="fingerMinus">−</button><span class="fine-cap">±0.1 mm</span><button class="step-btn" id="fingerPlus">+</button></div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnFingerDone">Reveal my size</button>
+      <button class="link" id="fingerBack">switch method</button></div>
   </div>
 </section>
 
-<!-- ════════ RESULTADO ════════ -->
+<!-- ════════ RESULT ════════ -->
 <section class="screen" id="s-result">
-  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Resultado</span><span class="step-dots"><i class="done"></i><i class="done"></i><i class="on"></i></span></div>
+  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Result</span><span class="step-dots"><i class="done"></i><i class="done"></i><i class="on"></i></span></div>
   <div class="result-hero">
-    <p class="eyebrow">O seu tamanho</p>
+    <p class="eyebrow">Your size</p>
     <div class="size-ring">
-      <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="none" stroke="var(--line)" stroke-width="1"/>
-        <circle id="srArc" cx="100" cy="100" r="92" fill="none" stroke="url(#ember)" stroke-width="3" stroke-linecap="round"
+      <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="none" stroke="var(--line)" stroke-width="1.5"/>
+        <circle id="srArc" cx="100" cy="100" r="92" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="butt"
           transform="rotate(-90 100 100)" stroke-dasharray="578" stroke-dashoffset="578"/></svg>
-      <div class="sr-num"><span class="sr-k">Aro Brasil</span><span class="sr-v" id="rAro">—</span><span class="sr-range" id="rRange"></span></div>
+      <div class="sr-num"><span class="sr-k">US Size</span><span class="sr-v" id="rUSbig">—</span><span class="sr-range" id="rRange"></span></div>
     </div>
     <div class="conf mid" id="confBadge"><span class="dot"></span><span id="confText">—</span></div>
   </div>
   <div class="sys-grid">
-    <div class="sys"><div class="sv" id="rUS">—</div><div class="sk">Tam. US</div></div>
-    <div class="sys"><div class="sv" id="rDia">—</div><div class="sk">Ø interno mm</div></div>
-    <div class="sys"><div class="sv" id="rCirc">—</div><div class="sk">Circunf. mm</div></div>
+    <div class="sys"><div class="sv" id="rDia">—</div><div class="sk">Inner Ø (mm)</div></div>
+    <div class="sys"><div class="sv" id="rCirc">—</div><div class="sk">Circumference (mm)</div></div>
   </div>
 
   <div class="order">
-    <h3>Encomende o seu smartring</h3>
+    <h3>Order your smart ring</h3>
     <p id="orderSummary">—</p>
     <div class="btnrow">
-      <a class="btn btn-molten btn-block" id="btnWhats" target="_blank" rel="noopener">Encomendar pelo WhatsApp</a>
-      <div style="display:flex;gap:10px"><a class="btn btn-outline" id="btnEmail" style="flex:1">E-mail</a>
-        <button class="btn btn-outline" id="btnCopy" style="flex:1">Copiar</button></div>
+      <a class="btn btn-primary btn-block" id="btnWhats" target="_blank" rel="noopener">Order on WhatsApp</a>
+      <div style="display:flex;gap:10px"><a class="btn btn-outline" id="btnEmail" style="flex:1">Email</a>
+        <button class="btn btn-outline" id="btnCopy" style="flex:1">Copy</button></div>
     </div>
   </div>
 
-  <details class="guidance" open><summary>Ajuste perfeito <span class="x">+</span></summary>
+  <details class="guidance" open><summary>Perfect fit <span class="x">+</span></summary>
     <div class="gbody">
-      <div class="gtip"><span class="gi">◆</span><span><b>Junta maior que a base?</b> Escolha o tamanho que <b>passa pela junta</b> — o anel precisa entrar.</span></div>
-      <div class="gtip"><span class="gi">◆</span><span><b>Hora do dia.</b> Meça no fim da tarde, corpo aquecido. Os dedos incham até meio tamanho no frio.</span></div>
-      <div class="gtip"><span class="gi">◆</span><span><b>Banda larga veste mais justo.</b> Para o smartring, entre dois números, prefira o <b>maior</b>.</span></div>
-      <div class="gtip"><span class="gi">◆</span><span><b>Confirme.</b> Meça 2–3 vezes e, se puder, cruze dois métodos. Resultados próximos = confiança alta.</span></div>
+      <div class="gtip"><span class="gi">◆</span><span><b>Knuckle bigger than the base?</b> Pick the size that <b>slides over the knuckle</b> — the ring has to get on.</span></div>
+      <div class="gtip"><span class="gi">◆</span><span><b>Time of day.</b> Measure in the late afternoon, when warm. Fingers shrink up to a half size in the cold.</span></div>
+      <div class="gtip"><span class="gi">◆</span><span><b>Wide bands fit tighter.</b> For the smart ring, if you're between two sizes, go <b>up</b>.</span></div>
+      <div class="gtip"><span class="gi">◆</span><span><b>Confirm.</b> Measure 2–3 times and, if you can, cross two methods. Close results = high confidence.</span></div>
     </div>
   </details>
 
-  <details class="conv"><summary>Tabela de conversão <span class="x">+</span></summary><table id="convTable"></table></details>
+  <details class="conv"><summary>Conversion table <span class="x">+</span></summary><table id="convTable"></table></details>
 
   <div class="result-foot">
     <div style="display:flex;gap:8px;justify-content:center">
-      <button class="btn btn-outline btn-sm" id="btnAgain">Medir de novo</button>
-      <button class="btn btn-outline btn-sm" id="btnRecal">Recalibrar</button>
+      <button class="btn btn-outline btn-sm" id="btnAgain">Measure again</button>
+      <button class="btn btn-outline btn-sm" id="btnRecal">Recalibrate</button>
     </div>
-    <p class="disclaimer" id="disclaimer">Aro Brasil = circunferência interna (mm) − 40 · US = (circunferência − 36,537) ÷ 2,5535 · circunferência = π × diâmetro.</p>
+    <p class="disclaimer" id="disclaimer">US size = (circumference − 36.537) ÷ 2.5535 · circumference = π × diameter. Inner diameter in millimeters.</p>
   </div>
 </section>
 
 </div><!-- /#app -->
 
-<!-- sanidade -->
+<!-- sanity -->
 <div class="overlay" id="sanity" role="dialog" aria-modal="true">
   <div class="sheet">
     <div class="grab"></div>
-    <h3>Vamos conferir?</h3>
+    <h3>Let's double-check</h3>
     <p id="sanityText">—</p>
     <div class="btnrow">
-      <button class="btn btn-molten btn-block" id="sanRecal">Recalibrar a tela</button>
-      <button class="btn btn-outline btn-block" id="sanRetry">Medir de novo</button>
-      <button class="link" id="sanForce">tenho certeza — continuar</button>
+      <button class="btn btn-primary btn-block" id="sanRecal">Recalibrate the screen</button>
+      <button class="btn btn-outline btn-block" id="sanRetry">Measure again</button>
+      <button class="link" id="sanForce">I'm sure — continue</button>
     </div>
   </div>
 </div>
 
-<!-- instalar no iOS -->
+<!-- install on iOS -->
 <div class="overlay" id="installSheet" role="dialog" aria-modal="true">
   <div class="sheet">
     <div class="grab"></div>
-    <h3 id="installTitle">Instalar na tela inicial</h3>
+    <h3 id="installTitle">Add to Home Screen</h3>
     <div id="iosSteps">
-      <div class="ios-step"><span class="n">1</span><span>Toque no botão <b>Compartilhar</b></span>
+      <div class="ios-step"><span class="n">1</span><span>Tap the <b>Share</b> button</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v13M8 7l4-4 4 4"/><path d="M5 12v7a1 1 0 001 1h12a1 1 0 001-1v-7"/></svg></div>
-      <div class="ios-step"><span class="n">2</span><span>Escolha <b>“Adicionar à Tela de Início”</b></span>
+      <div class="ios-step"><span class="n">2</span><span>Choose <b>“Add to Home Screen”</b></span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg></div>
     </div>
-    <p id="iosNotSafari" hidden>Abra este site no <b>Safari</b> para instalar — pelo Chrome ou apps do iPhone não funciona.</p>
-    <button class="btn btn-molten btn-block" id="installSheetClose">Entendi</button>
+    <p id="iosNotSafari" hidden>Open this site in <b>Safari</b> to install — it won't work from Chrome or in-app browsers on iPhone.</p>
+    <button class="btn btn-primary btn-block" id="installSheetClose">Got it</button>
   </div>
 </div>
 
 <div id="installBar">
-  <svg class="ib-i" viewBox="0 0 48 48"><use href="#mark"/></svg>
-  <span class="ib-t"><b>Instalar OBVIOUS</b>Tela inicial · funciona offline</span>
-  <button class="btn btn-molten btn-sm" id="installYes">Instalar</button>
-  <button class="ib-x" id="installNo" aria-label="Fechar">×</button>
+  <svg class="ib-i" viewBox="0 0 48 48" style="color:var(--ink)"><use href="#mark"/></svg>
+  <span class="ib-t"><b>Install OBVIOUS</b>Home screen · works offline</span>
+  <button class="btn btn-primary btn-sm" id="installYes">Install</button>
+  <button class="ib-x" id="installNo" aria-label="Close">×</button>
 </div>
 
-<div class="zoom-warn" id="zoomWarn">Tela com zoom — volte a 100% para medir corretamente.</div>
+<div class="zoom-warn" id="zoomWarn">Screen is zoomed — reset to 100% to measure correctly.</div>
 <div id="toast" role="status"></div>
 
 <script>
 'use strict';
-/* ══════════════ OBVIOUS · Medidor de Anel ══════════════
-   Precisão: a calibração px→mm é a única fonte de erro relevante. Usa um
-   cartão ISO/IEC 7810 ID-1 (85,60 mm, padronizado a 0,01 mm) medido pela
-   BORDA LONGA (menor erro relativo). ppm = px / 85,60. Medição = px / ppm.
-   O resultado mostra uma MARGEM honesta derivada do método.               */
+/* ══════════════ OBVIOUS · Ring Sizer ══════════════
+   Calibration px→mm is the only meaningful source of error. It uses an
+   ISO/IEC 7810 ID-1 card (85.60 mm, standardized to 0.01 mm) measured on
+   the LONG edge. ppm = px / 85.60. Measurement = px / ppm. US sizes from
+   circumference; results show an honest margin per method.                */
 
 const CONFIG = {
-  whatsapp: '5511999999999',          // ← número real (formato 55DDXXXXXXXXX)
-  email:    'contato@obvious.enterprises'
+  whatsapp: '15555550123',            // ← real number (format 1XXXXXXXXXX for US)
+  email:    'orders@obvious.enterprises'
 };
 
 const OBJ = {
-  bank: { w: 85.60, h: 53.98, name: 'cartão de banco', edge: 'w' },
-  card: { w: 63.50, h: 88.90, name: 'carta de baralho', edge: 'h' }
+  bank: { w: 85.60, h: 53.98, name: 'credit card', edge: 'w' },
+  card: { w: 63.50, h: 88.90, name: 'playing card', edge: 'h' }
 };
-const LS = 'obvious.v3.cal';
+const LS = 'obvious.v4.cal';
 const SIGMA = { ring: 0.18, strip: 0.28, finger: 0.50 };
 const CAL_SIGMA = 0.15;
 
 const $ = s => document.querySelector(s);
 const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
-const fmt1 = v => v.toFixed(1).replace('.', ',');
-const fmt2 = v => v.toFixed(2).replace('.', ',');
+const fmt1 = v => v.toFixed(1);
+const fmt2 = v => v.toFixed(2);
 
 let ppm = null, calObj = OBJ.bank, lastResult = null;
 
-/* ── navegação ── */
+/* ── navigation ── */
 let cur = 's-intro', busy = false;
 function go(id){
   if (busy || id === cur) return;
@@ -635,10 +609,10 @@ function go(id){
     cur = id;
     if (to.classList.contains('scrolly') || id==='s-result') to.scrollTop = 0;
     requestAnimationFrame(()=>{ onEnter(id); busy=false; });
-  }, 260);
+  }, 250);
 }
 function onEnter(id){
-  if (id==='s-intro') startLava(); else stopLava();
+  if (id==='s-intro') startGauge(); else stopGauge();
   if (id==='s-cal') layoutCal();
   if (id==='s-ring') layoutRing();
   if (id==='s-strip') layoutStrip();
@@ -646,85 +620,70 @@ function onEnter(id){
   if (id==='s-result') animateResult();
 }
 
-/* ── toast ── */
 let toastT;
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
 
-/* ── segurar para repetir ── */
 function hold(el, fn){
   let to, iv; const stop=()=>{clearTimeout(to);clearInterval(iv);};
   el.addEventListener('pointerdown',e=>{e.preventDefault();fn();to=setTimeout(()=>iv=setInterval(fn,90),400);});
   ['pointerup','pointercancel','pointerleave'].forEach(ev=>el.addEventListener(ev,stop));
 }
 
-/* ════════ LAVA — animação procedural da forja ════════ */
-const lava = (()=>{
-  const cv=$('#lava'); const ctx=cv.getContext('2d');
-  let W=0,H=0,DPR=1,raf=0,parts=[],t0=0,running=false;
+/* ════════ GAUGE — precision instrument animation (B/W) ════════ */
+const gauge = (()=>{
+  const cv=$('#gauge'); const ctx=cv.getContext('2d');
+  let W=0,H=0,DPR=1,raf=0,t0=0,running=false;
   const reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
-  function resize(){
-    const r=cv.getBoundingClientRect(); DPR=Math.min(2,window.devicePixelRatio||1);
-    W=r.width; H=r.height; cv.width=W*DPR; cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
-  }
-  function spawn(){ return {x:Math.random()*W, y:H+10, r:1+Math.random()*2.6, v:0.5+Math.random()*1.6,
-    life:0, max:80+Math.random()*120, drift:(Math.random()-0.5)*0.5}; }
-  function heat(h){ h=clamp(h,0,1); let r,g,b;
-    if(h<0.5){const t=h/0.5; r=150+105*t; g=18+72*t; b=6+8*t;}
-    else{const t=(h-0.5)/0.5; r=255; g=90+150*t; b=14+190*t;}
-    return 'rgb('+(r|0)+','+(g|0)+','+(b|0)+')';
-  }
-  function ring(t){
-    const cx=W/2, cy=H*0.36, R=Math.min(W*0.5,H*0.42)*0.46, lw=R*0.30;
-    ctx.save(); ctx.globalCompositeOperation='lighter';
-    // halo
-    const halo=ctx.createRadialGradient(cx,cy,R*0.4,cx,cy,R*2.1);
-    halo.addColorStop(0,'rgba(255,90,20,0.20)'); halo.addColorStop(1,'rgba(255,90,20,0)');
-    ctx.fillStyle=halo; ctx.fillRect(0,0,W,H);
-    // banda incandescente em segmentos
-    const seg=54;
-    ctx.lineWidth=lw; ctx.lineCap='butt';
-    for(let i=0;i<seg;i++){
-      const a0=(i/seg)*Math.PI*2, a1=((i+1)/seg)*Math.PI*2+0.03;
-      const h=0.42+0.42*Math.sin(a0*3 - t*0.0011)+0.16*Math.sin(a0*7+t*0.0017);
-      ctx.strokeStyle=heat(h); ctx.beginPath(); ctx.arc(cx,cy,R,a0,a1); ctx.stroke();
-    }
-    // núcleo branco-quente fino
-    ctx.lineWidth=lw*0.20; ctx.strokeStyle='rgba(255,241,207,0.55)';
-    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.stroke();
-    ctx.restore();
-    return {cx,cy,R};
-  }
-  function frame(ts){
-    if(!running) return;
-    if(!t0)t0=ts; const t=ts-t0;
+  function resize(){ const r=cv.getBoundingClientRect(); DPR=Math.min(2,window.devicePixelRatio||1);
+    W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0); }
+  function hexPath(cx,cy,r){ ctx.beginPath();
+    for(let i=0;i<6;i++){ const a=(-90+i*60)*Math.PI/180, x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); i?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.closePath(); }
+  function render(t){
     ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#0a0a0c'; ctx.fillRect(0,0,W,H);
-    const r=ring(t);
-    // brasas subindo
-    ctx.save(); ctx.globalCompositeOperation='lighter';
-    if(parts.length<90) parts.push(spawn());
-    for(const p of parts){
-      p.life++; p.y-=p.v; p.x+=p.drift; p.v*=0.997;
-      const k=1-p.life/p.max, a=Math.max(0,k)*0.9;
-      ctx.fillStyle='rgba(255,'+(120+100*k|0)+',40,'+a+')';
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*k+0.3,0,7); ctx.fill();
+    const cx=W/2, cy=H*0.34, R=Math.min(W*0.5,H*0.42)*0.62;
+    ctx.strokeStyle='#0c0c0d'; ctx.fillStyle='#0c0c0d';
+    // outer hexagon (faint, slow rotate)
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*0.00006); ctx.translate(-cx,-cy);
+    ctx.globalAlpha=0.10; ctx.lineWidth=1.5; hexPath(cx,cy,R*1.42); ctx.stroke(); ctx.restore();
+    // concentric measuring rings
+    ctx.globalAlpha=0.16; ctx.lineWidth=1; ctx.beginPath(); ctx.arc(cx,cy,R*1.16,0,7); ctx.stroke();
+    ctx.globalAlpha=0.30; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.stroke();
+    // tick marks around outer ring
+    const ticks=72;
+    for(let i=0;i<ticks;i++){
+      const a=(i/ticks)*Math.PI*2; const major=i%6===0;
+      const r0=R*1.16, r1=r0-(major?12:6);
+      const sweep=((t*0.00045)%(Math.PI*2));
+      const d=Math.abs(((a-sweep)+Math.PI*3)%(Math.PI*2)-Math.PI); // distance from sweep
+      ctx.globalAlpha = d<0.5 ? 0.9 : (major?0.5:0.22);
+      ctx.lineWidth = d<0.5?2:1;
+      ctx.beginPath();
+      ctx.moveTo(cx+r0*Math.cos(a),cy+r0*Math.sin(a));
+      ctx.lineTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));
+      ctx.stroke();
     }
-    parts=parts.filter(p=>p.life<p.max && p.y>-20);
-    ctx.restore();
-    raf=requestAnimationFrame(frame);
+    // rotating sweep line
+    const sa=(t*0.00045)%(Math.PI*2);
+    ctx.globalAlpha=0.5; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+R*1.12*Math.cos(sa),cy+R*1.12*Math.sin(sa)); ctx.stroke();
+    // inner hexagon mark (the logo) with breathing scale
+    const bs=1+0.02*Math.sin(t*0.002);
+    ctx.globalAlpha=0.92; ctx.lineWidth=2.5; hexPath(cx,cy,R*0.5*bs); ctx.stroke();
+    ctx.globalAlpha=0.92; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(cx,cy,R*0.28*bs,0,7); ctx.stroke();
+    ctx.globalAlpha=1;
   }
+  function frame(ts){ if(!running)return; if(!t0)t0=ts; render(ts-t0); raf=requestAnimationFrame(frame); }
   return {
     start(){ resize(); if(running)return; running=true;
-      if(reduce){ t0=0; ctx.clearRect(0,0,W,H); ctx.fillStyle='#0a0a0c'; ctx.fillRect(0,0,W,H); ring(1200); running=false; return; }
-      t0=0; raf=requestAnimationFrame(frame); },
+      if(reduce){ render(1500); running=false; return; } t0=0; raf=requestAnimationFrame(frame); },
     stop(){ running=false; cancelAnimationFrame(raf); },
-    resize(){ if(running||true){ resize(); } }
+    resize(){ resize(); }
   };
 })();
-function startLava(){ lava.start(); }
-function stopLava(){ lava.stop(); }
+function startGauge(){ gauge.start(); }
+function stopGauge(){ gauge.stop(); }
 
-/* ════════ CALIBRAÇÃO ════════ */
+/* ════════ CALIBRATION ════════ */
 const calStage=$('#calStage'), calObjEl=$('#calObj'), calSlider=$('#calSlider');
 const ANX=16, ANY_RATIO=0.5;
 let calLong=300, stageW=0, stageH=0, anchorY=0;
@@ -752,7 +711,7 @@ function drawCal(){
   $('#anchor').style.left=(ANX-4.5)+'px'; $('#anchor').style.top=(top-4.5)+'px';
   ppm = calLong / longMM;
   calSlider.value=Math.round(calLong);
-  $('#calScale').innerHTML='escala: <b>'+fmt2(ppm)+' px/mm</b> · '+calObj.name+' '+fmt1(calObj.w)+' × '+fmt1(calObj.h)+' mm';
+  $('#calScale').innerHTML='scale: <b>'+fmt2(ppm)+' px/mm</b> · '+calObj.name+' '+fmt1(calObj.w)+' × '+fmt1(calObj.h)+' mm';
 }
 function setLong(px){ const max=parseFloat(calSlider.max); calLong=clamp(px,140,max); drawCal(); }
 calSlider.addEventListener('input',()=>setLong(parseFloat(calSlider.value)));
@@ -786,11 +745,11 @@ calStage.addEventListener('pointermove',e=>{
 
 $('#btnCalDone').addEventListener('click',()=>{
   try{ localStorage.setItem(LS, JSON.stringify({ppm,dpr:window.devicePixelRatio||1,w:innerWidth,obj:calObj.name,ts:Date.now()})); }catch(_){}
-  toast('Tela calibrada: '+fmt2(ppm)+' px/mm');
+  toast('Screen calibrated: '+fmt2(ppm)+' px/mm');
   go('s-method');
 });
 
-/* ════════ ANEL ════════ */
+/* ════════ RING ════════ */
 const ringStage=$('#ringStage'), ringC=$('#ringC'), ringSlider=$('#ringSlider');
 let ringD=17;
 function layoutRing(){ drawRing(); }
@@ -815,7 +774,7 @@ ringStage.addEventListener('pointerdown',e=>{
 $('#btnRingDone').addEventListener('click',()=>reveal(ringD,'ring'));
 $('#ringBack').addEventListener('click',()=>go('s-method'));
 
-/* ════════ TIRA DE PAPEL ════════ */
+/* ════════ STRIP ════════ */
 const stripStage=$('#stripStage'), cal0=$('#cal0'), cal1=$('#cal1');
 let sx0=0, sx1=0, sW=0;
 function layoutStrip(){
@@ -848,7 +807,7 @@ hold($('#stripMinus'),()=>setStripGap((sx1-sx0)/ppm-0.2)); hold($('#stripPlus'),
 $('#btnStripDone').addEventListener('click',()=>reveal((sx1-sx0)/ppm/Math.PI,'strip'));
 $('#stripBack').addEventListener('click',()=>go('s-method'));
 
-/* ════════ DEDO ════════ */
+/* ════════ FINGER ════════ */
 const fingerStage=$('#fingerStage'), dv0=$('#dv0'), dv1=$('#dv1');
 let fx0=0, fx1=0, fW=0;
 function layoutFinger(){
@@ -877,17 +836,18 @@ hold($('#fingerMinus'),()=>setFingerGap((fx1-fx0)/ppm-0.1)); hold($('#fingerPlus
 $('#btnFingerDone').addEventListener('click',()=>reveal((fx1-fx0)/ppm,'finger'));
 $('#fingerBack').addEventListener('click',()=>go('s-method'));
 
-/* ════════ MATEMÁTICA ════════ */
-function sizes(dMM){ const circ=Math.PI*dMM; return { d:dMM, circ, aro:circ-40, us:(circ-36.537)/2.5535 }; }
-const aroOf = d => Math.round(Math.PI*d-40);
-const usOf  = d => Math.round(((Math.PI*d-36.537)/2.5535)*2)/2;
-function usLabel(u){ if(u<2||u>15)return '—'; const i=Math.floor(u); return u%1? i+'½':String(i); }
+/* ════════ MATH (US sizing) ════════ */
+const circOf = d => Math.PI*d;
+const usExact = d => (Math.PI*d - 36.537)/2.5535;
+const usOf  = d => Math.round(usExact(d)*2)/2;
+function usLabel(u){ if(u<2||u>16)return '—'; const i=Math.floor(u); return u%1? i+'½':String(i); }
+const dFromUS = u => (36.537 + 2.5535*u)/Math.PI;
 
-/* ════════ REVELAÇÃO ════════ */
+/* ════════ REVEAL ════════ */
 function reveal(dMM, method){
   if(dMM<13||dMM>24){
-    $('#sanityText').innerHTML='A medida deu <b>Ø '+fmt1(dMM)+' mm</b> — fora da faixa humana usual (13–24 mm). '+
-      'Quase sempre é a calibração que escorregou. Vamos refazer?';
+    $('#sanityText').innerHTML='That came out to <b>Ø '+fmt1(dMM)+' mm</b> — outside the usual human range (13–24 mm). '+
+      'Almost always the calibration slipped. Want to redo it?';
     $('#sanity').classList.add('show');
     $('#sanForce').onclick=()=>{$('#sanity').classList.remove('show');show(dMM,method);};
     $('#sanRetry').onclick=()=>$('#sanity').classList.remove('show');
@@ -897,55 +857,53 @@ function reveal(dMM, method){
   show(dMM,method);
 }
 function show(dMM, method){
-  const s=sizes(dMM); lastResult={...s,method};
+  const circ=circOf(dMM); lastResult={d:dMM,circ,us:usOf(dMM),method};
   const sigma=Math.hypot(SIGMA[method],CAL_SIGMA);
-  $('#rAro').textContent=Math.round(s.aro);
-  const aLo=aroOf(dMM-sigma), aHi=aroOf(dMM+sigma);
-  $('#rRange').textContent = (method==='finger' && aLo!==aHi)
-    ? ('provavelmente '+aLo+'–'+aHi) : ('margem ± '+fmt1(sigma)+' mm');
-  $('#rUS').textContent=usLabel(usOf(dMM));
-  $('#rDia').textContent=fmt1(s.d);
-  $('#rCirc').textContent=fmt1(s.circ);
-  const conf=method==='ring'?['high','Anel — método mais exato']
-    :method==='strip'?['mid','Tira — circunferência real']
-    :['low','Dedo — estimativa; confirme depois'];
+  $('#rUSbig').textContent=usLabel(usOf(dMM));
+  const uLo=usOf(dMM-sigma), uHi=usOf(dMM+sigma);
+  $('#rRange').textContent = (method==='finger' && uLo!==uHi)
+    ? ('likely '+usLabel(uLo)+'–'+usLabel(uHi)) : ('±'+fmt1(sigma)+' mm margin');
+  $('#rDia').textContent=fmt1(dMM);
+  $('#rCirc').textContent=fmt1(circ);
+  const conf=method==='ring'?['high','Ring — most accurate']
+    :method==='strip'?['mid','Paper strip — true circumference']
+    :['low','Finger — estimate; confirm later'];
   const cb=$('#confBadge'); cb.className='conf '+conf[0]; $('#confText').textContent=conf[1];
-  buildConv(Math.round(s.aro));
-  const sum='Aro '+Math.round(s.aro)+' · US '+usLabel(usOf(dMM))+' · Ø '+fmt1(s.d)+' mm · circ. '+fmt1(s.circ)+' mm';
-  $('#orderSummary').textContent='Medida: '+sum;
-  const body='Olá! Quero encomendar um smartring OBVIOUS.%0A%0AMeu tamanho:%0A'+encodeURIComponent(sum)+'%0A(medido no app OBVIOUS)';
+  buildConv(usOf(dMM));
+  const sum='US '+usLabel(usOf(dMM))+' · Ø '+fmt1(dMM)+' mm · circ. '+fmt1(circ)+' mm';
+  $('#orderSummary').textContent='Measurement: '+sum;
+  const body='Hi! I\'d like to order an OBVIOUS smart ring.%0A%0AMy size:%0A'+encodeURIComponent(sum)+'%0A(measured with the OBVIOUS app)';
   $('#btnWhats').href='https://wa.me/'+CONFIG.whatsapp+'?text='+body;
-  $('#btnEmail').href='mailto:'+CONFIG.email+'?subject='+encodeURIComponent('Encomenda smartring — Aro '+Math.round(s.aro))+'&body='+body;
+  $('#btnEmail').href='mailto:'+CONFIG.email+'?subject='+encodeURIComponent('Smart ring order — US '+usLabel(usOf(dMM)))+'&body='+body;
   go('s-result');
 }
 function animateResult(){
   const arc=$('#srArc'), C=578;
   arc.style.transition='none'; arc.style.strokeDashoffset=C;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    arc.style.transition='stroke-dashoffset 1.3s cubic-bezier(.3,.8,.3,1)';
-    arc.style.strokeDashoffset=C*0.14;
+    arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.3,.8,.3,1)';
+    arc.style.strokeDashoffset=C*0.16;
   }));
 }
 function buildConv(hit){
-  const rows=['<tr><th>Aro BR</th><th>Ø mm</th><th>Circ. mm</th><th>US</th></tr>'];
-  for(let aro=8;aro<=30;aro++){ const circ=aro+40, d=circ/Math.PI;
-    rows.push('<tr'+(aro===hit?' class="hit"':'')+'><td>'+aro+'</td><td>'+fmt1(d)+'</td><td>'+fmt1(circ)+'</td><td>'+usLabel(usOf(d))+'</td></tr>');
+  const rows=['<tr><th>US</th><th>Ø mm</th><th>Circ. mm</th></tr>'];
+  for(let u=4;u<=13;u+=0.5){ const d=dFromUS(u), c=circOf(d);
+    rows.push('<tr'+(u===hit?' class="hit"':'')+'><td>'+usLabel(u)+'</td><td>'+fmt1(d)+'</td><td>'+fmt1(c)+'</td></tr>');
   }
   $('#convTable').innerHTML=rows.join('');
 }
 
-/* compartilhar / copiar */
+/* share / copy */
 $('#btnCopy').addEventListener('click',async()=>{
   if(!lastResult)return; const s=lastResult;
-  const txt='💍 Meu tamanho de anel — Aro '+Math.round(s.aro)+' (BR) · US '+usLabel(usOf(s.d))+
-    ' · Ø '+fmt1(s.d)+' mm · circ. '+fmt1(s.circ)+' mm · medido no app OBVIOUS '+location.href;
-  if(navigator.share){ try{ await navigator.share({title:'Meu tamanho de anel',text:txt}); return; }catch(_){} }
-  try{ await navigator.clipboard.writeText(txt); toast('Resultado copiado'); }catch(_){ toast('Aro '+Math.round(s.aro)+' — anote!'); }
+  const txt='💍 My ring size — US '+usLabel(s.us)+' · Ø '+fmt1(s.d)+' mm · circ. '+fmt1(s.circ)+' mm · measured with the OBVIOUS app '+location.href;
+  if(navigator.share){ try{ await navigator.share({title:'My ring size',text:txt}); return; }catch(_){} }
+  try{ await navigator.clipboard.writeText(txt); toast('Result copied'); }catch(_){ toast('US '+usLabel(s.us)+' — write it down!'); }
 });
 $('#btnAgain').addEventListener('click',()=>go('s-method'));
 $('#btnRecal').addEventListener('click',()=>go('s-cal'));
 
-/* ════════ fluxo inicial ════════ */
+/* initial flow */
 $('#btnBegin').addEventListener('click',()=>go('s-cal'));
 $('#mBack').addEventListener('click',()=>go('s-cal'));
 $('#mRing').addEventListener('click',()=>go('s-ring'));
@@ -957,9 +915,9 @@ $('#mFinger').addEventListener('click',()=>go('s-finger'));
   if(!s||!(s.ppm>0))return;
   ppm=s.ppm;
   const btn=$('#btnSkip'); btn.hidden=false;
-  btn.textContent='Já calibrei ('+new Date(s.ts).toLocaleDateString('pt-BR')+') — medir agora';
+  btn.textContent="I'm calibrated ("+new Date(s.ts).toLocaleDateString('en-US')+") — measure now";
   btn.addEventListener('click',()=>{
-    if((window.devicePixelRatio||1)!==s.dpr || innerWidth!==s.w) toast('A tela parece diferente — recomendo recalibrar');
+    if((window.devicePixelRatio||1)!==s.dpr || innerWidth!==s.w) toast('The screen looks different — recalibration recommended');
     go('s-method');
   });
 })();
@@ -972,34 +930,33 @@ if(window.visualViewport){
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('dblclick',e=>e.preventDefault());
 addEventListener('resize',()=>{
-  if(cur==='s-intro')lava.resize();
+  if(cur==='s-intro')gauge.resize();
   if(cur==='s-cal')layoutCal(); if(cur==='s-ring')layoutRing(); if(cur==='s-strip')layoutStrip(); if(cur==='s-finger')layoutFinger();
 });
 
-/* ════════ PWA: instalação (Android + iOS) + service worker ════════ */
+/* ════════ PWA install (Android + iOS) + service worker ════════ */
 const ua=navigator.userAgent||'';
 const isIOS=/iphone|ipad|ipod/i.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
 const isSafari=/safari/i.test(ua) && !/crios|fxios|chrome|android|edg/i.test(ua);
 const standalone=window.matchMedia('(display-mode:standalone)').matches || window.navigator.standalone===true;
 let deferredPrompt=null, barShown=false;
-
 function openInstallHelp(){
   if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; $('#installBar').classList.remove('show'); return; }
-  // iOS (ou navegador sem prompt nativo): mostrar instruções
-  $('#iosSteps').hidden = !isIOS;
-  $('#iosNotSafari').hidden = !(isIOS && !isSafari);
-  $('#installTitle').textContent = isIOS ? 'Instalar no iPhone' : 'Instalar o app';
+  if(!isIOS){ toast('Use your browser menu → Install app'); $('#installBar').classList.remove('show'); return; }
+  $('#iosSteps').hidden = false;
+  $('#iosNotSafari').hidden = isSafari;
+  $('#installTitle').textContent = 'Add to Home Screen';
   $('#installBar').classList.remove('show');
   $('#installSheet').classList.add('show');
 }
 function maybeShowInstall(){
   if(standalone){ $('#introInstall').hidden=true; return; }
-  $('#introInstall').hidden=false;                 // botão sempre disponível fora do app instalado
+  $('#introInstall').hidden=false;
   if(isIOS && !barShown && localStorage.getItem('obvious.install.dismissed')!=='1'){
     barShown=true; setTimeout(()=>$('#installBar').classList.add('show'),1800);
   }
 }
-addEventListener('beforeinstallprompt',e=>{        // Android/Chrome
+addEventListener('beforeinstallprompt',e=>{
   e.preventDefault(); deferredPrompt=e; $('#introInstall').hidden=false;
   if(!barShown && !standalone){ barShown=true; setTimeout(()=>$('#installBar').classList.add('show'),1600); }
 });
@@ -1008,13 +965,12 @@ $('#introInstall').addEventListener('click',openInstallHelp);
 $('#installSheetClose').addEventListener('click',()=>$('#installSheet').classList.remove('show'));
 $('#installSheet').addEventListener('click',e=>{ if(e.target===$('#installSheet')) $('#installSheet').classList.remove('show'); });
 $('#installNo').addEventListener('click',()=>{ $('#installBar').classList.remove('show'); try{localStorage.setItem('obvious.install.dismissed','1');}catch(_){} });
-addEventListener('appinstalled',()=>{ $('#installBar').classList.remove('show'); $('#introInstall').hidden=true; toast('Instalado — bem-vindo à OBVIOUS'); });
+addEventListener('appinstalled',()=>{ $('#installBar').classList.remove('show'); $('#introInstall').hidden=true; toast('Installed — welcome to OBVIOUS'); });
 maybeShowInstall();
 
 if('serviceWorker' in navigator) addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
-/* iniciar a forja */
-startLava();
+startGauge();
 </script>
 </body>
 </html>
