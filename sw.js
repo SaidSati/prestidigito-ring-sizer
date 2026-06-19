@@ -1,5 +1,5 @@
 /* OBVIOUS · Ring Sizer — service worker */
-const VERSION = 'obvious-v5.0.0';
+const VERSION = 'obvious-v6.0.0';
 const SHELL = [
   './',
   './index.html',
@@ -7,7 +7,8 @@ const SHELL = [
   './icon.svg',
   './icon-192.png',
   './icon-512.png',
-  './assets/ring-cutout.png'
+  './assets/ring-cutout.png',
+  './og-image.png'
 ];
 const CDN = ['fonts.googleapis.com','fonts.gstatic.com','cdn.jsdelivr.net','storage.googleapis.com'];
 

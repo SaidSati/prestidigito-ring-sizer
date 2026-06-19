@@ -10,8 +10,17 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="OBVIOUS">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.obviousenterprises.com">
 <meta property="og:title" content="OBVIOUS — Ring Sizer">
-<meta property="og:description" content="Your exact ring size, measured from your phone. Try it on in AR.">
+<meta property="og:description" content="Measure your ring size and try it on in AR.">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OBVIOUS — Ring Sizer">
+<meta name="twitter:description" content="Measure your ring size and try it on in AR.">
+<meta name="twitter:image" content="og-image.png">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -33,94 +42,79 @@ body{background:var(--bg);color:var(--ink);font-family:"Space Grotesk",system-ui
 ::selection{background:var(--ink);color:var(--bg)}
 
 #app{position:relative;height:100dvh;max-width:480px;margin:0 auto;background:var(--bg);overflow:hidden}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transform:translateY(8px);
-  transition:opacity .4s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s cubic-bezier(.2,.8,.2,1)}
 .screen.active{display:flex;opacity:1;transform:none}
 .screen.leaving{opacity:0;transform:translateY(-8px)}
 .scrolly{overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 #s-result>*,#s-method>*{flex:0 0 auto}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;
-  padding:max(14px,env(safe-area-inset-top)) 20px 12px;flex:0 0 auto;position:relative;z-index:3}
-.wordmark{display:flex;align-items:center;gap:9px;font-family:"Archivo",sans-serif;font-weight:900;font-size:15px;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:max(14px,env(safe-area-inset-top)) 20px 12px;flex:0 0 auto;position:relative;z-index:3}
+.wordmark{display:flex;align-items:center;gap:9px;font-family:"Archivo",sans-serif;font-weight:900;font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
 .wordmark svg{width:22px;height:22px;display:block}
 .step-dots{display:flex;gap:5px;align-items:center}
 .step-dots i{width:16px;height:3px;background:var(--line);transition:all .35s}
 .step-dots i.on{background:var(--ink)}.step-dots i.done{background:var(--dim-2)}
-.tb-link{font-size:11px;color:var(--ink);background:none;border:1.5px solid var(--ink);cursor:pointer;
-  font-family:inherit;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;transition:all .15s}
+.tb-link{font-size:11px;color:var(--ink);background:none;border:1.5px solid var(--ink);cursor:pointer;font-family:inherit;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:7px 12px;transition:all .15s}
 .tb-link:hover{background:var(--ink);color:var(--bg)}
 
 .eyebrow{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);font-weight:600}
-h1.hero-h{font-family:"Archivo",sans-serif;font-weight:900;line-height:.9;text-transform:uppercase;
-  font-size:clamp(50px,16vw,78px);letter-spacing:-.025em;color:var(--ink)}
+h1.hero-h{font-family:"Archivo",sans-serif;font-weight:900;line-height:.9;text-transform:uppercase;font-size:clamp(50px,16vw,78px);letter-spacing:-.025em;color:var(--ink)}
 h2.title{font-family:"Archivo",sans-serif;font-weight:800;font-size:clamp(26px,7vw,34px);line-height:1;letter-spacing:-.01em;text-transform:uppercase}
 .lead{font-size:15.5px;line-height:1.5;color:var(--ink-soft)}
-.body{font-size:14px;line-height:1.55;color:var(--dim)}
-.body b{color:var(--ink);font-weight:600}
+.body{font-size:14px;line-height:1.55;color:var(--dim)}.body b{color:var(--ink);font-weight:600}
 .center{text-align:center}
 
-.btn{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
-  border:1.5px solid var(--ink);border-radius:var(--r);padding:16px 24px;cursor:pointer;display:inline-flex;align-items:center;
-  justify-content:center;gap:9px;text-decoration:none;background:var(--bg);color:var(--ink);
-  transition:transform .12s,box-shadow .18s,background .18s,color .18s}
+.btn{font-family:"Space Grotesk",sans-serif;font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;border:1.5px solid var(--ink);border-radius:var(--r);padding:16px 24px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;background:var(--bg);color:var(--ink);transition:transform .12s,box-shadow .18s,background .18s,color .18s}
 .btn:active{transform:translate(2px,2px);box-shadow:none!important}
 .btn-primary{background:var(--ink);color:var(--bg);box-shadow:4px 4px 0 var(--ink)}
 .btn-primary:hover{box-shadow:6px 6px 0 var(--ink);transform:translate(-1px,-1px)}
-.btn-outline{background:var(--bg);color:var(--ink)}
-.btn-outline:hover{background:var(--paper)}
+.btn-outline{background:var(--bg);color:var(--ink)}.btn-outline:hover{background:var(--paper)}
 .btn-block{width:100%}.btn-sm{padding:11px 16px;font-size:12px}
-.link{background:none;border:none;color:var(--dim);font-family:inherit;font-size:12px;font-weight:500;letter-spacing:.08em;
-  text-transform:uppercase;cursor:pointer;padding:9px;transition:color .15s;text-decoration:underline;text-underline-offset:3px}
+.link{background:none;border:none;color:var(--dim);font-family:inherit;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;padding:9px;transition:color .15s;text-decoration:underline;text-underline-offset:3px}
 .link:hover{color:var(--ink)}
 .btnrow{display:flex;flex-direction:column;gap:10px}
 
-/* INTRO */
 #s-intro{overflow:hidden}
 #gauge{position:absolute;inset:0;width:100%;height:100%;z-index:0;display:block}
 .intro-inner{position:relative;z-index:2;display:flex;flex-direction:column;height:100%}
-.intro-inner::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62%;z-index:-1;
-  background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.84) 44%,var(--bg) 90%)}
+.intro-inner::before{content:"";position:absolute;left:0;right:0;bottom:0;height:62%;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,255,255,.84) 44%,var(--bg) 90%)}
 .hero{flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 24px 6px;gap:13px}
-.hero-spacer{flex:1;min-height:70px}
+.hero-spacer{flex:1;min-height:60px}
 .feat-row{display:flex;gap:16px;flex-wrap:wrap}
 .feat{display:flex;gap:9px;align-items:flex-start;flex:1;min-width:120px}
 .feat .fi{flex:0 0 auto;color:var(--ink);margin-top:1px}.feat .fi svg{width:16px;height:16px}
 .feat .ft{font-size:11px;line-height:1.35;color:var(--dim)}
 .feat .ft b{color:var(--ink);font-weight:700;display:block;letter-spacing:.02em;text-transform:uppercase;font-size:10.5px}
-.intro-foot{padding:12px 24px calc(16px + var(--safe-b));position:relative;z-index:2}
-.fineline{font-size:11px;color:var(--dim-2);text-align:center;margin-top:10px;letter-spacing:.03em}
+.intro-foot{padding:10px 24px calc(14px + var(--safe-b));position:relative;z-index:2}
+.lastsize{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--ink);color:var(--bg);border:none;border-radius:var(--r);padding:11px 15px;margin-bottom:10px;cursor:pointer;font-family:inherit}
+.lastsize .ls-k{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.lastsize .ls-v{font-family:"Archivo";font-weight:800;font-size:15px;letter-spacing:.04em}
+.lastsize .ls-go{font-size:16px}
+.fineline{font-size:11px;color:var(--dim-2);text-align:center;margin-top:9px;letter-spacing:.03em;display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
 
-/* STAGE */
 .stage-head{padding:4px 24px 12px;flex:0 0 auto}
-.stage-wrap{position:relative;flex:1;min-height:160px;margin:0 14px;border-radius:var(--r);overflow:hidden;
-  background:var(--stage);border:1.5px solid var(--ink);touch-action:none;user-select:none;-webkit-user-select:none}
-.stage-note{position:absolute;left:0;right:0;bottom:11px;text-align:center;color:rgba(255,255,255,.45);
-  font-size:10px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;padding:0 12px}
+.stage-wrap{position:relative;flex:1;min-height:160px;margin:0 14px;border-radius:var(--r);overflow:hidden;background:var(--stage);border:1.5px solid var(--ink);touch-action:none;user-select:none;-webkit-user-select:none}
+.stage-note{position:absolute;left:0;right:0;bottom:11px;text-align:center;color:rgba(255,255,255,.45);font-size:10px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;padding:0 12px}
 .guide-v{position:absolute;top:0;bottom:0;width:1px;background:var(--on-stage);box-shadow:0 0 6px rgba(255,255,255,.5)}
 .guide-h{position:absolute;left:0;right:0;height:1px;background:var(--on-stage);box-shadow:0 0 6px rgba(255,255,255,.5)}
 .guide-fixed{opacity:.35}
+.privacy-note{font-size:10px;color:var(--dim-2);text-align:center;letter-spacing:.03em;margin-top:9px}
 
 .panel{flex:0 0 auto;padding:14px 22px calc(14px + var(--safe-b))}
-.readout-big{font-family:"Archivo",sans-serif;font-weight:800;font-size:34px;color:var(--ink);text-align:center;
-  font-variant-numeric:lining-nums tabular-nums}
+.readout-big{font-family:"Archivo",sans-serif;font-weight:800;font-size:34px;color:var(--ink);text-align:center;font-variant-numeric:lining-nums tabular-nums}
 .readout-big small{font-size:12px;color:var(--dim);font-family:"Space Grotesk";font-weight:500;letter-spacing:.1em;text-transform:uppercase}
 .slider-row{display:flex;align-items:center;gap:13px;margin:8px 0 4px}
 .slider-row .cap{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim-2)}
 input[type=range]{flex:1;appearance:none;-webkit-appearance:none;height:30px;background:transparent;touch-action:pan-x}
 input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--line)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;margin-top:-11px;
-  background:var(--ink);border:2px solid var(--bg);box-shadow:0 0 0 1.5px var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;margin-top:-11px;background:var(--ink);border:2px solid var(--bg);box-shadow:0 0 0 1.5px var(--ink)}
 input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--ink);border:2px solid var(--bg);box-shadow:0 0 0 1.5px var(--ink)}
 .fine{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:6px}
-.step-btn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);
-  font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.step-btn{width:48px;height:48px;border-radius:50%;border:1.5px solid var(--ink);background:var(--bg);color:var(--ink);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
 .step-btn:active{background:var(--ink);color:var(--bg)}
 .fine-cap{font-size:10.5px;color:var(--dim);text-align:center;letter-spacing:.06em;text-transform:uppercase;line-height:1.4;min-width:118px}
 .chiprow{display:flex;justify-content:center;gap:8px;margin:2px 0 8px;flex-wrap:wrap}
-.chip{font-family:inherit;font-size:12px;color:var(--dim);background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r);
-  padding:8px 14px;cursor:pointer;transition:all .15s;display:inline-flex;gap:6px;align-items:center}
+.chip{font-family:inherit;font-size:12px;color:var(--dim);background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r);padding:8px 14px;cursor:pointer;transition:all .15s;display:inline-flex;gap:6px;align-items:center}
 .chip.on{color:var(--bg);background:var(--ink);border-color:var(--ink);font-weight:600}
 .scale-note{text-align:center;font-size:11px;color:var(--dim-2);margin-top:2px;font-variant-numeric:tabular-nums;letter-spacing:.03em}
 .scale-note b{color:var(--ink);font-weight:600}
@@ -132,30 +126,24 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .cardface .cf-mono{position:absolute;right:9%;bottom:10%;color:rgba(255,255,255,.85);font-family:"Archivo",sans-serif;font-weight:900;font-size:13px}
 .anchor-dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--on-stage);box-shadow:0 0 10px rgba(255,255,255,.9);z-index:5}
 
-/* METHODS */
 .methods{display:flex;flex-direction:column;gap:11px;padding:4px 24px}
-.method{display:flex;gap:14px;align-items:center;text-align:left;font-family:inherit;color:var(--ink);background:var(--bg);
-  border:1.5px solid var(--ink);border-radius:var(--r);padding:16px;cursor:pointer;transition:transform .12s,box-shadow .18s;position:relative}
+.method{display:flex;gap:14px;align-items:center;text-align:left;font-family:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--ink);border-radius:var(--r);padding:16px;cursor:pointer;transition:transform .12s,box-shadow .18s;position:relative}
 .method:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
 .method .m-ico{flex:0 0 auto;width:46px;height:46px;border-radius:4px;background:var(--ink);display:flex;align-items:center;justify-content:center;color:var(--bg)}
 .method .m-ico svg{width:24px;height:24px}
 .m-body{flex:1;min-width:0;display:flex;flex-direction:column}
 .method .m-tt{display:block;font-family:"Archivo",sans-serif;font-size:18px;font-weight:800;line-height:1.05;text-transform:uppercase}
 .method .m-ds{display:block;font-size:12px;color:var(--dim);line-height:1.4;margin-top:4px}
-.method .m-tag{display:inline-block;align-self:flex-start;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);
-  font-weight:700;margin-bottom:4px;border-bottom:1.5px solid var(--ink);padding-bottom:1px}
+.method .m-tag{display:inline-block;align-self:flex-start;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);font-weight:700;margin-bottom:4px;border-bottom:1.5px solid var(--ink);padding-bottom:1px}
 .method .m-tag.muted{color:var(--dim-2);border-color:var(--line)}
 .method .m-arrow{flex:0 0 auto;color:var(--dim-2);font-size:18px}
-.precision-meter{display:flex;gap:3px;margin-top:9px}
-.precision-meter i{width:16px;height:3px;background:var(--line)}.precision-meter i.f{background:var(--ink)}
+.precision-meter{display:flex;gap:3px;margin-top:9px}.precision-meter i{width:16px;height:3px;background:var(--line)}.precision-meter i.f{background:var(--ink)}
 
 .drag-v{position:absolute;top:0;bottom:0;width:40px;margin-left:-20px;cursor:ew-resize;touch-action:none;z-index:4}
 .drag-v::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:1.5px;margin-left:-.75px;background:var(--on-stage);box-shadow:0 0 8px rgba(255,255,255,.7)}
 .drag-v .h{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.14);border:1.5px solid var(--on-stage);display:flex;align-items:center;justify-content:center}
 .drag-v .h::after{content:"";width:11px;height:11px;border-left:1px solid var(--on-stage);border-right:1px solid var(--on-stage)}
-.finger-ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:74%;border:1.5px dashed rgba(255,255,255,.22);
-  border-radius:50px;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px;color:rgba(255,255,255,.4);
-  font-size:11px;text-transform:uppercase;letter-spacing:.08em;text-align:center;transition:opacity .3s}
+.finger-ghost{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:74%;border:1.5px dashed rgba(255,255,255,.22);border-radius:50px;pointer-events:none;display:flex;align-items:flex-end;justify-content:center;padding-bottom:16px;color:rgba(255,255,255,.4);font-size:11px;text-transform:uppercase;letter-spacing:.08em;text-align:center;transition:opacity .3s}
 
 #ringC{position:absolute;border:1.5px solid var(--on-stage);border-radius:50%;pointer-events:none;box-shadow:0 0 0 .5px rgba(0,0,0,.5),0 0 14px rgba(255,255,255,.4),inset 0 0 14px rgba(255,255,255,.15)}
 #ringC::before{content:"";position:absolute;inset:50% auto auto 50%;width:5px;height:5px;margin:-2.5px;border-radius:50%;background:var(--on-stage);box-shadow:0 0 7px rgba(255,255,255,.8)}
@@ -170,35 +158,31 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .caliper::before{content:"";position:absolute;top:14px;bottom:14px;left:50%;width:2px;margin-left:-1px;background:var(--on-stage);box-shadow:0 0 8px rgba(255,255,255,.7)}
 .caliper .cap{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.16);border:1.5px solid var(--on-stage)}
 
-/* CAMERA + AR */
 #camVid,#arVid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
-#arVid{transform:scaleX(-1)}
-#arCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.cam-pill{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(12,12,13,.72);color:#fff;
-  font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-radius:999px;backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);text-align:center;max-width:90%;z-index:6}
-.cam-pill b{color:#fff}
-.cam-fail{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-  color:rgba(255,255,255,.85);text-align:center;padding:28px;font-size:13.5px;line-height:1.5}
+#arVid{opacity:0}
+#arCanvas{position:absolute;inset:0;width:100%;height:100%;background:#000;pointer-events:none}
+.cam-pill{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(12,12,13,.72);color:#fff;font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-align:center;max-width:90%;z-index:6;transition:opacity .3s}
+.cam-fail{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:rgba(255,255,255,.85);text-align:center;padding:28px;font-size:13.5px;line-height:1.5;z-index:7}
 .cam-fail svg{width:40px;height:40px;opacity:.7}
 .cam-controls{position:absolute;left:12px;right:12px;bottom:10px;display:flex;gap:8px;justify-content:center;z-index:6}
-.cam-btn{background:rgba(12,12,13,.7);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;
-  font-family:inherit;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:9px 14px;cursor:pointer;
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:inline-flex;gap:6px;align-items:center}
+.cam-btn{background:rgba(12,12,13,.7);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:999px;font-family:inherit;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:600;padding:9px 14px;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:inline-flex;gap:6px;align-items:center}
 .cam-btn.on{background:#fff;color:#0c0c0d;border-color:#fff}
-.ar-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.snap-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:8}
+.snap-flash.go{animation:flash .5s ease}
+@keyframes flash{0%{opacity:.85}100%{opacity:0}}
+.ar-row{display:flex;align-items:center;gap:12px;margin:6px 0}
 .ar-row label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim-2);min-width:46px}
-.fingerset{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.fingerset{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:4px}
 .fingerset .chip{font-size:11px;padding:7px 11px}
 
-/* RESULT */
 #s-result{overflow-y:auto;overscroll-behavior:contain}
 .result-hero{padding:16px 24px 8px;text-align:center}
 .size-ring{position:relative;width:200px;height:200px;margin:6px auto 4px}
 .size-ring svg{position:absolute;inset:0;width:100%;height:100%}
 .size-ring .sr-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .size-ring .sr-k{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim);font-weight:600}
-.size-ring .sr-v{font-family:"Archivo",sans-serif;font-size:80px;font-weight:900;line-height:.85;color:var(--ink);font-variant-numeric:lining-nums}
+.size-ring .sr-v{font-family:"Archivo",sans-serif;font-size:80px;font-weight:900;line-height:.85;color:var(--ink);font-variant-numeric:lining-nums;transition:opacity .1s}
+.size-ring .sr-v.flip{opacity:.45}
 .size-ring .sr-range{font-size:11px;color:var(--dim);margin-top:4px;letter-spacing:.04em}
 .conf{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:var(--dim);margin-top:8px;border:1.5px solid var(--line);border-radius:var(--r);padding:6px 12px;letter-spacing:.04em;text-transform:uppercase}
 .conf .dot{width:8px;height:8px;border-radius:50%}
@@ -208,8 +192,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .sys .sv{font-family:"Archivo",sans-serif;font-size:25px;font-weight:800;color:var(--ink);font-variant-numeric:lining-nums tabular-nums}
 .sys .sk{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim-2);margin-top:4px}
 .guidance,.conv{margin:14px 22px 0;border:1.5px solid var(--ink);border-radius:var(--r);overflow:hidden;background:var(--bg)}
-.guidance summary,.conv summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;
-  font-family:"Archivo",sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
+.guidance summary,.conv summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;font-family:"Archivo",sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;color:var(--ink)}
 .guidance summary::-webkit-details-marker,.conv summary::-webkit-details-marker{display:none}
 .guidance summary .x,.conv summary .x{color:var(--ink);transition:transform .25s;font-weight:400}
 .guidance[open] summary .x,.conv[open] summary .x{transform:rotate(45deg)}
@@ -226,20 +209,24 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .order .btn-primary{background:var(--bg);color:var(--ink);box-shadow:4px 4px 0 rgba(255,255,255,.25);border-color:var(--bg)}
 .order .btn-outline{background:transparent;color:var(--bg);border-color:rgba(255,255,255,.4)}
 .order .btn-outline:hover{background:rgba(255,255,255,.1)}
+.order .copy-link{color:rgba(255,255,255,.55);font-size:11px;margin-top:4px}
 .result-foot{padding:16px 22px calc(22px + var(--safe-b));text-align:center}
 .disclaimer{font-size:10.5px;color:var(--dim-2);line-height:1.6;margin-top:14px;padding:0 4px;letter-spacing:.02em}
 
 .overlay{position:fixed;inset:0;z-index:120;display:none;align-items:flex-end;justify-content:center;background:rgba(12,12,13,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
 .overlay.show{display:flex}
-.sheet{width:100%;max-width:480px;background:var(--bg);border-top:2px solid var(--ink);border-radius:var(--r) var(--r) 0 0;
-  padding:22px 22px calc(24px + var(--safe-b));box-shadow:0 -10px 40px rgba(0,0,0,.3);animation:sheetUp .3s cubic-bezier(.2,.8,.2,1)}
+.sheet{width:100%;max-width:480px;background:var(--bg);border-top:2px solid var(--ink);border-radius:var(--r) var(--r) 0 0;padding:22px 22px calc(24px + var(--safe-b));box-shadow:0 -10px 40px rgba(0,0,0,.3);animation:sheetUp .3s cubic-bezier(.2,.8,.2,1)}
 @keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .sheet .grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 16px}
 .sheet h3{font-family:"Archivo",sans-serif;font-weight:800;font-size:22px;text-transform:uppercase;margin-bottom:10px;text-align:center}
 .sheet p{font-size:13.5px;color:var(--dim);line-height:1.6;text-align:center;margin-bottom:16px}.sheet p b{color:var(--ink)}
-.ios-step{display:flex;align-items:center;gap:12px;text-align:left;background:var(--paper);border:1.5px solid var(--ink);border-radius:var(--r);padding:13px;margin-bottom:10px;font-size:13px;color:var(--ink-soft);line-height:1.4}
-.ios-step b{color:var(--ink)}.ios-step .n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
-.ios-step svg{flex:0 0 auto;width:20px;height:20px;color:var(--ink)}
+.ios-step,.feat-line{display:flex;align-items:center;gap:12px;text-align:left;background:var(--paper);border:1.5px solid var(--ink);border-radius:var(--r);padding:13px;margin-bottom:10px;font-size:13px;color:var(--ink-soft);line-height:1.4}
+.ios-step b,.feat-line b{color:var(--ink)}
+.ios-step .n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.ios-step svg,.feat-line svg{flex:0 0 auto;width:22px;height:22px;color:var(--ink)}
+.feat-line .ft{flex:1}.feat-line .ft b{display:block;font-family:"Archivo";text-transform:uppercase;font-size:12px;letter-spacing:.04em}
+.feat-line .ft span{font-size:12px;color:var(--dim)}
+.priv-line{display:flex;gap:8px;align-items:center;justify-content:center;font-size:11px;color:var(--dim);margin:2px 0 16px;text-align:center}
 #toast{position:fixed;left:50%;bottom:calc(26px + var(--safe-b));transform:translate(-50%,16px);background:var(--ink);color:var(--bg);border-radius:var(--r);padding:12px 20px;font-size:13px;z-index:300;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;max-width:90vw;box-shadow:4px 4px 0 rgba(12,12,13,.25);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #toast.show{opacity:1;transform:translate(-50%,0)}
 #installBar{position:fixed;left:50%;transform:translateX(-50%) translateY(160%);bottom:calc(14px + var(--safe-b));width:min(440px,92vw);background:var(--bg);border:2px solid var(--ink);border-radius:var(--r);padding:13px 14px;display:flex;align-items:center;gap:12px;z-index:200;box-shadow:6px 6px 0 var(--ink);transition:transform .4s}
@@ -253,8 +240,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media (min-width:481px){
-  body{padding:0;display:flex;align-items:center;justify-content:center;
-    background:repeating-linear-gradient(0deg,transparent 0 39px,var(--line-2) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,var(--line-2) 39px 40px),var(--paper-2)}
+  body{padding:0;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(0deg,transparent 0 39px,var(--line-2) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,var(--line-2) 39px 40px),var(--paper-2)}
   #app{flex:0 0 auto;width:438px;height:min(880px,100dvh);overflow:hidden;border:2px solid var(--ink);box-shadow:16px 16px 0 var(--ink)}
 }
 @media (display-mode:standalone) and (min-width:481px){
@@ -266,9 +252,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-  <symbol id="mark" viewBox="0 0 48 48">
-    <path fill-rule="evenodd" fill="currentColor" d="M24 2 L43.05 13 L43.05 35 L24 46 L4.95 35 L4.95 13 Z M24 13.4 A10.6 10.6 0 1 0 24 34.6 A10.6 10.6 0 1 0 24 13.4 Z"/>
-  </symbol>
+  <symbol id="mark" viewBox="0 0 48 48"><path fill-rule="evenodd" fill="currentColor" d="M24 2 L43.05 13 L43.05 35 L24 46 L4.95 35 L4.95 13 Z M24 13.4 A10.6 10.6 0 1 0 24 34.6 A10.6 10.6 0 1 0 24 13.4 Z"/></symbol>
 </defs></svg>
 
 <div id="app">
@@ -277,10 +261,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <section class="screen active" id="s-intro">
   <canvas id="gauge" aria-hidden="true"></canvas>
   <div class="intro-inner">
-    <div class="topbar">
-      <span class="wordmark"><svg><use href="#mark"/></svg> OBVIOUS</span>
-      <button class="tb-link" id="introInstall" hidden>Install</button>
-    </div>
+    <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> OBVIOUS</span><button class="tb-link" id="introInstall" hidden>Install</button></div>
     <div class="hero">
       <div class="hero-spacer"></div>
       <p class="eyebrow">Obvious Enterprises · Smart Rings</p>
@@ -293,120 +274,84 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
       </div>
     </div>
     <div class="intro-foot">
+      <button class="lastsize" id="lastSize" hidden><span><span class="ls-k">Your last size</span><br><span class="ls-v">—</span></span><span class="ls-go">→</span></button>
       <div class="btnrow">
         <button class="btn btn-primary btn-block" id="btnMeasure">Measure my size →</button>
         <button class="btn btn-outline btn-block" id="btnTryOn">Try it on (AR)</button>
       </div>
-      <p class="fineline"><a class="link" id="btnAdvanced" style="display:inline">Advanced — precise hand methods</a></p>
+      <p class="fineline"><button class="link" id="btnWhat" style="padding:6px">What it does</button><span style="color:var(--line)">·</span><button class="link" id="btnAdvanced" style="padding:6px">Precise methods</button></p>
     </div>
   </div>
 </section>
 
-<!-- CAMERA MEASURE (default) -->
+<!-- CAMERA MEASURE -->
 <section class="screen" id="s-camera">
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Camera</span><span class="step-dots"><i class="on"></i><i></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Camera sizing</h2>
-    <p class="body" id="camStep" style="margin-top:6px">Lay a <b>playing card</b> and your finger flat on a table. First, line the two marks up with the <b>long edge of the card</b>.</p></div>
+  <div class="stage-head"><h2 class="title">Camera sizing</h2><p class="body" id="camStep" style="margin-top:6px">Lay a <b>playing card</b> and your finger flat on a table. First, line the two marks up with the <b>long edge of the card</b>.</p></div>
   <div class="stage-wrap" id="camStage">
     <video id="camVid" playsinline muted></video>
     <div class="cam-pill" id="camPill">Align to the card</div>
     <div class="drag-v" id="cm0"><span class="h"></span></div>
     <div class="drag-v" id="cm1"><span class="h"></span></div>
-    <div class="cam-controls"><button class="cam-btn" id="camFreeze">Freeze</button><button class="cam-btn" id="camFlip">Flip</button></div>
-    <div class="cam-fail" id="camFail" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg>
-      <div id="camFailMsg">Camera unavailable. Use a precise hand method instead.</div>
-      <button class="btn btn-outline btn-sm" id="camFailAdv">Precise methods</button>
-    </div>
+    <div class="cam-controls"><button class="cam-btn" id="camFreeze">Freeze</button></div>
+    <div class="cam-fail" id="camFail" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg><div id="camFailMsg">Camera unavailable. Use a precise method instead.</div><button class="btn btn-outline btn-sm" id="camFailAdv">Precise methods</button></div>
   </div>
   <div class="panel">
-    <div class="readout-big"><span id="camRead">—</span> <small id="camUnit">mm card edge</small></div>
+    <div class="readout-big"><span id="camRead">—</span> <small id="camUnit">px card edge</small></div>
     <div class="fine"><button class="step-btn" id="camMinus">−</button><span class="fine-cap" id="camFineCap">drag the marks<br>or ±0.2 mm</span><button class="step-btn" id="camPlus">+</button></div>
-    <div class="btnrow" style="margin-top:12px">
-      <button class="btn btn-primary btn-block" id="camAction">Set scale →</button>
-      <div style="display:flex;gap:8px;justify-content:center">
-        <button class="link" id="camBack">back</button><span style="color:var(--line)">·</span>
-        <button class="link" id="camAdv">advanced precise modes</button>
-      </div>
-    </div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn btn-primary btn-block" id="camAction">Set scale →</button>
+      <div style="display:flex;gap:8px;justify-content:center"><button class="link" id="camBack">back</button><span style="color:var(--line)">·</span><button class="link" id="camAdv">precise modes</button></div></div>
+    <p class="privacy-note">🔒 Your camera stays on your device — nothing is uploaded.</p>
   </div>
 </section>
 
 <!-- AR TRY-ON -->
 <section class="screen" id="s-ar">
-  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Try-On</span>
-    <button class="tb-link" id="arBack2">Done</button></div>
-  <div class="stage-head"><h2 class="title">Try it on</h2>
-    <p class="body" id="arStep" style="margin-top:6px">Point the camera at your hand. The ring follows your finger. Tap <b>Manual</b> to place it yourself.</p></div>
+  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Try-On</span><button class="tb-link" id="arBack2">Done</button></div>
+  <div class="stage-head"><h2 class="title">Try it on</h2><p class="body" style="margin-top:6px">Point the rear camera at your hand. The ring follows your finger. Tap <b>Manual</b> to place it yourself.</p></div>
   <div class="stage-wrap" id="arStage">
     <video id="arVid" playsinline muted></video>
     <canvas id="arCanvas"></canvas>
     <div class="cam-pill" id="arPill">Starting camera…</div>
-    <div class="cam-controls">
-      <button class="cam-btn on" id="arAuto">Auto</button>
-      <button class="cam-btn" id="arManual">Manual</button>
-      <button class="cam-btn" id="arFlip">Flip</button>
-    </div>
-    <div class="cam-fail" id="arFail" hidden>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg>
-      <div id="arFailMsg">Camera unavailable.</div>
-    </div>
+    <div class="snap-flash" id="snapFlash"></div>
+    <div class="cam-controls"><button class="cam-btn on" id="arAuto">Auto</button><button class="cam-btn" id="arManual">Manual</button><button class="cam-btn" id="arSnap">📷 Photo</button></div>
+    <div class="cam-fail" id="arFail" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg><div id="arFailMsg">Camera unavailable.</div></div>
   </div>
   <div class="panel">
-    <div class="fingerset" id="arFingers">
-      <button class="chip" data-f="1">Index</button>
-      <button class="chip" data-f="2">Middle</button>
-      <button class="chip on" data-f="3">Ring</button>
-      <button class="chip" data-f="4">Pinky</button>
-    </div>
+    <div class="fingerset" id="arFingers"><button class="chip" data-f="1">Index</button><button class="chip" data-f="2">Middle</button><button class="chip on" data-f="3">Ring</button><button class="chip" data-f="4">Pinky</button></div>
     <div class="ar-row"><label>Size</label><input type="range" id="arSize" min="0.6" max="1.8" step="0.01" value="1"></div>
     <div class="ar-row"><label>Rotate</label><input type="range" id="arRot" min="-45" max="45" step="1" value="0"></div>
-    <div class="btnrow" style="margin-top:6px"><button class="btn btn-primary btn-block" id="arMeasureCta">Measure my size →</button></div>
+    <div class="btnrow" style="margin-top:4px"><button class="btn btn-primary btn-block" id="arMeasureCta">Measure my size →</button></div>
+    <p class="privacy-note">🔒 Processed on your device — nothing is uploaded.</p>
   </div>
 </section>
 
-<!-- CALIBRATION (advanced) -->
+<!-- CALIBRATION -->
 <section class="screen" id="s-cal">
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Calibrate</span><span class="step-dots"><i class="on"></i><i></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Place your card</h2>
-    <p class="body" style="margin-top:6px">Lay a <b>playing card</b> on the screen (or a bank card), corner on the dot, and resize until the <b>edges line up</b>. This teaches the screen to measure in millimeters.</p></div>
-  <div class="chiprow" role="group" aria-label="Reference object">
-    <button class="chip on" id="objCard">🂠 Playing card</button>
-    <button class="chip" id="objBank">💳 Bank card</button>
-  </div>
+  <div class="stage-head"><h2 class="title">Place your card</h2><p class="body" style="margin-top:6px">Lay a <b>playing card</b> on the screen (or a bank card), corner on the dot, and resize until the <b>edges line up</b>.</p></div>
+  <div class="chiprow" role="group" aria-label="Reference object"><button class="chip on" id="objCard">🂠 Playing card</button><button class="chip" id="objBank">💳 Bank card</button></div>
   <div class="stage-wrap" id="calStage">
-    <div class="guide-v guide-fixed" id="cgL"></div><div class="guide-v" id="cgR"></div>
-    <div class="guide-h guide-fixed" id="cgT"></div><div class="guide-h" id="cgB"></div>
-    <div id="calObj"><div class="cardface"><div class="cf-chip"></div>
-      <div class="cf-line" style="left:8%;right:8%;top:62%"></div><div class="cf-line" style="left:8%;right:42%;top:74%"></div>
-      <div class="cf-mono">O</div></div></div>
-    <div class="anchor-dot" id="anchor"></div>
-    <span class="stage-note">drag the edge · pinch · or ± below</span>
+    <div class="guide-v guide-fixed" id="cgL"></div><div class="guide-v" id="cgR"></div><div class="guide-h guide-fixed" id="cgT"></div><div class="guide-h" id="cgB"></div>
+    <div id="calObj"><div class="cardface"><div class="cf-chip"></div><div class="cf-line" style="left:8%;right:8%;top:62%"></div><div class="cf-line" style="left:8%;right:42%;top:74%"></div><div class="cf-mono">O</div></div></div>
+    <div class="anchor-dot" id="anchor"></div><span class="stage-note">drag the edge · pinch · or ± below</span>
   </div>
   <div class="panel">
     <div class="slider-row"><span class="cap">−</span><input type="range" id="calSlider" aria-label="Virtual card size"><span class="cap">+</span></div>
     <div class="fine"><button class="step-btn" id="calMinus">−</button><span class="fine-cap">fine tune<br>±0.2 mm</span><button class="step-btn" id="calPlus">+</button></div>
     <p class="scale-note" id="calScale">scale: <b>—</b></p>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnCalDone">Edges match — continue</button>
-      <button class="link" id="calBack">back to start</button></div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnCalDone">Edges match — continue</button><button class="link" id="calBack">back to start</button></div>
   </div>
 </section>
 
-<!-- METHOD (advanced) -->
+<!-- METHOD -->
 <section class="screen scrolly" id="s-method">
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Precise</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Precise methods</h2>
-    <p class="body" style="margin-top:6px">More bars, more accurate. A <b>ring you already own</b> is the most accurate of all.</p></div>
+  <div class="stage-head"><h2 class="title">Precise methods</h2><p class="body" style="margin-top:6px">More bars, more accurate. A <b>ring you already own</b> is the most accurate of all.</p></div>
   <div class="methods">
-    <button class="method" id="mRing"><span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M9.5 5l2.5-2.5L14.5 5"/></svg></span>
-      <span class="m-body"><span class="m-tag">most accurate</span><span class="m-tt">A ring you own</span><span class="m-ds">Lay it on the screen and match the circle to the inner diameter.</span>
-        <span class="precision-meter"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></span><span class="m-arrow">→</span></button>
-    <button class="method" id="mStrip"><span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9h16v6H4z"/><path d="M8 9v3M12 9v4M16 9v3"/></svg></span>
-      <span class="m-body"><span class="m-tag">recommended</span><span class="m-tt">Paper strip</span><span class="m-ds">Wrap your finger, mark it, then measure the strip on the calibrated ruler.</span>
-        <span class="precision-meter"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></span><span class="m-arrow">→</span></button>
-    <button class="method" id="mFinger"><span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21V11l-2.5 1.5M9 11l4-7 1.5 1 -2 5h4l1 1.5-1.5 9"/></svg></span>
-      <span class="m-body"><span class="m-tag muted">estimate</span><span class="m-tt">Your finger</span><span class="m-ds">Rest your finger and match two lines to its sides. Fast, less exact.</span>
-        <span class="precision-meter"><i class="f"></i><i class="f"></i><i></i><i></i></span></span><span class="m-arrow">→</span></button>
+    <button class="method" id="mRing"><span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="13" r="7"/><circle cx="12" cy="13" r="3.5"/><path d="M9.5 5l2.5-2.5L14.5 5"/></svg></span><span class="m-body"><span class="m-tag">most accurate</span><span class="m-tt">A ring you own</span><span class="m-ds">Lay it on the screen and match the circle to the inner diameter.</span><span class="precision-meter"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span></span><span class="m-arrow">→</span></button>
+    <button class="method" id="mStrip"><span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 9h16v6H4z"/><path d="M8 9v3M12 9v4M16 9v3"/></svg></span><span class="m-body"><span class="m-tag">recommended</span><span class="m-tt">Paper strip</span><span class="m-ds">Wrap your finger, mark it, then measure the strip on the calibrated ruler.</span><span class="precision-meter"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span></span><span class="m-arrow">→</span></button>
+    <button class="method" id="mFinger"><span class="m-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21V11l-2.5 1.5M9 11l4-7 1.5 1 -2 5h4l1 1.5-1.5 9"/></svg></span><span class="m-body"><span class="m-tag muted">estimate</span><span class="m-tt">Your finger</span><span class="m-ds">Rest your finger and match two lines to its sides.</span><span class="precision-meter"><i class="f"></i><i class="f"></i><i></i><i></i></span></span><span class="m-arrow">→</span></button>
   </div>
   <div class="center" style="padding:18px 0 calc(20px + var(--safe-b))"><button class="link" id="mBack">recalibrate screen</button></div>
 </section>
@@ -416,12 +361,10 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Ring</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
   <div class="stage-head"><h2 class="title">Match the ring</h2><p class="body" style="margin-top:6px">With the phone <b>flat on a table</b>, lay the ring over the target and size the circle to the <b>inner edge</b>.</p></div>
   <div class="stage-wrap" id="ringStage"><span class="ring-cross" id="ringCross"></span><div id="ringC"></div><span class="stage-note">drag the circle edge · pinch · or ±</span></div>
-  <div class="panel">
-    <div class="readout-big"><span id="ringRead">—</span> <small>mm inner Ø</small></div>
+  <div class="panel"><div class="readout-big"><span id="ringRead">—</span> <small>mm inner Ø</small></div>
     <div class="slider-row"><span class="cap">min</span><input type="range" id="ringSlider" min="12" max="24" step="0.05"><span class="cap">max</span></div>
     <div class="fine"><button class="step-btn" id="ringMinus">−</button><span class="fine-cap">±0.05 mm</span><button class="step-btn" id="ringPlus">+</button></div>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnRingDone">Reveal my size</button><button class="link" id="ringBack">switch method</button></div>
-  </div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnRingDone">Reveal my size</button><button class="link" id="ringBack">switch method</button></div></div>
 </section>
 
 <!-- STRIP -->
@@ -429,11 +372,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Strip</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
   <div class="stage-head"><h2 class="title">Measure the strip</h2><p class="body" style="margin-top:6px">Wrap a paper strip around the base of your finger, mark where it meets, then <b>line up both markers</b>.</p></div>
   <div class="stage-wrap" id="stripStage"><div class="ruler" id="ruler"><div class="track" id="rulerTrack"></div></div><div class="caliper" id="cal0"><span class="cap"></span></div><div class="caliper" id="cal1"><span class="cap"></span></div><span class="stage-note">drag both lines to the strip · or ±</span></div>
-  <div class="panel">
-    <div class="readout-big"><span id="stripRead">—</span> <small>mm circumference</small></div>
+  <div class="panel"><div class="readout-big"><span id="stripRead">—</span> <small>mm circumference</small></div>
     <div class="fine"><button class="step-btn" id="stripMinus">−</button><span class="fine-cap">opening<br>±0.2 mm</span><button class="step-btn" id="stripPlus">+</button></div>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnStripDone">Reveal my size</button><button class="link" id="stripBack">switch method</button></div>
-  </div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnStripDone">Reveal my size</button><button class="link" id="stripBack">switch method</button></div></div>
 </section>
 
 <!-- FINGER -->
@@ -441,11 +382,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Finger</span><span class="step-dots"><i class="done"></i><i class="on"></i><i></i></span></div>
   <div class="stage-head"><h2 class="title">Rest your finger</h2><p class="body" style="margin-top:6px">At the <b>base of the finger</b>, where the ring sits. Close the lines until they <b>just touch the skin</b>.</p></div>
   <div class="stage-wrap" id="fingerStage"><div class="finger-ghost" id="fingerGhost"><span>your finger<br>rests here</span></div><div class="drag-v" id="dv0"><span class="h"></span></div><div class="drag-v" id="dv1"><span class="h"></span></div><span class="stage-note">drag the lines · or ±</span></div>
-  <div class="panel">
-    <div class="readout-big"><span id="fingerRead">—</span> <small>mm width</small></div>
+  <div class="panel"><div class="readout-big"><span id="fingerRead">—</span> <small>mm width</small></div>
     <div class="fine"><button class="step-btn" id="fingerMinus">−</button><span class="fine-cap">±0.1 mm</span><button class="step-btn" id="fingerPlus">+</button></div>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnFingerDone">Reveal my size</button><button class="link" id="fingerBack">switch method</button></div>
-  </div>
+    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnFingerDone">Reveal my size</button><button class="link" id="fingerBack">switch method</button></div></div>
 </section>
 
 <!-- RESULT -->
@@ -453,23 +392,20 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Result</span><span class="step-dots"><i class="done"></i><i class="done"></i><i class="on"></i></span></div>
   <div class="result-hero">
     <p class="eyebrow">Your size</p>
-    <div class="size-ring">
-      <svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="none" stroke="var(--line)" stroke-width="1.5"/>
-        <circle id="srArc" cx="100" cy="100" r="92" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="butt" transform="rotate(-90 100 100)" stroke-dasharray="578" stroke-dashoffset="578"/></svg>
-      <div class="sr-num"><span class="sr-k">US Size</span><span class="sr-v" id="rUSbig">—</span><span class="sr-range" id="rRange"></span></div>
-    </div>
+    <div class="size-ring"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="none" stroke="var(--line)" stroke-width="1.5"/><circle id="srArc" cx="100" cy="100" r="92" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="butt" transform="rotate(-90 100 100)" stroke-dasharray="578" stroke-dashoffset="578"/></svg>
+      <div class="sr-num"><span class="sr-k">US Size</span><span class="sr-v" id="rUSbig">—</span><span class="sr-range" id="rRange"></span></div></div>
     <div class="conf mid" id="confBadge"><span class="dot"></span><span id="confText">—</span></div>
   </div>
-  <div class="sys-grid">
-    <div class="sys"><div class="sv" id="rDia">—</div><div class="sk">Inner Ø (mm)</div></div>
-    <div class="sys"><div class="sv" id="rCirc">—</div><div class="sk">Circumference (mm)</div></div>
-  </div>
+  <div class="sys-grid"><div class="sys"><div class="sv" id="rDia">—</div><div class="sk">Inner Ø (mm)</div></div><div class="sys"><div class="sv" id="rCirc">—</div><div class="sk">Circumference (mm)</div></div></div>
   <div style="padding:14px 22px 0"><button class="btn btn-outline btn-block" id="btnTryOn2">Try this ring on (AR)</button></div>
   <div class="order">
     <h3>Order your smart ring</h3>
     <p id="orderSummary">—</p>
-    <div class="btnrow"><a class="btn btn-primary btn-block" id="btnWhats" target="_blank" rel="noopener">Order on WhatsApp</a>
-      <div style="display:flex;gap:10px"><a class="btn btn-outline" id="btnEmail" style="flex:1">Email</a><button class="btn btn-outline" id="btnCopy" style="flex:1">Copy</button></div></div>
+    <div class="btnrow">
+      <a class="btn btn-primary btn-block" id="btnShop" target="_blank" rel="noopener">Shop at obviousenterprises.com</a>
+      <div style="display:flex;gap:10px"><a class="btn btn-outline" id="btnWhats" target="_blank" rel="noopener" style="flex:1">WhatsApp</a><a class="btn btn-outline" id="btnInsta" target="_blank" rel="noopener" style="flex:1">Instagram</a></div>
+      <button class="link copy-link" id="btnCopy">Copy my size</button>
+    </div>
   </div>
   <details class="guidance" open><summary>Perfect fit <span class="x">+</span></summary><div class="gbody">
     <div class="gtip"><span class="gi">◆</span><span><b>Knuckle bigger than the base?</b> Pick the size that <b>slides over the knuckle</b>.</span></div>
@@ -478,17 +414,28 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
     <div class="gtip"><span class="gi">◆</span><span><b>Confirm.</b> The camera is a quick estimate — for a final order, cross-check with a precise method.</span></div>
   </div></details>
   <details class="conv"><summary>Conversion table <span class="x">+</span></summary><table id="convTable"></table></details>
-  <div class="result-foot">
-    <div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline btn-sm" id="btnAgain">Measure again</button><button class="btn btn-outline btn-sm" id="btnRecal">Precise mode</button></div>
-    <p class="disclaimer" id="disclaimer">US size = (circumference − 36.537) ÷ 2.5535 · circumference = π × diameter.</p>
-  </div>
+  <div class="result-foot"><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline btn-sm" id="btnAgain">Measure again</button><button class="btn btn-outline btn-sm" id="btnRecal">Precise mode</button></div>
+    <p class="disclaimer">US size = (circumference − 36.537) ÷ 2.5535 · circumference = π × diameter.</p></div>
 </section>
 
 </div><!-- /#app -->
 
-<div class="overlay" id="sanity" role="dialog" aria-modal="true"><div class="sheet"><div class="grab"></div>
-  <h3>Let's double-check</h3><p id="sanityText">—</p>
+<div class="overlay" id="sanity" role="dialog" aria-modal="true"><div class="sheet"><div class="grab"></div><h3>Let's double-check</h3><p id="sanityText">—</p>
   <div class="btnrow"><button class="btn btn-primary btn-block" id="sanRecal">Use a precise method</button><button class="btn btn-outline btn-block" id="sanRetry">Measure again</button><button class="link" id="sanForce">I'm sure — continue</button></div></div></div>
+
+<div class="overlay" id="camPrompt" role="dialog" aria-modal="true"><div class="sheet"><div class="grab"></div>
+  <h3>Camera access</h3>
+  <p>We use your camera to size your finger and show the ring on your hand.</p>
+  <p class="priv-line">🔒 <span>Everything is processed <b>on your device</b> — nothing is uploaded.</span></p>
+  <div class="btnrow"><button class="btn btn-primary btn-block" id="camPromptYes">Enable camera</button><button class="link" id="camPromptNo">Use precise methods instead</button></div></div></div>
+
+<div class="overlay" id="whatSheet" role="dialog" aria-modal="true"><div class="sheet"><div class="grab"></div>
+  <h3>What it does</h3>
+  <div class="feat-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg><span class="ft"><b>Brushed stainless steel</b><span>Precision-machined, built to last.</span></span></div>
+  <div class="feat-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="3"/></svg><span class="ft"><b>Black onyx face</b><span>Hand-set cushion-cut stone.</span></span></div>
+  <div class="feat-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5L12 21l-5-2.8 1-5.5-4-3.9 5.5-.8z"/></svg><span class="ft"><b>Built for performers</b><span>Designed for the stage.</span></span></div>
+  <div class="feat-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5M5 16l7 5 7-5"/></svg><span class="ft"><b>Smart by design</b><span>[ add your signature feature ]</span></span></div>
+  <button class="btn btn-primary btn-block" id="whatClose" style="margin-top:6px">Close</button></div></div>
 
 <div class="overlay" id="installSheet" role="dialog" aria-modal="true"><div class="sheet"><div class="grab"></div>
   <h3 id="installTitle">Add to Home Screen</h3>
@@ -499,43 +446,44 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <p id="iosNotSafari" hidden>Open this site in <b>Safari</b> to install — it won't work from Chrome or in-app browsers on iPhone.</p>
   <button class="btn btn-primary btn-block" id="installSheetClose">Got it</button></div></div>
 
-<div id="installBar"><svg class="ib-i" viewBox="0 0 48 48" style="color:var(--ink)"><use href="#mark"/></svg>
-  <span class="ib-t"><b>Install OBVIOUS</b>Home screen · works offline</span>
-  <button class="btn btn-primary btn-sm" id="installYes">Install</button><button class="ib-x" id="installNo" aria-label="Close">×</button></div>
-
+<div id="installBar"><svg class="ib-i" viewBox="0 0 48 48" style="color:var(--ink)"><use href="#mark"/></svg><span class="ib-t"><b>Install OBVIOUS</b>Home screen · works offline</span><button class="btn btn-primary btn-sm" id="installYes">Install</button><button class="ib-x" id="installNo" aria-label="Close">×</button></div>
 <div class="zoom-warn" id="zoomWarn">Screen is zoomed — reset to 100% to measure correctly.</div>
 <div id="toast" role="status"></div>
 
 <script>
 'use strict';
-/* ══════════ OBVIOUS · Ring Sizer (Phase 2: camera + AR) ══════════ */
-const CONFIG = { whatsapp: '15555550123', email: 'orders@obvious.enterprises' };
+/* ══════════ OBVIOUS · Ring Sizer (Phase 4) ══════════ */
+const CONFIG = {
+  site: 'https://www.obviousenterprises.com',
+  instagram: 'https://instagram.com/obviousenterprises',
+  whatsapp: '5511961033333'
+};
 const RING_IMG = 'assets/ring-cutout.png';
 const OBJ = {
-  card: { w: 63.50, h: 88.90, name: 'playing card', edge: 'h', longMM: 88.90 },
-  bank: { w: 85.60, h: 53.98, name: 'bank card', edge: 'w', longMM: 85.60 }
+  card: { w: 63.50, h: 88.90, name: 'playing card', edge: 'h' },
+  bank: { w: 85.60, h: 53.98, name: 'bank card', edge: 'w' }
 };
-const CARD_LONG_MM = 88.90; // playing-card long edge, used for camera scale
-const LS = 'obvious.v4.cal';
+const CARD_LONG_MM = 88.90;
+const LS = 'obvious.v4.cal', LS_LAST = 'obvious.v4.last';
 const SIGMA = { ring: 0.18, strip: 0.28, finger: 0.50, camera: 0.80 };
 const CAL_SIGMA = 0.15;
+const REDUCE = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
 const $ = s => document.querySelector(s);
 const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
 const fmt1 = v => v.toFixed(1);
 const fmt2 = v => v.toFixed(2);
+function buzz(ms){ try{ navigator.vibrate && navigator.vibrate(ms); }catch(_){} }
 
 let ppm = null, calObj = OBJ.card, lastResult = null;
 
-/* navigation */
 let cur = 's-intro', busy = false;
 function go(id){
   if (busy || id === cur) return;
   busy = true;
   const from = $('#'+cur), to = $('#'+id);
   from.classList.add('leaving');
-  setTimeout(()=>{
-    from.classList.remove('active','leaving'); to.classList.add('active'); cur=id;
+  setTimeout(()=>{ from.classList.remove('active','leaving'); to.classList.add('active'); cur=id;
     if (to.classList.contains('scrolly') || id==='s-result') to.scrollTop = 0;
     requestAnimationFrame(()=>{ onEnter(id); busy=false; });
   }, 250);
@@ -544,202 +492,179 @@ function onEnter(id){
   if (id!=='s-camera') camMeasure.stop();
   if (id!=='s-ar') arTryOn.stop();
   if (id==='s-intro') startGauge(); else stopGauge();
-  if (id==='s-camera') camMeasure.start();
-  if (id==='s-ar') arTryOn.start();
+  if (id==='s-camera') primeCamera(()=>camMeasure.start());
+  if (id==='s-ar') primeCamera(()=>arTryOn.start());
   if (id==='s-cal') layoutCal();
   if (id==='s-ring') layoutRing();
   if (id==='s-strip') layoutStrip();
   if (id==='s-finger') layoutFinger();
   if (id==='s-result') animateResult();
 }
-
 let toastT;
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2600); }
 function hold(el, fn){ let to, iv; const stop=()=>{clearTimeout(to);clearInterval(iv);};
   el.addEventListener('pointerdown',e=>{e.preventDefault();fn();to=setTimeout(()=>iv=setInterval(fn,90),400);});
   ['pointerup','pointercancel','pointerleave'].forEach(ev=>el.addEventListener(ev,stop)); }
 
-/* shared camera helper */
+/* camera permission pre-prompt (also the privacy note) */
+let camPrimed=false, primeCb=null;
+function primeCamera(cb){ if(camPrimed){ cb(); return; } primeCb=cb; $('#camPrompt').classList.add('show'); }
+$('#camPromptYes').addEventListener('click',()=>{ camPrimed=true; $('#camPrompt').classList.remove('show'); buzz(8); if(primeCb){ primeCb(); primeCb=null; } });
+$('#camPromptNo').addEventListener('click',()=>{ $('#camPrompt').classList.remove('show'); go('s-cal'); });
+
 async function openCamera(video, facing){
   const stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:facing, width:{ideal:1280}, height:{ideal:720} }, audio:false });
   video.srcObject = stream; video.setAttribute('playsinline',''); await video.play(); return stream;
 }
-function stopStream(stream){ if(stream) stream.getTracks().forEach(t=>t.stop()); }
+function stopStream(s){ if(s) s.getTracks().forEach(t=>t.stop()); }
 
-/* ════════ GAUGE animation ════════ */
-const gauge = (()=>{
-  const cv=$('#gauge'); const ctx=cv.getContext('2d'); let W=0,H=0,DPR=1,raf=0,t0=0,running=false;
-  const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
-  function resize(){ const r=cv.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0); }
+/* GAUGE */
+const gauge=(()=>{ const cv=$('#gauge'),ctx=cv.getContext('2d'); let W=0,H=0,raf=0,t0=0,running=false;
+  function resize(){ const r=cv.getBoundingClientRect(),DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0); }
   function hex(cx,cy,r){ ctx.beginPath(); for(let i=0;i<6;i++){const a=(-90+i*60)*Math.PI/180,x=cx+r*Math.cos(a),y=cy+r*Math.sin(a);i?ctx.lineTo(x,y):ctx.moveTo(x,y);} ctx.closePath(); }
-  function render(t){
-    ctx.clearRect(0,0,W,H); const cx=W/2,cy=H*0.34,R=Math.min(W*0.5,H*0.42)*0.62;
-    ctx.strokeStyle='#0c0c0d';
+  function render(t){ ctx.clearRect(0,0,W,H); const cx=W/2,cy=H*0.34,R=Math.min(W*0.5,H*0.42)*0.62; ctx.strokeStyle='#0c0c0d';
     ctx.save();ctx.translate(cx,cy);ctx.rotate(t*0.00006);ctx.translate(-cx,-cy);ctx.globalAlpha=.10;ctx.lineWidth=1.5;hex(cx,cy,R*1.42);ctx.stroke();ctx.restore();
     ctx.globalAlpha=.16;ctx.lineWidth=1;ctx.beginPath();ctx.arc(cx,cy,R*1.16,0,7);ctx.stroke();
     ctx.globalAlpha=.30;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.stroke();
-    const ticks=72;
-    for(let i=0;i<ticks;i++){const a=(i/ticks)*Math.PI*2,major=i%6===0,r0=R*1.16,r1=r0-(major?12:6),sweep=((t*0.00045)%(Math.PI*2)),d=Math.abs(((a-sweep)+Math.PI*3)%(Math.PI*2)-Math.PI);
+    for(let i=0;i<72;i++){const a=(i/72)*Math.PI*2,major=i%6===0,r0=R*1.16,r1=r0-(major?12:6),sweep=((t*0.00045)%(Math.PI*2)),d=Math.abs(((a-sweep)+Math.PI*3)%(Math.PI*2)-Math.PI);
       ctx.globalAlpha=d<0.5?.9:(major?.5:.22);ctx.lineWidth=d<0.5?2:1;ctx.beginPath();ctx.moveTo(cx+r0*Math.cos(a),cy+r0*Math.sin(a));ctx.lineTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));ctx.stroke();}
     const sa=(t*0.00045)%(Math.PI*2);ctx.globalAlpha=.5;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R*1.12*Math.cos(sa),cy+R*1.12*Math.sin(sa));ctx.stroke();
-    const bs=1+0.02*Math.sin(t*0.002);ctx.globalAlpha=.92;ctx.lineWidth=2.5;hex(cx,cy,R*0.5*bs);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,R*0.28*bs,0,7);ctx.stroke();ctx.globalAlpha=1;
-  }
+    const bs=1+0.02*Math.sin(t*0.002);ctx.globalAlpha=.92;ctx.lineWidth=2.5;hex(cx,cy,R*0.5*bs);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,R*0.28*bs,0,7);ctx.stroke();ctx.globalAlpha=1; }
   function frame(ts){ if(!running)return; if(!t0)t0=ts; render(ts-t0); raf=requestAnimationFrame(frame); }
-  return { start(){ resize(); if(running)return; running=true; if(reduce){render(1500);running=false;return;} t0=0; raf=requestAnimationFrame(frame); },
-    stop(){ running=false; cancelAnimationFrame(raf); }, resize(){ resize(); } };
+  return { start(){ resize(); if(running)return; running=true; if(REDUCE){render(1500);running=false;return;} t0=0; raf=requestAnimationFrame(frame); }, stop(){ running=false; cancelAnimationFrame(raf); }, resize(){ resize(); } };
 })();
 function startGauge(){ gauge.start(); } function stopGauge(){ gauge.stop(); }
 
-/* ════════ CAMERA MEASURE ════════ */
-const camMeasure = (()=>{
-  const stage=$('#camStage'), vid=$('#camVid'), c0=$('#cm0'), c1=$('#cm1');
-  let stream=null, facing='environment', W=0, x0=0, x1=0, step='scale', ppmCam=null, frozen=false;
+/* CAMERA MEASURE (rear) */
+const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0'),c1=$('#cm1');
+  let stream=null,W=0,x0=0,x1=0,step='scale',ppmCam=null,frozen=false;
   function place(){ x0=clamp(x0,8,W-8); x1=clamp(x1,x0+10,W-8); c0.style.left=x0+'px'; c1.style.left=x1+'px';
-    if(step==='scale'){ const mm=CARD_LONG_MM; ppmCam=Math.abs(x1-x0)/mm; $('#camRead').textContent=Math.round(Math.abs(x1-x0)); $('#camUnit').textContent='px card edge'; }
-    else { const mm=Math.abs(x1-x0)/(ppmCam||1); $('#camRead').textContent=fmt1(mm); $('#camUnit').textContent='mm finger width'; }
-  }
+    if(step==='scale'){ ppmCam=Math.abs(x1-x0)/CARD_LONG_MM; $('#camRead').textContent=Math.round(Math.abs(x1-x0)); $('#camUnit').textContent='px card edge'; }
+    else { $('#camRead').textContent=fmt1(Math.abs(x1-x0)/(ppmCam||1)); $('#camUnit').textContent='mm finger width'; } }
   function layout(){ const r=stage.getBoundingClientRect(); W=r.width; if(!x0&&!x1){ x0=W*0.28; x1=W*0.72; } place(); }
-  function bindLine(el){ el.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();el.setPointerCapture(e.pointerId);
+  function bind(el){ el.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();el.setPointerCapture(e.pointerId);
     const mv=ev=>{ const r=stage.getBoundingClientRect(); const x=ev.clientX-r.left; if(el===c0)x0=x;else x1=x; place(); };
     const up=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);};
     el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up); }); }
-  bindLine(c0); bindLine(c1);
+  bind(c0); bind(c1);
   hold($('#camMinus'),()=>{ const c=(x0+x1)/2,g=Math.abs(x1-x0)-0.2*(ppmCam||4); x0=c-g/2;x1=c+g/2; place(); });
   hold($('#camPlus'), ()=>{ const c=(x0+x1)/2,g=Math.abs(x1-x0)+0.2*(ppmCam||4); x0=c-g/2;x1=c+g/2; place(); });
-  $('#camAction').addEventListener('click',()=>{
+  $('#camAction').addEventListener('click',()=>{ buzz(6);
     if(step==='scale'){ if(!(ppmCam>0)){toast('Align the marks to the card first');return;} step='finger';
       $('#camStep').innerHTML='Now line the two marks to the <b>sides of your finger</b>, at the base where the ring sits.';
-      $('#camPill').textContent='Align to your finger'; $('#camAction').textContent='Reveal my size'; $('#camStage .step-dots');
-      x0=W*0.4; x1=W*0.6; place(); }
-    else { const mm=Math.abs(x1-x0)/(ppmCam||1); reveal(mm,'camera'); }
-  });
-  $('#camFreeze').addEventListener('click',()=>{ frozen=!frozen; if(frozen){ vid.pause(); $('#camFreeze').classList.add('on'); $('#camFreeze').textContent='Live'; } else { vid.play(); $('#camFreeze').classList.remove('on'); $('#camFreeze').textContent='Freeze'; } });
-  $('#camFlip').addEventListener('click',async()=>{ facing = facing==='environment'?'user':'environment'; await restart(); });
+      $('#camPill').textContent='Align to your finger'; $('#camAction').textContent='Reveal my size'; x0=W*0.4; x1=W*0.6; place(); }
+    else reveal(Math.abs(x1-x0)/(ppmCam||1),'camera'); });
+  $('#camFreeze').addEventListener('click',()=>{ frozen=!frozen; if(frozen){vid.pause();$('#camFreeze').classList.add('on');$('#camFreeze').textContent='Live';}else{vid.play();$('#camFreeze').classList.remove('on');$('#camFreeze').textContent='Freeze';} });
   $('#camBack').addEventListener('click',()=>go('s-intro'));
   $('#camAdv').addEventListener('click',()=>go('s-cal'));
   $('#camFailAdv').addEventListener('click',()=>go('s-cal'));
-  async function restart(){ stopStream(stream); try{ stream=await openCamera(vid,facing); $('#camFail').hidden=true; }catch(e){ fail(e); } }
-  function fail(e){ $('#camFail').hidden=false; $('#camFailMsg').textContent = (location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable. Allow camera access, or use a precise method.':'Camera needs HTTPS. Use a precise method instead.'; }
-  return {
-    async start(){ step='scale'; frozen=false; ppmCam=null; x0=0;x1=0;
+  function fail(){ $('#camFail').hidden=false; $('#camFailMsg').textContent=(location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable. Allow camera access, or use a precise method.':'Camera needs HTTPS. Use a precise method instead.'; }
+  return { async start(){ step='scale';frozen=false;ppmCam=null;x0=0;x1=0;
       $('#camStep').innerHTML='Lay a <b>playing card</b> and your finger flat on a table. First, line the two marks up with the <b>long edge of the card</b>.';
-      $('#camPill').textContent='Align to the card'; $('#camAction').textContent='Set scale →'; $('#camFreeze').textContent='Freeze'; $('#camFreeze').classList.remove('on');
-      layout();
+      $('#camPill').textContent='Align to the card';$('#camAction').textContent='Set scale →';$('#camFreeze').textContent='Freeze';$('#camFreeze').classList.remove('on'); layout();
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
-      try{ stream=await openCamera(vid,facing); $('#camFail').hidden=true; setTimeout(layout,300); }catch(e){ fail(e); }
-    },
-    stop(){ stopStream(stream); stream=null; },
-    layout
-  };
+      try{ stream=await openCamera(vid,'environment'); $('#camFail').hidden=true; setTimeout(layout,300); }catch(e){ fail(); } },
+    stop(){ stopStream(stream); stream=null; }, layout };
 })();
 
-/* ════════ AR TRY-ON ════════ */
-const arTryOn = (()=>{
-  const stage=$('#arStage'), vid=$('#arVid'), cv=$('#arCanvas'), ctx=cv.getContext('2d');
-  let stream=null, facing='user', raf=0, running=false, mode='auto', finger=3, sizeMul=1, rotDeg=0;
-  let DPR=1,W=0,H=0; let landmarker=null, loading=false, lastT=0, haveHand=false;
-  let manual={x:0.5,y:0.5}; const ringImg=new Image(); let ringReady=false; ringImg.onload=()=>ringReady=true; ringImg.src=RING_IMG;
+/* AR TRY-ON (rear, canvas composite, smoothed, contact shadow, snapshot) */
+const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas'),ctx=cv.getContext('2d');
+  let stream=null,raf=0,running=false,mode='auto',finger=3,sizeMul=1,rotDeg=0;
+  let DPR=1,W=0,H=0,landmarker=null,loading=false,haveHand=false,snapPending=false;
+  let manual={x:0.5,y:0.5}; let s={x:0,y:0,w:0,a:0,init:false};
+  const ringImg=new Image(); let ringReady=false; ringImg.onload=()=>ringReady=true; ringImg.src=RING_IMG;
   const PAIR={1:[5,6],2:[9,10],3:[13,14],4:[17,18]};
-  function resize(){ const r=stage.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height; cv.width=W*DPR;cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); }
-  async function loadLM(){
-    if(landmarker||loading) return; loading=true;
-    try{
-      const v=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs');
+  function resize(){ const r=stage.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height; cv.width=W*DPR;cv.height=H*DPR; }
+  async function loadLM(){ if(landmarker||loading)return; loading=true;
+    try{ const v=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs');
       const fs=await v.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
       landmarker=await v.HandLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',delegate:'GPU'},numHands:1,runningMode:'VIDEO'});
-      $('#arPill').textContent='Show your hand';
-    }catch(e){ landmarker=null; $('#arPill').textContent='Auto tracking unavailable — use Manual'; setMode('manual'); }
-    loading=false;
-  }
+      if(mode==='auto')$('#arPill').textContent='Show your hand';
+    }catch(e){ landmarker=null; toast('Auto tracking off — use Manual'); setMode('manual'); } loading=false; }
+  function cover(){ const vw=vid.videoWidth||1280, vh=vid.videoHeight||720, sc=Math.max(W/vw,H/vh); return {sc,dx:(W-vw*sc)/2,dy:(H-vh*sc)/2,vw,vh}; }
   function drawRing(cx,cy,w,ang){ if(!ringReady)return; const h=w*(ringImg.height/ringImg.width);
-    ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);ctx.drawImage(ringImg,-w/2,-h*0.5,w,h);ctx.restore(); }
-  function frame(ts){
-    if(!running)return;
-    ctx.save(); ctx.clearRect(0,0,W,H);
-    // mirror to match the mirrored (selfie) video
-    ctx.translate(W,0); ctx.scale(-1,1);
-    let placed=false;
-    if(mode==='auto' && landmarker && vid.readyState>=2){
-      let res=null; try{ res=landmarker.detectForVideo(vid, ts); }catch(_){}
-      if(res && res.landmarks && res.landmarks[0]){
-        haveHand=true; const lm=res.landmarks[0]; const [a,b]=PAIR[finger];
-        const mcp=lm[a], pip=lm[b];
-        const px=mcp.x*W, py=mcp.y*H, qx=pip.x*W, qy=pip.y*H;
-        const cx=px+(qx-px)*0.42, cy=py+(qy-py)*0.42;
-        const segp=lm[a===5?9:(a-4)] || lm[9];
-        const wpx=Math.hypot((lm[5].x-lm[17].x)*W,(lm[5].y-lm[17].y)*H)*0.42*sizeMul;
-        const ang=Math.atan2(qy-py,qx-px)-Math.PI/2 + rotDeg*Math.PI/180;
-        drawRing(cx,cy,Math.max(40,wpx*1.7),ang); placed=true;
-      } else haveHand=false;
-    }
-    if(mode==='manual' || (mode==='auto'&&!placed&&!landmarker)){
-      const cx=manual.x*W, cy=manual.y*H; drawRing(cx,cy,W*0.34*sizeMul,rotDeg*Math.PI/180); placed=true;
-    }
-    ctx.restore();
-    if(mode==='auto' && landmarker){ $('#arPill').textContent = haveHand? '' : 'Show your hand to the camera'; $('#arPill').style.opacity = haveHand?0:1; }
-    raf=requestAnimationFrame(frame);
-  }
-  function setMode(m){ mode=m; $('#arAuto').classList.toggle('on',m==='auto'); $('#arManual').classList.toggle('on',m==='manual');
-    $('#arPill').style.opacity=1; $('#arPill').textContent = m==='manual'?'Drag the ring onto your finger':(landmarker?'Show your hand':'Loading…'); }
-  // manual drag on canvas
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(ang);
+    const g=ctx.createRadialGradient(0,h*0.24,0,0,h*0.24,w*0.55); g.addColorStop(0,'rgba(0,0,0,0.38)'); g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(0,h*0.26,w*0.52,h*0.20,0,0,7); ctx.fill();
+    ctx.drawImage(ringImg,-w/2,-h*0.5,w,h); ctx.restore(); }
+  function watermark(){ const x=18,y=H-18,r=11; ctx.save(); ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=6; ctx.fillStyle='#fff';
+    ctx.beginPath(); for(let i=0;i<6;i++){const a=(-90+i*60)*Math.PI/180,px=x+r*Math.cos(a),py=y-9+r*Math.sin(a);i?ctx.lineTo(px,py):ctx.moveTo(px,py);} ctx.closePath(); ctx.fill();
+    ctx.font='800 16px Archivo, sans-serif'; ctx.textBaseline='middle'; ctx.fillText('OBVIOUS', x+r+8, y-9); ctx.restore(); }
+  function smooth(tx,ty,tw,ta){ if(!s.init){s.x=tx;s.y=ty;s.w=tw;s.a=ta;s.init=true;return;} const k=REDUCE?1:0.3;
+    s.x+=(tx-s.x)*k; s.y+=(ty-s.y)*k; s.w+=(tw-s.w)*k; let da=ta-s.a; while(da>Math.PI)da-=2*Math.PI; while(da<-Math.PI)da+=2*Math.PI; s.a+=da*k; }
+  function frame(ts){ if(!running)return; ctx.setTransform(DPR,0,0,DPR,0,0); ctx.clearRect(0,0,W,H);
+    if(vid.readyState>=2){ const c=cover(); ctx.drawImage(vid,c.dx,c.dy,c.vw*c.sc,c.vh*c.sc); }
+    let placed=false,tx,ty,tw,ta;
+    if(mode==='auto'&&landmarker&&vid.readyState>=2){ let res=null; try{ res=landmarker.detectForVideo(vid,ts); }catch(_){}
+      if(res&&res.landmarks&&res.landmarks[0]){ haveHand=true; const lm=res.landmarks[0],c=cover(),M=p=>({x:c.dx+p.x*c.vw*c.sc,y:c.dy+p.y*c.vh*c.sc});
+        const [a,b]=PAIR[finger],mcp=M(lm[a]),pip=M(lm[b]),i5=M(lm[5]),i17=M(lm[17]);
+        tx=mcp.x+(pip.x-mcp.x)*0.42; ty=mcp.y+(pip.y-mcp.y)*0.42;
+        tw=Math.max(60,Math.hypot(i5.x-i17.x,i5.y-i17.y)*0.45*sizeMul*1.7);
+        ta=Math.atan2(pip.y-mcp.y,pip.x-mcp.x)-Math.PI/2+rotDeg*Math.PI/180; placed=true; }
+      else haveHand=false; }
+    if(mode==='manual'){ tx=manual.x*W; ty=manual.y*H; tw=W*0.34*sizeMul; ta=rotDeg*Math.PI/180; placed=true; }
+    if(placed){ smooth(tx,ty,tw,ta); drawRing(s.x,s.y,s.w,s.a); }
+    if(snapPending){ snapPending=false; watermark(); cv.toBlob(saveSnap,'image/png'); }
+    if(mode==='auto'&&landmarker){ $('#arPill').style.opacity=haveHand?0:1; if(!haveHand)$('#arPill').textContent='Show your hand to the camera'; }
+    raf=requestAnimationFrame(frame); }
+  function saveSnap(blob){ if(!blob){toast('Could not capture');return;} const f=new File([blob],'obvious-tryon.png',{type:'image/png'});
+    $('#snapFlash').classList.remove('go'); void $('#snapFlash').offsetWidth; $('#snapFlash').classList.add('go'); buzz(15);
+    if(navigator.canShare&&navigator.canShare({files:[f]})){ navigator.share({files:[f],title:'OBVIOUS'}).catch(()=>{}); }
+    else { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='obvious-tryon.png'; a.click(); toast('Photo saved'); } }
+  function setMode(m){ mode=m; s.init=false; $('#arAuto').classList.toggle('on',m==='auto'); $('#arManual').classList.toggle('on',m==='manual');
+    $('#arPill').style.opacity=1; $('#arPill').textContent=m==='manual'?'Drag the ring onto your finger':(landmarker?'Show your hand':'Loading tracking…'); }
   stage.addEventListener('pointerdown',e=>{ if(mode!=='manual')return; const r=stage.getBoundingClientRect();
-    manual.x=1-((e.clientX-r.left)/r.width); manual.y=(e.clientY-r.top)/r.height; // 1- because mirrored
-    const mv=ev=>{ manual.x=1-((ev.clientX-r.left)/r.width); manual.y=(ev.clientY-r.top)/r.height; };
-    const up=()=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);};
+    const set=ev=>{ manual.x=clamp((ev.clientX-r.left)/r.width,0,1); manual.y=clamp((ev.clientY-r.top)/r.height,0,1); }; set(e);
+    const mv=ev=>set(ev); const up=()=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);};
     document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up); });
-  $('#arAuto').addEventListener('click',()=>{ if(!landmarker) loadLM(); setMode('auto'); });
+  $('#arAuto').addEventListener('click',()=>{ if(!landmarker)loadLM(); setMode('auto'); });
   $('#arManual').addEventListener('click',()=>setMode('manual'));
-  $('#arFlip').addEventListener('click',async()=>{ facing=facing==='user'?'environment':'user'; vid.style.transform = facing==='user'?'scaleX(-1)':'none'; await restart(); });
-  $('#arFingers').addEventListener('click',e=>{ const b=e.target.closest('[data-f]'); if(!b)return; finger=+b.dataset.f;
+  $('#arSnap').addEventListener('click',()=>{ snapPending=true; });
+  $('#arFingers').addEventListener('click',e=>{ const b=e.target.closest('[data-f]'); if(!b)return; finger=+b.dataset.f; s.init=false;
     document.querySelectorAll('#arFingers .chip').forEach(c=>c.classList.toggle('on',c===b)); });
   $('#arSize').addEventListener('input',e=>sizeMul=+e.target.value);
   $('#arRot').addEventListener('input',e=>rotDeg=+e.target.value);
   $('#arBack2').addEventListener('click',()=>go(lastResult?'s-result':'s-intro'));
   $('#arMeasureCta').addEventListener('click',()=>go('s-camera'));
   function fail(){ $('#arFail').hidden=false; $('#arFailMsg').textContent=(location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable.':'Camera needs HTTPS.'; }
-  async function restart(){ stopStream(stream); try{ stream=await openCamera(vid,facing); $('#arFail').hidden=true; }catch(e){ fail(); } }
-  return {
-    async start(){ resize(); running=true; $('#arFail').hidden=true; setMode('auto'); $('#arPill').textContent='Starting camera…'; $('#arPill').style.opacity=1;
+  return { async start(){ resize(); running=true; s.init=false; $('#arFail').hidden=true; setMode('auto'); $('#arPill').textContent='Starting camera…'; $('#arPill').style.opacity=1;
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
-      try{ stream=await openCamera(vid,facing); vid.style.transform = facing==='user'?'scaleX(-1)':'none'; }catch(e){ fail(); return; }
+      try{ stream=await openCamera(vid,'environment'); }catch(e){ fail(); return; }
       loadLM(); raf=requestAnimationFrame(frame); },
-    stop(){ running=false; cancelAnimationFrame(raf); stopStream(stream); stream=null; },
-    resize
-  };
+    stop(){ running=false; cancelAnimationFrame(raf); stopStream(stream); stream=null; }, resize };
 })();
 
-/* ════════ CALIBRATION ════════ */
-const calStage=$('#calStage'), calObjEl=$('#calObj'), calSlider=$('#calSlider');
-const ANX=16, ANY_RATIO=0.5; let calLong=300, stageW=0, stageH=0, anchorY=0;
-function layoutCal(){ const r=calStage.getBoundingClientRect(); stageW=r.width; stageH=r.height; anchorY=stageH*ANY_RATIO;
-  const maxLong=Math.min(stageW-ANX-8,560); calSlider.min=140; calSlider.max=Math.round(maxLong); calSlider.step=1; calLong=clamp(calLong,140,maxLong); drawCal(); }
-function drawCal(){ const longMM=calObj.edge==='w'?calObj.w:calObj.h, shortMM=calObj.edge==='w'?calObj.h:calObj.w; let w,h;
-  if(calObj.edge==='w'){w=calLong;h=calLong*(shortMM/longMM);} else {h=calLong;w=calLong*(shortMM/longMM);}
+/* CALIBRATION */
+const calStage=$('#calStage'),calObjEl=$('#calObj'),calSlider=$('#calSlider');
+const ANX=16,ANY_RATIO=0.5; let calLong=300,stageW=0,stageH=0,anchorY=0;
+function layoutCal(){ const r=calStage.getBoundingClientRect(); stageW=r.width;stageH=r.height;anchorY=stageH*ANY_RATIO;
+  const maxLong=Math.min(stageW-ANX-8,560); calSlider.min=140;calSlider.max=Math.round(maxLong);calSlider.step=1; calLong=clamp(calLong,140,maxLong); drawCal(); }
+function drawCal(){ const longMM=calObj.edge==='w'?calObj.w:calObj.h,shortMM=calObj.edge==='w'?calObj.h:calObj.w; let w,h;
+  if(calObj.edge==='w'){w=calLong;h=calLong*(shortMM/longMM);}else{h=calLong;w=calLong*(shortMM/longMM);}
   const top=clamp(anchorY-h/2,4,stageH-h-4);
   calObjEl.style.left=ANX+'px';calObjEl.style.top=top+'px';calObjEl.style.transform='none';calObjEl.style.width=w+'px';calObjEl.style.height=h+'px';
   $('#cgL').style.left=ANX+'px';$('#cgR').style.left=(ANX+w)+'px';$('#cgT').style.top=top+'px';$('#cgB').style.top=(top+h)+'px';
   $('#anchor').style.left=(ANX-4.5)+'px';$('#anchor').style.top=(top-4.5)+'px';
   ppm=calLong/longMM; calSlider.value=Math.round(calLong);
   $('#calScale').innerHTML='scale: <b>'+fmt2(ppm)+' px/mm</b> · '+calObj.name+' '+fmt1(calObj.w)+' × '+fmt1(calObj.h)+' mm'; }
-function setLong(px){ const max=parseFloat(calSlider.max); calLong=clamp(px,140,max); drawCal(); }
+function setLong(px){ calLong=clamp(px,140,parseFloat(calSlider.max)); drawCal(); }
 calSlider.addEventListener('input',()=>setLong(parseFloat(calSlider.value)));
 hold($('#calMinus'),()=>setLong(calLong-0.2*(ppm||4))); hold($('#calPlus'),()=>setLong(calLong+0.2*(ppm||4)));
 $('#objCard').addEventListener('click',()=>setObj('card')); $('#objBank').addEventListener('click',()=>setObj('bank'));
 function setObj(k){ calObj=OBJ[k]; $('#objCard').classList.toggle('on',k==='card'); $('#objBank').classList.toggle('on',k==='bank'); drawCal(); }
-const cps=new Map(); let pinch0=0, long0=0, edge=null;
-calStage.addEventListener('pointerdown',e=>{ e.preventDefault(); calStage.setPointerCapture(e.pointerId); cps.set(e.pointerId,{x:e.clientX,y:e.clientY});
+const cps=new Map(); let pinch0=0,long0=0,edge=null;
+calStage.addEventListener('pointerdown',e=>{ e.preventDefault();calStage.setPointerCapture(e.pointerId);cps.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(cps.size===1){ const r=calStage.getBoundingClientRect(),x=e.clientX-r.left,w=parseFloat(calObjEl.style.width); edge=Math.abs(x-(ANX+w))<34?'r':null; }
   else if(cps.size===2){ edge=null; const [a,b]=[...cps.values()]; pinch0=Math.hypot(a.x-b.x,a.y-b.y); long0=calLong; } });
 calStage.addEventListener('pointermove',e=>{ if(!cps.has(e.pointerId))return; cps.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(cps.size===2&&pinch0>0){ const [a,b]=[...cps.values()]; setLong(long0*Math.hypot(a.x-b.x,a.y-b.y)/pinch0); }
   else if(cps.size===1&&edge==='r'){ const r=calStage.getBoundingClientRect(); const w=e.clientX-r.left-ANX; setLong(calObj.edge==='w'?w:w*(calObj.h/calObj.w)); } });
 ['pointerup','pointercancel'].forEach(ev=>calStage.addEventListener(ev,e=>{cps.delete(e.pointerId);pinch0=0;edge=null;}));
-$('#btnCalDone').addEventListener('click',()=>{ try{ localStorage.setItem(LS,JSON.stringify({ppm,dpr:devicePixelRatio||1,w:innerWidth,obj:calObj.name,ts:Date.now()})); }catch(_){}
-  toast('Screen calibrated: '+fmt2(ppm)+' px/mm'); go('s-method'); });
+$('#btnCalDone').addEventListener('click',()=>{ try{ localStorage.setItem(LS,JSON.stringify({ppm,dpr:devicePixelRatio||1,w:innerWidth,obj:calObj.name,ts:Date.now()})); }catch(_){} toast('Screen calibrated: '+fmt2(ppm)+' px/mm'); go('s-method'); });
 $('#calBack').addEventListener('click',()=>go('s-intro'));
 
-/* ════════ RING ════════ */
-const ringStage=$('#ringStage'), ringC=$('#ringC'), ringSlider=$('#ringSlider'); let ringD=17;
+/* RING */
+const ringStage=$('#ringStage'),ringC=$('#ringC'),ringSlider=$('#ringSlider'); let ringD=17;
 function layoutRing(){ drawRingUI(); }
 function drawRingUI(){ const r=ringStage.getBoundingClientRect(),d=ringD*ppm,cx=r.width/2,cy=r.height/2;
   ringC.style.width=ringC.style.height=d+'px';ringC.style.left=(cx-d/2)+'px';ringC.style.top=(cy-d/2)+'px';
@@ -754,25 +679,25 @@ ringStage.addEventListener('pointerdown',e=>{ e.preventDefault(); const r=ringSt
   ringStage.addEventListener('pointermove',mv);ringStage.addEventListener('pointerup',up);ringStage.addEventListener('pointercancel',up); });
 $('#btnRingDone').addEventListener('click',()=>reveal(ringD,'ring')); $('#ringBack').addEventListener('click',()=>go('s-method'));
 
-/* ════════ STRIP ════════ */
-const stripStage=$('#stripStage'), cal0=$('#cal0'), cal1=$('#cal1'); let sx0=0,sx1=0,sW=0;
+/* STRIP */
+const stripStage=$('#stripStage'),cal0=$('#cal0'),cal1=$('#cal1'); let sx0=0,sx1=0,sW=0;
 function layoutStrip(){ const r=stripStage.getBoundingClientRect(); sW=r.width; const track=$('#rulerTrack'); track.querySelectorAll('.tick').forEach(t=>t.remove());
-  const usable=sW-36; for(let mm=0; mm*ppm<=usable; mm+=5){ const t=document.createElement('span'); t.className='tick'; const big=mm%10===0; t.style.left=(18+mm*ppm)+'px'; t.style.height=(big?16:9)+'px'; track.appendChild(t); }
+  const usable=sW-36; for(let mm=0;mm*ppm<=usable;mm+=5){ const t=document.createElement('span');t.className='tick';const big=mm%10===0;t.style.left=(18+mm*ppm)+'px';t.style.height=(big?16:9)+'px';track.appendChild(t); }
   if(!sx0&&!sx1){ sx0=18; sx1=18+54*ppm; } drawStrip(); }
-function drawStrip(){ sx0=clamp(sx0,12,sW-12); sx1=clamp(sx1,sx0+4*ppm,Math.min(sW-12,sx0+90*ppm)); cal0.style.left=sx0+'px'; cal1.style.left=sx1+'px'; $('#stripRead').textContent=fmt1((sx1-sx0)/ppm); }
+function drawStrip(){ sx0=clamp(sx0,12,sW-12); sx1=clamp(sx1,sx0+4*ppm,Math.min(sW-12,sx0+90*ppm)); cal0.style.left=sx0+'px';cal1.style.left=sx1+'px'; $('#stripRead').textContent=fmt1((sx1-sx0)/ppm); }
 function setStripGap(mm){ sx1=sx0+clamp(mm,30,90)*ppm; drawStrip(); }
 hold($('#stripMinus'),()=>setStripGap((sx1-sx0)/ppm-0.2)); hold($('#stripPlus'),()=>setStripGap((sx1-sx0)/ppm+0.2));
 [cal0,cal1].forEach(c=>{ c.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();c.setPointerCapture(e.pointerId);
-  const mv=ev=>{const r=stripStage.getBoundingClientRect();const x=ev.clientX-r.left; if(c===cal0)sx0=x;else sx1=x; drawStrip();};
+  const mv=ev=>{const r=stripStage.getBoundingClientRect();const x=ev.clientX-r.left;if(c===cal0)sx0=x;else sx1=x;drawStrip();};
   const up=()=>{c.removeEventListener('pointermove',mv);c.removeEventListener('pointerup',up);c.removeEventListener('pointercancel',up);};
   c.addEventListener('pointermove',mv);c.addEventListener('pointerup',up);c.addEventListener('pointercancel',up); }); });
 $('#btnStripDone').addEventListener('click',()=>reveal((sx1-sx0)/ppm/Math.PI,'strip')); $('#stripBack').addEventListener('click',()=>go('s-method'));
 
-/* ════════ FINGER ════════ */
-const fingerStage=$('#fingerStage'), dv0=$('#dv0'), dv1=$('#dv1'); let fx0=0,fx1=0,fW=0;
+/* FINGER */
+const fingerStage=$('#fingerStage'),dv0=$('#dv0'),dv1=$('#dv1'); let fx0=0,fx1=0,fW=0;
 function layoutFinger(){ const r=fingerStage.getBoundingClientRect(); fW=r.width; if(!fx0&&!fx1){ const half=17*ppm/2; fx0=fW/2-half; fx1=fW/2+half; } drawFinger(); }
 function drawFinger(){ const minG=8*ppm,maxG=30*ppm; fx0=clamp(fx0,6,fW-6-minG); fx1=clamp(fx1,fx0+minG,Math.min(fW-6,fx0+maxG)); dv0.style.left=fx0+'px';dv1.style.left=fx1+'px';
-  const mm=(fx1-fx0)/ppm; $('#fingerRead').textContent=fmt1(mm); const g=$('#fingerGhost'); g.style.width=Math.max(40,fx1-fx0-12)+'px'; g.style.left=((fx0+fx1)/2)+'px'; g.style.transform='translate(-50%,-50%)'; g.style.opacity=mm<12?0:''; }
+  const mm=(fx1-fx0)/ppm;$('#fingerRead').textContent=fmt1(mm); const g=$('#fingerGhost');g.style.width=Math.max(40,fx1-fx0-12)+'px';g.style.left=((fx0+fx1)/2)+'px';g.style.transform='translate(-50%,-50%)';g.style.opacity=mm<12?0:''; }
 function setFingerGap(mm){ const c=(fx0+fx1)/2,half=mm*ppm/2; fx0=c-half; fx1=c+half; drawFinger(); }
 hold($('#fingerMinus'),()=>setFingerGap((fx1-fx0)/ppm-0.1)); hold($('#fingerPlus'),()=>setFingerGap((fx1-fx0)/ppm+0.1));
 [dv0,dv1].forEach(line=>{ line.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();line.setPointerCapture(e.pointerId);
@@ -781,61 +706,68 @@ hold($('#fingerMinus'),()=>setFingerGap((fx1-fx0)/ppm-0.1)); hold($('#fingerPlus
   line.addEventListener('pointermove',mv);line.addEventListener('pointerup',up);line.addEventListener('pointercancel',up); }); });
 $('#btnFingerDone').addEventListener('click',()=>reveal((fx1-fx0)/ppm,'finger')); $('#fingerBack').addEventListener('click',()=>go('s-method'));
 
-/* ════════ MATH (US) ════════ */
+/* MATH (US) */
 const circOf=d=>Math.PI*d; const usOf=d=>Math.round(((Math.PI*d-36.537)/2.5535)*2)/2;
 function usLabel(u){ if(u<2||u>16)return '—'; const i=Math.floor(u); return u%1? i+'½':String(i); }
 const dFromUS=u=>(36.537+2.5535*u)/Math.PI;
 
-/* ════════ REVEAL ════════ */
-function reveal(dMM, method){
+/* REVEAL */
+function reveal(dMM,method){ buzz(10);
   if(dMM<13||dMM>24){ $('#sanityText').innerHTML='That came out to <b>Ø '+fmt1(dMM)+' mm</b> — outside the usual human range (13–24 mm). Almost always the scale slipped. Want to redo it?';
     $('#sanity').classList.add('show');
     $('#sanForce').onclick=()=>{$('#sanity').classList.remove('show');show(dMM,method);};
     $('#sanRetry').onclick=()=>$('#sanity').classList.remove('show');
     $('#sanRecal').onclick=()=>{$('#sanity').classList.remove('show');go('s-cal');}; return; }
-  show(dMM,method);
-}
-function show(dMM, method){
-  const circ=circOf(dMM); lastResult={d:dMM,circ,us:usOf(dMM),method};
+  show(dMM,method); }
+function saveLast(d,method){ try{ localStorage.setItem(LS_LAST,JSON.stringify({d,method,ts:Date.now()})); }catch(_){} }
+function show(dMM,method){ const circ=circOf(dMM); lastResult={d:dMM,circ,us:usOf(dMM),method}; saveLast(dMM,method);
   const sigma=Math.hypot(SIGMA[method]||0.5,CAL_SIGMA);
   $('#rUSbig').textContent=usLabel(usOf(dMM));
   const uLo=usOf(dMM-sigma),uHi=usOf(dMM+sigma);
   $('#rRange').textContent=((method==='finger'||method==='camera')&&uLo!==uHi)?('likely '+usLabel(uLo)+'–'+usLabel(uHi)):('±'+fmt1(sigma)+' mm margin');
   $('#rDia').textContent=fmt1(dMM); $('#rCirc').textContent=fmt1(circ);
   const conf=method==='ring'?['high','Ring — most accurate']:method==='strip'?['mid','Paper strip — true circumference']:method==='camera'?['low','Camera — quick estimate']:['low','Finger — estimate; confirm later'];
-  const cb=$('#confBadge'); cb.className='conf '+conf[0]; $('#confText').textContent=conf[1];
+  $('#confBadge').className='conf '+conf[0]; $('#confText').textContent=conf[1];
   buildConv(usOf(dMM));
   const sum='US '+usLabel(usOf(dMM))+' · Ø '+fmt1(dMM)+' mm · circ. '+fmt1(circ)+' mm';
   $('#orderSummary').textContent='Measurement: '+sum;
-  const body='Hi! I\'d like to order an OBVIOUS smart ring.%0A%0AMy size:%0A'+encodeURIComponent(sum)+'%0A(measured with the OBVIOUS app)';
-  $('#btnWhats').href='https://wa.me/'+CONFIG.whatsapp+'?text='+body;
-  $('#btnEmail').href='mailto:'+CONFIG.email+'?subject='+encodeURIComponent('Smart ring order — US '+usLabel(usOf(dMM)))+'&body='+body;
-  go('s-result');
-}
+  $('#btnShop').href=CONFIG.site+'?size='+encodeURIComponent('US '+usLabel(usOf(dMM)));
+  $('#btnWhats').href='https://wa.me/'+CONFIG.whatsapp+'?text='+('Hi! I\'d like to order an OBVIOUS smart ring.%0A%0AMy size:%0A'+encodeURIComponent(sum));
+  $('#btnInsta').href=CONFIG.instagram;
+  go('s-result'); }
 function animateResult(){ const arc=$('#srArc'),C=578; arc.style.transition='none'; arc.style.strokeDashoffset=C;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{ arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.3,.8,.3,1)'; arc.style.strokeDashoffset=C*0.16; })); }
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.3,.8,.3,1)'; arc.style.strokeDashoffset=C*0.16; }));
+  if(REDUCE||!lastResult)return; const el=$('#rUSbig'),final=el.textContent,seq=['4','12','7','9','5','11','6','8','10']; let i=0; el.classList.add('flip');
+  const iv=setInterval(()=>{ el.textContent=seq[i%seq.length]; i++; },65);
+  setTimeout(()=>{ clearInterval(iv); el.textContent=final; el.classList.remove('flip'); },620); }
 function buildConv(hit){ const rows=['<tr><th>US</th><th>Ø mm</th><th>Circ. mm</th></tr>'];
   for(let u=4;u<=13;u+=0.5){ const d=dFromUS(u),c=circOf(d); rows.push('<tr'+(u===hit?' class="hit"':'')+'><td>'+usLabel(u)+'</td><td>'+fmt1(d)+'</td><td>'+fmt1(c)+'</td></tr>'); }
   $('#convTable').innerHTML=rows.join(''); }
 
 $('#btnCopy').addEventListener('click',async()=>{ if(!lastResult)return; const s=lastResult;
-  const txt='💍 My ring size — US '+usLabel(s.us)+' · Ø '+fmt1(s.d)+' mm · circ. '+fmt1(s.circ)+' mm · OBVIOUS app '+location.href;
+  const txt='💍 My ring size — US '+usLabel(s.us)+' · Ø '+fmt1(s.d)+' mm · circ. '+fmt1(s.circ)+' mm · OBVIOUS '+CONFIG.site;
   if(navigator.share){ try{ await navigator.share({title:'My ring size',text:txt}); return; }catch(_){} }
   try{ await navigator.clipboard.writeText(txt); toast('Result copied'); }catch(_){ toast('US '+usLabel(s.us)+' — write it down!'); } });
 $('#btnAgain').addEventListener('click',()=>go('s-camera'));
 $('#btnRecal').addEventListener('click',()=>go('s-cal'));
 $('#btnTryOn2').addEventListener('click',()=>go('s-ar'));
 
-/* initial flow */
+/* flow */
 $('#btnMeasure').addEventListener('click',()=>go('s-camera'));
 $('#btnTryOn').addEventListener('click',()=>go('s-ar'));
 $('#btnAdvanced').addEventListener('click',()=>go('s-cal'));
+$('#btnWhat').addEventListener('click',()=>$('#whatSheet').classList.add('show'));
+$('#whatClose').addEventListener('click',()=>$('#whatSheet').classList.remove('show'));
+$('#whatSheet').addEventListener('click',e=>{ if(e.target===$('#whatSheet'))$('#whatSheet').classList.remove('show'); });
 $('#mBack').addEventListener('click',()=>go('s-cal'));
 $('#mRing').addEventListener('click',()=>go('s-ring'));
 $('#mStrip').addEventListener('click',()=>go('s-strip'));
 $('#mFinger').addEventListener('click',()=>go('s-finger'));
 
-/* zoom guard */
+(function lastBanner(){ let s; try{ s=JSON.parse(localStorage.getItem(LS_LAST)); }catch(_){}
+  if(!s||!(s.d>0))return; const b=$('#lastSize'); b.hidden=false; b.querySelector('.ls-v').textContent='US '+usLabel(usOf(s.d));
+  b.addEventListener('click',()=>show(s.d,s.method||'camera')); })();
+
 if(window.visualViewport){ const w=()=>$('#zoomWarn').classList.toggle('show',visualViewport.scale>1.03); visualViewport.addEventListener('resize',w); w(); }
 document.addEventListener('gesturestart',e=>e.preventDefault());
 document.addEventListener('dblclick',e=>e.preventDefault());
@@ -847,13 +779,13 @@ const ua=navigator.userAgent||'';
 const isIOS=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const isSafari=/safari/i.test(ua)&&!/crios|fxios|chrome|android|edg/i.test(ua);
 const standalone=matchMedia('(display-mode:standalone)').matches||navigator.standalone===true;
-let deferredPrompt=null, barShown=false;
+let deferredPrompt=null,barShown=false;
 function openInstallHelp(){ if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; $('#installBar').classList.remove('show'); return; }
   if(!isIOS){ toast('Use your browser menu → Install app'); $('#installBar').classList.remove('show'); return; }
   $('#iosSteps').hidden=false; $('#iosNotSafari').hidden=isSafari; $('#installTitle').textContent='Add to Home Screen'; $('#installBar').classList.remove('show'); $('#installSheet').classList.add('show'); }
 function maybeShowInstall(){ if(standalone){ $('#introInstall').hidden=true; return; } $('#introInstall').hidden=false;
-  if(isIOS&&!barShown&&localStorage.getItem('obvious.install.dismissed')!=='1'){ barShown=true; setTimeout(()=>$('#installBar').classList.add('show'),2200); } }
-addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; $('#introInstall').hidden=false; if(!barShown&&!standalone){ barShown=true; setTimeout(()=>$('#installBar').classList.add('show'),1800); } });
+  if(isIOS&&!barShown&&localStorage.getItem('obvious.install.dismissed')!=='1'){ barShown=true; setTimeout(()=>$('#installBar').classList.add('show'),2600); } }
+addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; $('#introInstall').hidden=false; if(!barShown&&!standalone){ barShown=true; setTimeout(()=>$('#installBar').classList.add('show'),2000); } });
 $('#installYes').addEventListener('click',openInstallHelp); $('#introInstall').addEventListener('click',openInstallHelp);
 $('#installSheetClose').addEventListener('click',()=>$('#installSheet').classList.remove('show'));
 $('#installSheet').addEventListener('click',e=>{ if(e.target===$('#installSheet'))$('#installSheet').classList.remove('show'); });
