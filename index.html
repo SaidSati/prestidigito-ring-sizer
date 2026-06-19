@@ -58,7 +58,7 @@ body{background:var(--bg);color:var(--ink);font-family:"Space Grotesk",system-ui
 .tb-link:hover{background:var(--ink);color:var(--bg)}
 
 .eyebrow{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--dim);font-weight:600}
-h1.hero-h{font-family:"Archivo",sans-serif;font-weight:900;line-height:.9;text-transform:uppercase;font-size:clamp(50px,16vw,78px);letter-spacing:-.025em;color:var(--ink)}
+h1.hero-h{font-family:"Archivo",sans-serif;font-weight:800;line-height:.95;text-transform:uppercase;font-size:clamp(28px,8vw,40px);letter-spacing:.01em;color:var(--ink)}
 h2.title{font-family:"Archivo",sans-serif;font-weight:800;font-size:clamp(26px,7vw,34px);line-height:1;letter-spacing:-.01em;text-transform:uppercase}
 .lead{font-size:15.5px;line-height:1.5;color:var(--ink-soft)}
 .body{font-size:14px;line-height:1.55;color:var(--dim)}.body b{color:var(--ink);font-weight:600}
@@ -565,52 +565,40 @@ const gauge=(()=>{ const cv=$('#gauge'),ctx=cv.getContext('2d'); let W=0,H=0,raf
 })();
 function startGauge(){ gauge.start(); } function stopGauge(){ gauge.stop(); }
 
-/* CAMERA MEASURE — near-real: card outline locks the scale, MediaPipe auto-assists the finger lines */
+/* CAMERA MEASURE — upright card locks the scale, finger beside it, manual pre-set lines (no tracking) */
 const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0'),c1=$('#cm1'),guide=$('#cardGuide'),zone=$('#fingerZone');
-  const CT={card:{long:88.9,short:63.5,label:'🂠 Playing card'},bank:{long:85.6,short:53.98,label:'💳 Credit card'}};
-  let stream=null,raf=0,running=false,W=0,H=0,ppm=null,cardType='card',cardLong=88.9,cardShort=63.5;
-  let x0=0,x1=0,touched=false,landmarker=null,loading=false,token=0;
-  function sizeGuides(){ const gw=W*0.62,gx=(W-gw)/2,gh=gw*cardShort/cardLong,gy=H*0.09;
-    guide.style.left=gx+'px';guide.style.top=gy+'px';guide.style.width=gw+'px';guide.style.height=gh+'px';
-    const fw=W*0.5,fx=(W-fw)/2,fy=gy+gh+H*0.05,fh=Math.max(90,H-fy-H*0.07);
+  const CT={card:{long:88.9,short:63.5,label:'🂠 Playing card'},bank:{long:85.6,short:53.98,label:'💳 Bank card'}};
+  let stream=null,running=false,W=0,H=0,ppm=null,cardType='card',cardLong=88.9,cardShort=63.5,fzCx=0,placed=false,token=0;
+  let x0=0,x1=0;
+  function sizeGuides(){ // card upright on the left (long edge vertical); finger zone on the right
+    const ch=H*0.64,cw=ch*cardShort/cardLong,cx=W*0.07,cy=(H-ch)/2;
+    guide.style.left=cx+'px';guide.style.top=cy+'px';guide.style.width=cw+'px';guide.style.height=ch+'px';
+    const fw=Math.min(W*0.36,150),fh=H*0.64,fx=W-W*0.07-fw,fy=(H-fh)/2;
     zone.style.left=fx+'px';zone.style.top=fy+'px';zone.style.width=fw+'px';zone.style.height=fh+'px';
-    ppm=gw/cardLong; }
+    fzCx=fx+fw/2; ppm=ch/cardLong; }
   function place(){ x0=clamp(x0,6,W-6); x1=clamp(x1,x0+8,W-6); c0.style.left=x0+'px'; c1.style.left=x1+'px';
     $('#camRead').textContent = ppm? fmt1(Math.abs(x1-x0)/ppm) : '—'; }
-  function layout(){ const r=stage.getBoundingClientRect(); W=r.width;H=r.height; sizeGuides(); if(!x0&&!x1){ x0=W/2-28; x1=W/2+28; } place(); }
-  function manualGrab(){ touched=true; $('#camFineCap').innerHTML='manual<br>drag to adjust'; }
-  function bind(el){ el.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();manualGrab();el.setPointerCapture(e.pointerId);
+  function preset(){ const half=(ppm?17*ppm:30)/2; x0=fzCx-half; x1=fzCx+half; placed=true; place(); }
+  function layout(){ const r=stage.getBoundingClientRect(); W=r.width;H=r.height; sizeGuides(); if(!placed)preset(); else place(); }
+  function bind(el){ el.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();el.setPointerCapture(e.pointerId);
     const mv=ev=>{ const r=stage.getBoundingClientRect(); const x=ev.clientX-r.left; if(el===c0)x0=x;else x1=x; place(); };
     const up=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);};
     el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up); }); }
   bind(c0); bind(c1);
-  hold($('#camMinus'),()=>{ manualGrab(); const c=(x0+x1)/2,g=Math.abs(x1-x0)-0.2*(ppm||4); x0=c-g/2;x1=c+g/2; place(); });
-  hold($('#camPlus'), ()=>{ manualGrab(); const c=(x0+x1)/2,g=Math.abs(x1-x0)+0.2*(ppm||4); x0=c-g/2;x1=c+g/2; place(); });
-  $('#camCardType').addEventListener('click',()=>{ cardType=cardType==='card'?'bank':'card'; cardLong=CT[cardType].long;cardShort=CT[cardType].short; $('#camCardType').textContent=CT[cardType].label; sizeGuides(); place(); });
+  hold($('#camMinus'),()=>{ const c=(x0+x1)/2,g=Math.abs(x1-x0)-0.2*(ppm||4); x0=c-g/2;x1=c+g/2; place(); });
+  hold($('#camPlus'), ()=>{ const c=(x0+x1)/2,g=Math.abs(x1-x0)+0.2*(ppm||4); x0=c-g/2;x1=c+g/2; place(); });
+  $('#camCardType').addEventListener('click',()=>{ cardType=cardType==='card'?'bank':'card'; cardLong=CT[cardType].long;cardShort=CT[cardType].short; $('#camCardType').textContent=CT[cardType].label; sizeGuides(); preset(); });
   $('#camBack').addEventListener('click',()=>go('s-intro'));
   $('#camAdv').addEventListener('click',()=>go('s-cal'));
   $('#camFailAdv').addEventListener('click',()=>go('s-cal'));
   $('#camAction').addEventListener('click',()=>{ if(!(ppm>0)){toast('Fit your card in the outline first');return;} buzz(8); reveal(Math.abs(x1-x0)/ppm,'camera'); });
-  async function loadLM(){ if(landmarker||loading)return; loading=true;
-    try{ const v=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs');
-      const fs=await v.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
-      landmarker=await v.HandLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',delegate:'GPU'},numHands:1,runningMode:'VIDEO'}); }catch(e){ landmarker=null; } loading=false; }
-  function cover(){ const vw=vid.videoWidth||1280,vh=vid.videoHeight||720,sc=Math.max(W/vw,H/vh); return {sc,dx:(W-vw*sc)/2,dy:(H-vh*sc)/2,vw,vh}; }
-  function frame(ts){ if(!running)return;
-    if(landmarker && !touched && vid.readyState>=2){ let res=null; try{res=landmarker.detectForVideo(vid,ts);}catch(_){}
-      if(res&&res.landmarks&&res.landmarks[0]){ const lm=res.landmarks[0],c=cover(),M=p=>({x:c.dx+p.x*c.vw*c.sc,y:c.dy+p.y*c.vh*c.sc});
-        const mcp=M(lm[13]),w9=M(lm[9]),w17=M(lm[17]); const span=(Math.hypot(mcp.x-w9.x,mcp.y-w9.y)+Math.hypot(mcp.x-w17.x,mcp.y-w17.y))/2, fw=span*0.82;
-        x0=mcp.x-fw/2; x1=mcp.x+fw/2; place(); $('#camPill').textContent='Finger found — adjust if needed';
-      } else $('#camPill').textContent = ppm?'Rest your finger beside the card':'Fit your card in the outline…';
-    }
-    raf=requestAnimationFrame(frame); }
   function fail(){ $('#camFail').hidden=false; $('#camFailMsg').textContent=(location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable.':'Camera needs HTTPS.'; }
-  return { async start(){ token++; const tok=token; running=true; touched=false; x0=0;x1=0; $('#camCardType').textContent=CT[cardType].label; $('#camFineCap').innerHTML='auto-assist on<br>drag to adjust';
-      $('#camPill').textContent='Fit your card in the outline…'; $('#camRead').textContent='—'; layout();
+  return { async start(){ token++; const tok=token; running=true; placed=false; x0=0;x1=0; $('#camCardType').textContent=CT[cardType].label; $('#camFineCap').innerHTML='drag the lines<br>or ±0.2 mm';
+      $('#camStep').innerHTML='On a <b>flat surface</b>, stand your <b>card</b> upright in the outline, then rest your <b>finger</b> beside it on the right.';
+      $('#camPill').textContent='Fit your card, finger beside it'; $('#camRead').textContent='—'; layout();
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
-      try{ stream=await openCamera(vid,'environment'); $('#camFail').hidden=true; }catch(e){ fail(); return; }
-      if(tok!==token)return; loadLM(); setTimeout(layout,300); raf=requestAnimationFrame(frame); },
-    stop(){ token++; running=false; cancelAnimationFrame(raf); stopStream(stream); stream=null; }, layout };
+      try{ stream=await openCamera(vid,'environment'); $('#camFail').hidden=true; if(tok===token) setTimeout(layout,300); }catch(e){ fail(); } },
+    stop(){ token++; running=false; stopStream(stream); stream=null; }, layout };
 })();
 
 /* AR TRY-ON (rear, canvas composite, smoothed, contact shadow, snapshot) */
