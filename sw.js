@@ -1,5 +1,5 @@
 /* Prestidígito · Atelier de Medidas — service worker */
-const VERSION = 'presti-v2.0.0';
+const VERSION = 'obvious-v3.0.0';
 const SHELL = [
   './',
   './index.html',
