@@ -245,7 +245,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .reveal-card{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;perspective:700px;transition:transform .7s cubic-bezier(.55,0,.3,1),opacity .55s ease}
 .reveal-card svg{width:120px;height:168px;color:#fff;background:#0c0c0d;border-radius:10px;padding:36px;box-shadow:0 16px 36px rgba(0,0,0,.35),inset 0 0 0 2px rgba(255,255,255,.22)}
 .reveal-card.gone{transform:scale(1.55);opacity:0;pointer-events:none;filter:blur(5px)}
-.card-guide{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);width:64%;border:2px dashed rgba(255,255,255,.5);border-radius:8px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;color:rgba(255,255,255,.55);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;z-index:3}
+.card-guide,.finger-zone{position:absolute;border:2px dashed rgba(255,255,255,.5);display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;color:rgba(255,255,255,.55);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;z-index:3}
+.card-guide{border-radius:8px}
+.finger-zone{border-radius:44px;border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.5);align-items:flex-start;padding-top:8px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media (min-width:481px){
   body{padding:0;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(0deg,transparent 0 39px,var(--line-2) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,var(--line-2) 39px 40px),var(--paper-2)}
@@ -292,20 +294,26 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   </div>
 </section>
 
-<!-- CAMERA SCAN -->
+<!-- CAMERA MEASURE (near-real: card guide + auto-assist finger) -->
 <section class="screen" id="s-camera">
-  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Scan</span><span class="step-dots"><i class="on"></i><i></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Scanning</h2><p class="body" id="camStep" style="margin-top:6px">Hold your hand <b>steady</b> over the camera. Keep your fingers <b>spread</b> while we read your size.</p></div>
+  <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Measure</span><span class="step-dots"><i class="on"></i><i></i><i></i></span></div>
+  <div class="stage-head"><h2 class="title">Measure</h2><p class="body" id="camStep" style="margin-top:6px">On a <b>flat surface</b>, fit your <b>card</b> in the outline, then rest your <b>finger</b> just beside it.</p></div>
   <div class="stage-wrap" id="camStage">
     <video id="camVid" playsinline muted></video>
-    <canvas id="camScan" aria-hidden="true"></canvas>
-    <div class="cam-pill" id="camPill">Scanning your finger…</div>
+    <div class="card-guide" id="cardGuide" aria-hidden="true"><span>fit your card here</span></div>
+    <div class="finger-zone" id="fingerZone" aria-hidden="true"><span>finger here</span></div>
+    <div class="drag-v" id="cm0"><span class="h"></span></div>
+    <div class="drag-v" id="cm1"><span class="h"></span></div>
+    <div class="cam-pill" id="camPill">Fit your card in the outline…</div>
+    <div class="cam-controls"><button class="cam-btn on" id="camCardType">🂠 Playing card</button></div>
+    <div class="cam-fail" id="camFail" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg><div id="camFailMsg">Camera unavailable.</div><button class="btn btn-outline btn-sm" id="camFailAdv">Precise methods</button></div>
   </div>
   <div class="panel">
-    <div class="readout-big"><span id="camRead">US —</span> <small id="camUnit">analyzing…</small></div>
-    <div class="btnrow" style="margin-top:10px">
+    <div class="readout-big"><span id="camRead">—</span> <small id="camUnit">mm finger width</small></div>
+    <div class="fine"><button class="step-btn" id="camMinus">−</button><span class="fine-cap" id="camFineCap">auto-assist on<br>drag to adjust</span><button class="step-btn" id="camPlus">+</button></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn btn-primary btn-block" id="camAction">Reveal my size</button>
       <div style="display:flex;gap:8px;justify-content:center"><button class="link" id="camBack">cancel</button><span style="color:var(--line)">·</span><button class="link" id="camAdv">precise mode</button></div></div>
-    <p class="privacy-note">🔒 Your camera stays on your device — nothing is uploaded.</p>
+    <p class="privacy-note">🔒 Processed on your device — nothing is uploaded · Beta</p>
   </div>
 </section>
 
@@ -399,7 +407,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
     <p class="eyebrow">Your size</p>
     <div class="size-ring"><svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="none" stroke="var(--line)" stroke-width="1.5"/><circle id="srArc" cx="100" cy="100" r="92" fill="none" stroke="var(--ink)" stroke-width="3.5" stroke-linecap="butt" transform="rotate(-90 100 100)" stroke-dasharray="578" stroke-dashoffset="578"/></svg>
       <div class="sr-num"><span class="sr-k">US Size</span><span class="sr-v" id="rUSbig">—</span><span class="sr-range" id="rRange"></span></div>
-      <div class="reveal-card" id="revealCard" aria-hidden="true"><svg viewBox="0 0 48 48"><use href="#mark"/></svg></div></div>
+      </div>
     <div class="conf mid" id="confBadge"><span class="dot"></span><span id="confText">—</span></div>
   </div>
   <div class="sys-grid"><div class="sys"><div class="sv" id="rDia">—</div><div class="sk">Inner Ø (mm)</div></div><div class="sys"><div class="sv" id="rCirc">—</div><div class="sk">Circumference (mm)</div></div></div>
@@ -557,41 +565,52 @@ const gauge=(()=>{ const cv=$('#gauge'),ctx=cv.getContext('2d'); let W=0,H=0,raf
 })();
 function startGauge(){ gauge.start(); } function stopGauge(){ gauge.stop(); }
 
-/* CAMERA SCAN — staged scan over the live camera, reveals a believable size (mock) */
-const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),cv=$('#camScan'),ctx=cv.getContext('2d');
-  let stream=null,raf=0,running=false,DPR=1,W=0,H=0,t0=0,token=0,presetD=18,done=false;
-  const DUR=2700; // scan length (ms)
-  function resize(){ const r=stage.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height; cv.width=W*DPR;cv.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0); }
-  function reticle(x,y,s,a){ ctx.strokeStyle='rgba(255,255,255,'+a+')'; ctx.lineWidth=2; const c=14;
-    [[1,1],[-1,1],[1,-1],[-1,-1]].forEach(([sxg,syg])=>{ const cx=x+sxg*s,cy=y+syg*s; ctx.beginPath(); ctx.moveTo(cx-sxg*c,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy-syg*c); ctx.stroke(); }); }
-  function frame(ts){ if(!running)return; if(!t0)t0=ts; const t=ts-t0,p=Math.min(1,t/DUR); ctx.clearRect(0,0,W,H);
-    // subtle dark veil so the scan reads on any camera feed
-    ctx.fillStyle='rgba(10,10,12,0.28)'; ctx.fillRect(0,0,W,H);
-    const bx=W*0.5,by=H*0.5,bw=Math.min(W*0.78,260),bh=Math.min(H*0.7,300);
-    reticle(bx,by,Math.min(bw,bh)/2,0.85);
-    if(p<1){ // sweeping scan line within the reticle box
-      const yy=by-bh/2 + ((t*0.0009)%1)*bh, gx=ctx.createLinearGradient(0,yy-26,0,yy+26);
-      gx.addColorStop(0,'rgba(255,255,255,0)');gx.addColorStop(.5,'rgba(255,255,255,0.5)');gx.addColorStop(1,'rgba(255,255,255,0)');
-      ctx.fillStyle=gx; ctx.fillRect(bx-bw/2,yy-26,bw,52);
-      ctx.strokeStyle='rgba(255,255,255,0.95)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bx-bw/2,yy);ctx.lineTo(bx+bw/2,yy);ctx.stroke();
-      // progress arc
-      ctx.strokeStyle='rgba(255,255,255,0.85)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(bx,by+bh/2+24,12,-Math.PI/2,-Math.PI/2+p*Math.PI*2);ctx.stroke();
-      $('#camRead').textContent='US '+usLabel(usOf(13.5+p*(presetD-13.5))); $('#camUnit').textContent='analyzing…';
-    } else { // lock pulse
-      const k=Math.min(1,(t-DUR)/300); ctx.strokeStyle='rgba(255,255,255,'+(1-k)+')';ctx.lineWidth=3;ctx.beginPath();ctx.arc(bx,by,(Math.min(bw,bh)/2)*(0.6+k*0.5),0,7);ctx.stroke();
-      $('#camRead').textContent='US '+usLabel(usOf(presetD)); $('#camUnit').textContent='size locked';
-    }
-    if(p>=1 && !done){ done=true; const tok=token; $('#camPill').textContent='Size locked ✦'; buzz([10,40,16]); setTimeout(()=>{ if(running&&tok===token) show(presetD,'camera'); },650); }
-    raf=requestAnimationFrame(frame); }
+/* CAMERA MEASURE — near-real: card outline locks the scale, MediaPipe auto-assists the finger lines */
+const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0'),c1=$('#cm1'),guide=$('#cardGuide'),zone=$('#fingerZone');
+  const CT={card:{long:88.9,short:63.5,label:'🂠 Playing card'},bank:{long:85.6,short:53.98,label:'💳 Credit card'}};
+  let stream=null,raf=0,running=false,W=0,H=0,ppm=null,cardType='card',cardLong=88.9,cardShort=63.5;
+  let x0=0,x1=0,touched=false,landmarker=null,loading=false,token=0;
+  function sizeGuides(){ const gw=W*0.62,gx=(W-gw)/2,gh=gw*cardShort/cardLong,gy=H*0.09;
+    guide.style.left=gx+'px';guide.style.top=gy+'px';guide.style.width=gw+'px';guide.style.height=gh+'px';
+    const fw=W*0.5,fx=(W-fw)/2,fy=gy+gh+H*0.05,fh=Math.max(90,H-fy-H*0.07);
+    zone.style.left=fx+'px';zone.style.top=fy+'px';zone.style.width=fw+'px';zone.style.height=fh+'px';
+    ppm=gw/cardLong; }
+  function place(){ x0=clamp(x0,6,W-6); x1=clamp(x1,x0+8,W-6); c0.style.left=x0+'px'; c1.style.left=x1+'px';
+    $('#camRead').textContent = ppm? fmt1(Math.abs(x1-x0)/ppm) : '—'; }
+  function layout(){ const r=stage.getBoundingClientRect(); W=r.width;H=r.height; sizeGuides(); if(!x0&&!x1){ x0=W/2-28; x1=W/2+28; } place(); }
+  function manualGrab(){ touched=true; $('#camFineCap').innerHTML='manual<br>drag to adjust'; }
+  function bind(el){ el.addEventListener('pointerdown',e=>{ e.preventDefault();e.stopPropagation();manualGrab();el.setPointerCapture(e.pointerId);
+    const mv=ev=>{ const r=stage.getBoundingClientRect(); const x=ev.clientX-r.left; if(el===c0)x0=x;else x1=x; place(); };
+    const up=()=>{el.removeEventListener('pointermove',mv);el.removeEventListener('pointerup',up);el.removeEventListener('pointercancel',up);};
+    el.addEventListener('pointermove',mv);el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up); }); }
+  bind(c0); bind(c1);
+  hold($('#camMinus'),()=>{ manualGrab(); const c=(x0+x1)/2,g=Math.abs(x1-x0)-0.2*(ppm||4); x0=c-g/2;x1=c+g/2; place(); });
+  hold($('#camPlus'), ()=>{ manualGrab(); const c=(x0+x1)/2,g=Math.abs(x1-x0)+0.2*(ppm||4); x0=c-g/2;x1=c+g/2; place(); });
+  $('#camCardType').addEventListener('click',()=>{ cardType=cardType==='card'?'bank':'card'; cardLong=CT[cardType].long;cardShort=CT[cardType].short; $('#camCardType').textContent=CT[cardType].label; sizeGuides(); place(); });
   $('#camBack').addEventListener('click',()=>go('s-intro'));
   $('#camAdv').addEventListener('click',()=>go('s-cal'));
-  return { async start(){ token++; const tok=token; done=false; t0=0; running=true; presetD=17.0+Math.random()*1.7; resize();
-      $('#camStep').innerHTML='Hold your hand <b>steady</b> over the camera. Keep your fingers <b>spread</b> while we read your size.';
-      $('#camPill').textContent='Scanning your finger…'; $('#camRead').textContent='US —'; $('#camUnit').textContent='analyzing…';
-      if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){ try{ stream=await openCamera(vid,'environment'); }catch(e){} }
-      if(tok===token){ resize(); raf=requestAnimationFrame(frame); } },
-    stop(){ token++; running=false; cancelAnimationFrame(raf); stopStream(stream); stream=null; ctx&&ctx.clearRect(0,0,W,H); },
-    layout(){ resize(); } };
+  $('#camFailAdv').addEventListener('click',()=>go('s-cal'));
+  $('#camAction').addEventListener('click',()=>{ if(!(ppm>0)){toast('Fit your card in the outline first');return;} buzz(8); reveal(Math.abs(x1-x0)/ppm,'camera'); });
+  async function loadLM(){ if(landmarker||loading)return; loading=true;
+    try{ const v=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs');
+      const fs=await v.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+      landmarker=await v.HandLandmarker.createFromOptions(fs,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task',delegate:'GPU'},numHands:1,runningMode:'VIDEO'}); }catch(e){ landmarker=null; } loading=false; }
+  function cover(){ const vw=vid.videoWidth||1280,vh=vid.videoHeight||720,sc=Math.max(W/vw,H/vh); return {sc,dx:(W-vw*sc)/2,dy:(H-vh*sc)/2,vw,vh}; }
+  function frame(ts){ if(!running)return;
+    if(landmarker && !touched && vid.readyState>=2){ let res=null; try{res=landmarker.detectForVideo(vid,ts);}catch(_){}
+      if(res&&res.landmarks&&res.landmarks[0]){ const lm=res.landmarks[0],c=cover(),M=p=>({x:c.dx+p.x*c.vw*c.sc,y:c.dy+p.y*c.vh*c.sc});
+        const mcp=M(lm[13]),w9=M(lm[9]),w17=M(lm[17]); const span=(Math.hypot(mcp.x-w9.x,mcp.y-w9.y)+Math.hypot(mcp.x-w17.x,mcp.y-w17.y))/2, fw=span*0.82;
+        x0=mcp.x-fw/2; x1=mcp.x+fw/2; place(); $('#camPill').textContent='Finger found — adjust if needed';
+      } else $('#camPill').textContent = ppm?'Rest your finger beside the card':'Fit your card in the outline…';
+    }
+    raf=requestAnimationFrame(frame); }
+  function fail(){ $('#camFail').hidden=false; $('#camFailMsg').textContent=(location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable.':'Camera needs HTTPS.'; }
+  return { async start(){ token++; const tok=token; running=true; touched=false; x0=0;x1=0; $('#camCardType').textContent=CT[cardType].label; $('#camFineCap').innerHTML='auto-assist on<br>drag to adjust';
+      $('#camPill').textContent='Fit your card in the outline…'; $('#camRead').textContent='—'; layout();
+      if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
+      try{ stream=await openCamera(vid,'environment'); $('#camFail').hidden=true; }catch(e){ fail(); return; }
+      if(tok!==token)return; loadLM(); setTimeout(layout,300); raf=requestAnimationFrame(frame); },
+    stop(){ token++; running=false; cancelAnimationFrame(raf); stopStream(stream); stream=null; }, layout };
 })();
 
 /* AR TRY-ON (rear, canvas composite, smoothed, contact shadow, snapshot) */
@@ -781,16 +800,16 @@ function revealBurst(){ const cv=$('#revealFx'); if(!cv)return; const ctx=cv.get
       if(p.smoke){ ctx.fillStyle='rgba(118,118,126,'+(0.16*k)+')'; ctx.beginPath();ctx.arc(p.x,p.y,p.r*(1.8-k)+4,0,7);ctx.fill(); }
       else { ctx.strokeStyle='rgba(12,12,13,'+(0.85*k)+')'; ctx.lineWidth=1.3; const rr=p.r*(0.8+k*1.4); ctx.beginPath(); ctx.moveTo(p.x-rr,p.y);ctx.lineTo(p.x+rr,p.y);ctx.moveTo(p.x,p.y-rr);ctx.lineTo(p.x,p.y+rr); ctx.stroke(); } }
     f++; if(alive&&f<100)requestAnimationFrame(step); else ctx.clearRect(0,0,W,H); })(); }
-function animateResult(){ const arc=$('#srArc'),C=578,card=$('#revealCard'),el=$('#rUSbig'),final=el.textContent;
+function animateResult(){ const arc=$('#srArc'),C=578,el=$('#rUSbig'),final=el.textContent;
   arc.style.transition='none'; arc.style.strokeDashoffset=C;
-  if(REDUCE){ if(card)card.classList.add('gone'); arc.style.transition='stroke-dashoffset .4s'; arc.style.strokeDashoffset=C*0.16; return; }
-  if(card)card.classList.remove('gone');
-  setTimeout(()=>{ if(card)card.classList.add('gone'); buzz([12,40,18]); revealBurst();
+  if(REDUCE){ arc.style.transition='stroke-dashoffset .4s'; arc.style.strokeDashoffset=C*0.16; el.style.opacity='1'; return; }
+  el.style.opacity='0';  // hidden until the smoke clears
+  setTimeout(()=>{ buzz([12,40,18]); revealBurst(); el.style.opacity='';
     requestAnimationFrame(()=>requestAnimationFrame(()=>{ arc.style.transition='stroke-dashoffset 1.2s cubic-bezier(.3,.8,.3,1)'; arc.style.strokeDashoffset=C*0.16; }));
     if(!lastResult)return; const seq=['4','12','7','9','5','11','6','8','10']; let i=0; el.classList.add('flip');
     const iv=setInterval(()=>{ el.textContent=seq[i%seq.length]; i++; },60);
     setTimeout(()=>{ clearInterval(iv); el.textContent=final; el.classList.remove('flip'); },560);
-  },520); }
+  },360); }
 function buildConv(hit){ const rows=['<tr><th>US</th><th>Ø mm</th><th>Circ. mm</th></tr>'];
   for(let u=4;u<=13;u+=0.5){ const d=dFromUS(u),c=circOf(d); rows.push('<tr'+(u===hit?' class="hit"':'')+'><td>'+usLabel(u)+'</td><td>'+fmt1(d)+'</td><td>'+fmt1(c)+'</td></tr>'); }
   $('#convTable').innerHTML=rows.join(''); }
