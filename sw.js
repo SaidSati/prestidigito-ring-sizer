@@ -1,13 +1,15 @@
-/* Prestidígito · Atelier de Medidas — service worker */
-const VERSION = 'obvious-v4.0.0';
+/* OBVIOUS · Ring Sizer — service worker */
+const VERSION = 'obvious-v5.0.0';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon.svg',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './assets/ring-cutout.png'
 ];
+const CDN = ['fonts.googleapis.com','fonts.gstatic.com','cdn.jsdelivr.net','storage.googleapis.com'];
 
 self.addEventListener('install', e => {
   e.waitUntil(
@@ -36,12 +38,12 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Google Fonts: stale-while-revalidate
-  if (url.hostname.includes('fonts.googleapis.com') || url.hostname.includes('fonts.gstatic.com')) {
+  // Google Fonts + MediaPipe CDN (WASM/model): stale-while-revalidate → works offline after first use
+  if (CDN.some(h => url.hostname.includes(h))) {
     e.respondWith(
-      caches.open(VERSION + '-fonts').then(async cache => {
+      caches.open(VERSION + '-cdn').then(async cache => {
         const hit = await cache.match(req);
-        const net = fetch(req).then(res => { cache.put(req, res.clone()); return res; }).catch(() => hit);
+        const net = fetch(req).then(res => { if (res && res.ok) cache.put(req, res.clone()); return res; }).catch(() => hit);
         return hit || net;
       })
     );
