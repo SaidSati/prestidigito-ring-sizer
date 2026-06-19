@@ -1,32 +1,82 @@
-# Prestidígito ✦ O Tamanho Perfeito
+# Prestidígito — Atelier de Medidas
 
-Single-page app de medição de tamanho de anel para a Prestidígito (smartrings para mágicos).
-Um único `index.html` — zero build, zero frameworks, fontes via Google Fonts.
+PWA de medição de tamanho de anel para a Prestidígito (smartrings para mágicos).
+Estética de joalheria fina, medição com precisão real, instalável e offline.
 
-## Como funciona a medição
+**Produção:** https://saidsati.github.io/prestidigito-ring-sizer/
 
-**Ato I — calibração.** O usuário encosta uma carta de baralho poker (63,5 × 88,9 mm) na tela
-e redimensiona uma carta virtual (slider, pinça ou botões ±1 px) até as bordas coincidirem.
-A carta é ancorada no canto inferior esquerdo, então só há uma borda móvel por eixo.
-A escala sai da **altura** (baseline mais longa → menor erro relativo):
+## Arquitetura
+
+- `index.html` — app inteiro (HTML + CSS + JS embutidos). Sem build, sem frameworks.
+- `manifest.webmanifest` — manifesto PWA (instalável, standalone, ícones).
+- `sw.js` — service worker: app-shell cache-first + Google Fonts stale-while-revalidate → funciona offline.
+- `icon*.png` / `icon.svg` — ícones do app (gerados por `make_icons.py`).
+- `make_icons.py` — gera os PNGs (anel + estrela, supersampling 4×). Roda só na build, não no runtime.
+
+## Como a precisão funciona (para auditar)
+
+A **única fonte de erro relevante é a calibração px→mm**. Decisões para minimizá-la:
+
+1. **Referência ISO.** O padrão é o **cartão de banco** (ISO/IEC 7810 ID-1: 85,60 × 53,98 mm),
+   padronizado a 0,01 mm — mais confiável que uma carta de baralho (que varia entre fabricantes).
+   A carta poker (63,5 × 88,9 mm) fica como alternativa.
+2. **Mede pela borda longa.** `ppm = comprimentoEmPx / 85,60`. A borda longa dá a maior baseline,
+   então o mesmo erro de ±1 px pesa menos no resultado.
+3. **Âncora num canto.** O usuário alinha o canto físico ao ponto dourado uma vez; só a borda
+   oposta se move. Menos graus de liberdade = menos erro.
+4. **Controles finos.** Slider + arrasto de borda + pinça + botões ± (~0,2 mm por toque).
+
+Calibração persiste em `localStorage` junto do `devicePixelRatio` e largura da janela; se a tela
+mudar numa revisita, o app sugere recalibrar.
+
+### Métodos de medição (ordenados por exatidão)
+
+| Método | O que mede | Conversão | σ diâmetro |
+|---|---|---|---|
+| **Anel que serve** | Ø interno direto | `Ø = px/ppm` | 0,18 mm |
+| **Tira de papel** | circunferência real do dedo | `Ø = (px/ppm) / π` | 0,28 mm |
+| **Dedo na tela** | largura (1 eixo) — estimativa | `Ø ≈ px/ppm` | 0,50 mm |
+
+A tira de papel captura a **circunferência verdadeira** (dedo é elíptico, não circular), por isso
+é mais honesta que medir só a largura na tela.
+
+### Conversões de tamanho
 
 ```
-ppm (px/mm) = altura_da_carta_em_px / 88,9
+circunferência (mm) = π × Ø
+Aro Brasil          = circunferência − 40
+Tamanho US          = (circunferência − 36,537) / 2,5535   (arredondado ao ½)
 ```
 
-Alternativa para telas pequenas ou quem não tem baralho: cartão bancário ISO/IEC 7810 ID-1
-(53,98 × 85,6 mm). A calibração persiste em `localStorage` (com o `devicePixelRatio` da época,
-para avisar se a tela mudou).
+O resultado mostra uma **margem honesta**: para anel/tira, a tolerância no diâmetro
+(`± hypot(σ_método, σ_calibração)`); para o dedo, a faixa provável de aro. Como cada número de
+aro equivale a só ~0,32 mm de diâmetro, a margem é o jeito honesto de não fingir exatidão.
 
-**Ato II — medição.** Largura do dedo entre duas linhas-guia, ou diâmetro interno de um anel
-existente sobre um círculo ajustável. Em ambos: `mm = px / ppm`.
+**Sanidade:** Ø fora de 13–24 mm abre um aviso sugerindo recalibrar (quase sempre é a calibração).
 
-**Ato III — conversões.**
+## Robustez
 
+- Viewport travado (`user-scalable=no`) + vigia de `visualViewport.scale` que avisa se a tela
+  estiver com zoom (o zoom quebra a escala física).
+- Tudo em px CSS; a calibração absorve a densidade real do dispositivo.
+
+## Pedido (sem backend)
+
+O resultado vira um link de WhatsApp e um e-mail com a medida preenchida, além de copiar/compartilhar.
+Configure número e e-mail no objeto `CONFIG` no topo do `<script>` em `index.html`:
+
+```js
+const CONFIG = { whatsapp: '5511999999999', email: 'pedidos@prestidigito.com.br' };
 ```
-circunferência = π × diâmetro
-aro Brasil     = circunferência (mm) − 40        (arredondado ao inteiro)
-tamanho US     = (diâmetro mm − 11,63) / 0,8128  (arredondado ao meio tamanho)
+
+Quando houver uma loja (Shopify/Nuvemshop/etc.), basta trocar o destino do botão por um link de
+checkout com o tamanho na query — sem reescrever o resto.
+
+## Rodar localmente
+
+```bash
+python -m http.server 8431 --directory .
+# abra http://localhost:8431
 ```
 
-Sanidade: diâmetros fora de 13–24 mm disparam sugestão bem-humorada de recalibração.
+> Service worker exige HTTPS (ou localhost). Em produção, o GitHub Pages já serve por HTTPS.
