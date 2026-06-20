@@ -248,6 +248,14 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .card-guide,.finger-zone{position:absolute;border:2px dashed rgba(255,255,255,.5);display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;color:rgba(255,255,255,.55);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;z-index:3}
 .card-guide{border-radius:8px}
 .finger-zone{border-radius:44px;border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.5);align-items:flex-start;padding-top:8px}
+/* maximise the calibration stage so a full upright card fits */
+#s-cal .stage-head{padding-top:0;padding-bottom:6px}
+#s-cal h2.title{font-size:clamp(24px,6.5vw,30px)}
+#s-cal .chiprow{margin:0 0 6px}
+#s-cal .panel{padding-top:8px}
+#s-cal .slider-row{margin:4px 0 2px}
+#s-cal .fine{margin-top:2px}
+#s-cal .scale-note{margin-top:4px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media (min-width:481px){
   body{padding:0;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(0deg,transparent 0 39px,var(--line-2) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,var(--line-2) 39px 40px),var(--paper-2)}
@@ -341,7 +349,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <!-- CALIBRATION -->
 <section class="screen" id="s-cal">
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Calibrate</span><span class="step-dots"><i class="on"></i><i></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Place your card</h2><p class="body" style="margin-top:6px">Lay a <b>playing card</b> on the screen (or a bank card), corner on the dot, and resize until the <b>edges line up</b>.</p></div>
+  <div class="stage-head"><h2 class="title">Place your card</h2><p class="body" style="margin-top:5px">Stand your card on the screen, corner on the dot, and resize until the <b>edges line up</b>.</p></div>
   <div class="chiprow" role="group" aria-label="Reference object"><button class="chip on" id="objCard">🂠 Playing card</button><button class="chip" id="objBank">💳 Bank card</button></div>
   <div class="stage-wrap" id="calStage">
     <div class="guide-v guide-fixed" id="cgL"></div><div class="guide-v" id="cgR"></div><div class="guide-h guide-fixed" id="cgT"></div><div class="guide-h" id="cgB"></div>
@@ -475,9 +483,9 @@ const CONFIG = {
   whatsapp: '5511961033333'
 };
 const RING_IMG = 'assets/ring-cutout.png';
-const OBJ = {
-  card: { w: 63.50, h: 88.90, name: 'playing card', edge: 'h' },
-  bank: { w: 85.60, h: 53.98, name: 'bank card', edge: 'w' }
+const OBJ = {  // both upright (portrait): w = short edge (horizontal), h = long edge (vertical)
+  card: { w: 63.50, h: 88.90, name: 'playing card' },
+  bank: { w: 53.98, h: 85.60, name: 'bank card' }
 };
 const CARD_LONG_MM = 88.90;
 const LS = 'obvious.v4.cal', LS_LAST = 'obvious.v4.last';
@@ -680,12 +688,16 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
 
 /* CALIBRATION */
 const calStage=$('#calStage'),calObjEl=$('#calObj'),calSlider=$('#calSlider');
-const ANX=16,ANY_RATIO=0.5; let calLong=300,stageW=0,stageH=0,anchorY=0;
-function layoutCal(){ const r=calStage.getBoundingClientRect(); stageW=r.width;stageH=r.height;anchorY=stageH*ANY_RATIO;
-  const maxLong=Math.min(stageW-ANX-8,560); calSlider.min=140;calSlider.max=Math.round(maxLong);calSlider.step=1; calLong=clamp(calLong,140,maxLong); drawCal(); }
-function drawCal(){ const longMM=calObj.edge==='w'?calObj.w:calObj.h,shortMM=calObj.edge==='w'?calObj.h:calObj.w; let w,h;
-  if(calObj.edge==='w'){w=calLong;h=calLong*(shortMM/longMM);}else{h=calLong;w=calLong*(shortMM/longMM);}
-  const top=clamp(anchorY-h/2,4,stageH-h-4);
+const ANX=16,TOP=8; let calLong=0,stageW=0,stageH=0;
+function layoutCal(){ const r=calStage.getBoundingClientRect(); stageW=r.width;stageH=r.height;
+  const longMM=calObj.h, shortMM=calObj.w;
+  // largest upright card that fits BOTH the stage height and width (no overflow)
+  const maxLong=Math.max(160, Math.min(stageH-TOP-8, (stageW-ANX-10)*(longMM/shortMM)));
+  calSlider.min=140; calSlider.max=Math.round(maxLong); calSlider.step=1;
+  if(calLong<140) calLong=maxLong;            // first time: start as large as fits
+  calLong=clamp(calLong,140,maxLong); drawCal(); }
+function drawCal(){ const longMM=calObj.h,shortMM=calObj.w; const h=calLong,w=calLong*(shortMM/longMM);
+  const top=TOP;
   calObjEl.style.left=ANX+'px';calObjEl.style.top=top+'px';calObjEl.style.transform='none';calObjEl.style.width=w+'px';calObjEl.style.height=h+'px';
   $('#cgL').style.left=ANX+'px';$('#cgR').style.left=(ANX+w)+'px';$('#cgT').style.top=top+'px';$('#cgB').style.top=(top+h)+'px';
   $('#anchor').style.left=(ANX-4.5)+'px';$('#anchor').style.top=(top-4.5)+'px';
@@ -695,16 +707,19 @@ function setLong(px){ calLong=clamp(px,140,parseFloat(calSlider.max)); drawCal()
 calSlider.addEventListener('input',()=>setLong(parseFloat(calSlider.value)));
 hold($('#calMinus'),()=>setLong(calLong-0.2*(ppm||4))); hold($('#calPlus'),()=>setLong(calLong+0.2*(ppm||4)));
 $('#objCard').addEventListener('click',()=>setObj('card')); $('#objBank').addEventListener('click',()=>setObj('bank'));
-function setObj(k){ calObj=OBJ[k]; $('#objCard').classList.toggle('on',k==='card'); $('#objBank').classList.toggle('on',k==='bank'); drawCal(); }
+function setObj(k){ calObj=OBJ[k]; $('#objCard').classList.toggle('on',k==='card'); $('#objBank').classList.toggle('on',k==='bank'); layoutCal(); }
 const cps=new Map(); let pinch0=0,long0=0,edge=null;
 calStage.addEventListener('pointerdown',e=>{ e.preventDefault();calStage.setPointerCapture(e.pointerId);cps.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(cps.size===1){ const r=calStage.getBoundingClientRect(),x=e.clientX-r.left,w=parseFloat(calObjEl.style.width); edge=Math.abs(x-(ANX+w))<34?'r':null; }
   else if(cps.size===2){ edge=null; const [a,b]=[...cps.values()]; pinch0=Math.hypot(a.x-b.x,a.y-b.y); long0=calLong; } });
 calStage.addEventListener('pointermove',e=>{ if(!cps.has(e.pointerId))return; cps.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(cps.size===2&&pinch0>0){ const [a,b]=[...cps.values()]; setLong(long0*Math.hypot(a.x-b.x,a.y-b.y)/pinch0); }
-  else if(cps.size===1&&edge==='r'){ const r=calStage.getBoundingClientRect(); const w=e.clientX-r.left-ANX; setLong(calObj.edge==='w'?w:w*(calObj.h/calObj.w)); } });
+  else if(cps.size===1&&edge==='r'){ const r=calStage.getBoundingClientRect(); const wpx=e.clientX-r.left-ANX; setLong(wpx*(calObj.h/calObj.w)); } });
 ['pointerup','pointercancel'].forEach(ev=>calStage.addEventListener(ev,e=>{cps.delete(e.pointerId);pinch0=0;edge=null;}));
-$('#btnCalDone').addEventListener('click',()=>{ try{ localStorage.setItem(LS,JSON.stringify({ppm,dpr:devicePixelRatio||1,w:innerWidth,obj:calObj.name,ts:Date.now()})); }catch(_){} toast('Screen calibrated: '+fmt2(ppm)+' px/mm'); go('s-method'); });
+$('#btnCalDone').addEventListener('click',()=>{
+  if(ppm<2.2||ppm>6.5){ toast('That scale looks off ('+fmt2(ppm)+' px/mm) — match the card edges exactly'); return; }
+  try{ localStorage.setItem(LS,JSON.stringify({ppm,dpr:devicePixelRatio||1,w:innerWidth,obj:calObj.name,ts:Date.now()})); }catch(_){}
+  toast('Screen calibrated: '+fmt2(ppm)+' px/mm'); go('s-method'); });
 $('#calBack').addEventListener('click',()=>go('s-intro'));
 
 /* RING */
