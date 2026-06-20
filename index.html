@@ -359,7 +359,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
       <button class="fin" data-f="graphite"><span class="sw sw-graphite"></span>Graphite</button>
       <button class="fin" data-f="black"><span class="sw sw-black"></span>Black</button>
     </div>
-    <div class="ar-row"><label>Size</label><input type="range" id="arSize" min="0.06" max="0.7" step="0.005" value="0.18"></div>
+    <div class="ar-row"><label>Size</label><input type="range" id="arSize" min="0.03" max="0.45" step="0.004" value="0.12"></div>
     <div class="ar-row"><label>Rotate</label><input type="range" id="arRot" min="-45" max="45" step="1" value="0"></div>
     <div class="btnrow" style="margin-top:6px"><button class="btn btn-primary btn-block" id="arMeasureCta">Measure my size →</button></div>
     <p class="privacy-note">🔒 Processed on your device — nothing is uploaded.</p>
@@ -636,7 +636,7 @@ const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0')
 
 /* AR TRY-ON (manual: rear camera, drag the ring, resize/rotate, gesture-safe photo via Web Share) */
 const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas'),ctx=cv.getContext('2d');
-  let stream=null,raf=0,running=false,sizeMul=0.18,rotDeg=0,DPR=1,W=0,H=0,shotBlob=null;
+  let stream=null,raf=0,running=false,sizeMul=0.12,rotDeg=0,DPR=1,W=0,H=0,shotBlob=null;
   let manual={x:0.5,y:0.46}; const ptrs=new Map(); let pinchD0=0,size0=0;
   const ringImgs={}; for(const k in RINGS){ const im=new Image(); im.src=RINGS[k]; ringImgs[k]=im; }
   let finish='steel'; const ringEl=()=>ringImgs[finish]; const ringOk=()=>{const im=ringImgs[finish]; return im&&im.complete&&im.naturalWidth>0;};
@@ -665,7 +665,7 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
   stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.cam-controls'))return; e.preventDefault(); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); $('#arPill').style.opacity=0;
     if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinchD0=Math.hypot(a.x-b.x,a.y-b.y); size0=sizeMul; } });
   stage.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId))return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); const r=stage.getBoundingClientRect();
-    if(ptrs.size>=2 && pinchD0>0){ const [a,b]=[...ptrs.values()]; sizeMul=clamp(size0*Math.hypot(a.x-b.x,a.y-b.y)/pinchD0,0.06,0.9); $('#arSize').value=sizeMul; }
+    if(ptrs.size>=2 && pinchD0>0){ const [a,b]=[...ptrs.values()]; sizeMul=clamp(size0*Math.hypot(a.x-b.x,a.y-b.y)/pinchD0,0.03,0.45); $('#arSize').value=sizeMul; }
     else if(ptrs.size===1){ manual.x=clamp((e.clientX-r.left)/r.width,0,1); manual.y=clamp((e.clientY-r.top)/r.height,0,1); } });
   ['pointerup','pointercancel','pointerleave'].forEach(ev=>stage.addEventListener(ev,e=>{ ptrs.delete(e.pointerId); pinchD0=0; }));
   $('#arSnap').addEventListener('click',takePhoto);
@@ -678,7 +678,7 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
   $('#arBack2').addEventListener('click',()=>go(lastResult?'s-result':'s-intro'));
   $('#arMeasureCta').addEventListener('click',()=>go('s-camera'));
   function fail(){ $('#arFail').hidden=false; $('#arFailMsg').textContent=(location.protocol==='https:'||location.hostname==='localhost')?'Camera blocked or unavailable.':'Camera needs HTTPS.'; }
-  return { async start(){ resize(); running=true; manual={x:0.5,y:0.46}; $('#arFail').hidden=true; $('#arPill').textContent='Drag the ring onto your finger'; $('#arPill').style.opacity=1;
+  return { async start(){ resize(); running=true; manual={x:0.5,y:0.46}; sizeMul=0.12; rotDeg=0; if($('#arSize'))$('#arSize').value='0.12'; if($('#arRot'))$('#arRot').value='0'; $('#arFail').hidden=true; $('#arPill').textContent='Drag the ring onto your finger'; $('#arPill').style.opacity=1;
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
       try{ stream=await openCamera(vid,'environment'); }catch(e){ fail(); return; }
       raf=requestAnimationFrame(frame); },

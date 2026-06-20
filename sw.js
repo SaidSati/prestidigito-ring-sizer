@@ -1,5 +1,5 @@
 /* OBVIOUS · Ring Sizer — service worker */
-const VERSION = 'obvious-v15.0.0';
+const VERSION = 'obvious-v16.0.0';
 const SHELL = [
   './',
   './index.html',
