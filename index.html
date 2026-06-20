@@ -258,6 +258,13 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .cal-toggle .chip{padding:6px 12px;font-size:11.5px;background:rgba(12,12,13,.55);color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.25);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .cal-toggle .chip.on{background:#fff;color:#0c0c0d;border-color:#fff}
 #photoImg{display:block;width:100%;max-height:58vh;object-fit:contain;background:#000;border:1.5px solid var(--ink);border-radius:6px;margin-bottom:14px}
+.finishset{display:flex;gap:8px;justify-content:center;margin-bottom:10px}
+.finishset .fin{display:inline-flex;align-items:center;gap:7px;font-family:inherit;font-size:11.5px;font-weight:600;letter-spacing:.04em;color:var(--dim);background:var(--bg);border:1.5px solid var(--line);border-radius:var(--r);padding:7px 11px;cursor:pointer;transition:all .15s}
+.finishset .fin.on{color:var(--ink);border-color:var(--ink)}
+.finishset .sw{width:13px;height:13px;border-radius:50%;border:1px solid rgba(0,0,0,.25);flex:0 0 auto}
+.sw-steel{background:linear-gradient(135deg,#e8e8ea,#9a9aa0)}
+.sw-graphite{background:linear-gradient(135deg,#6b6b70,#2c2c30)}
+.sw-black{background:linear-gradient(135deg,#3a3a3d,#0c0c0d)}
 #s-cal .panel{padding:6px 16px calc(8px + var(--safe-b))}
 .cal-ctl{display:flex;align-items:center;gap:12px}
 .cal-ctl .step-btn{flex:0 0 auto;width:42px;height:42px;font-size:20px}
@@ -347,6 +354,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
     <div class="cam-fail" id="arFail" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg><div id="arFailMsg">Camera unavailable.</div></div>
   </div>
   <div class="panel">
+    <div class="finishset" id="arFinish">
+      <button class="fin on" data-f="steel"><span class="sw sw-steel"></span>Steel</button>
+      <button class="fin" data-f="graphite"><span class="sw sw-graphite"></span>Graphite</button>
+      <button class="fin" data-f="black"><span class="sw sw-black"></span>Black</button>
+    </div>
     <div class="ar-row"><label>Size</label><input type="range" id="arSize" min="0.06" max="0.7" step="0.005" value="0.18"></div>
     <div class="ar-row"><label>Rotate</label><input type="range" id="arRot" min="-45" max="45" step="1" value="0"></div>
     <div class="btnrow" style="margin-top:6px"><button class="btn btn-primary btn-block" id="arMeasureCta">Measure my size →</button></div>
@@ -461,7 +473,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <div class="btnrow"><button class="btn btn-primary btn-block" id="camPromptYes">Enable camera</button><button class="link" id="camPromptNo">Use precise methods instead</button></div></div></div>
 
 <div class="overlay" id="whatSheet" role="dialog" aria-modal="true"><div class="sheet"><div class="grab"></div>
-  <img src="assets/ring-cutout.png" alt="OBVIOUS smart ring" style="display:block;width:170px;margin:0 auto 12px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.22))">
+  <img src="assets/ring-steel.png" alt="OBVIOUS smart ring" style="display:block;width:170px;margin:0 auto 12px;filter:drop-shadow(0 10px 18px rgba(0,0,0,.22))">
   <h3>What it does</h3>
   <div class="feat-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg><span class="ft"><b>Brushed stainless steel</b><span>Precision-machined, built to last.</span></span></div>
   <div class="feat-line"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5" y="5" width="14" height="14" rx="3"/></svg><span class="ft"><b>Black onyx face</b><span>Hand-set cushion-cut stone.</span></span></div>
@@ -495,7 +507,7 @@ const CONFIG = {
   instagram: 'https://instagram.com/obviousenterprises',
   whatsapp: '5511961033333'
 };
-const RING_IMG = 'assets/ring-cutout.png';
+const RINGS = { steel:'assets/ring-steel.png', graphite:'assets/ring-graphite.png', black:'assets/ring-black.png' };
 const OBJ = {  // both upright (portrait): w = short edge (horizontal), h = long edge (vertical)
   card: { w: 63.50, h: 88.90, name: 'playing card' },
   bank: { w: 53.98, h: 85.60, name: 'bank card' }
@@ -626,11 +638,12 @@ const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0')
 const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas'),ctx=cv.getContext('2d');
   let stream=null,raf=0,running=false,sizeMul=0.18,rotDeg=0,DPR=1,W=0,H=0,shotBlob=null;
   let manual={x:0.5,y:0.46}; const ptrs=new Map(); let pinchD0=0,size0=0;
-  const ringImg=new Image(); let ringReady=false; ringImg.onload=()=>ringReady=true; ringImg.src=RING_IMG;
+  const ringImgs={}; for(const k in RINGS){ const im=new Image(); im.src=RINGS[k]; ringImgs[k]=im; }
+  let finish='steel'; const ringEl=()=>ringImgs[finish]; const ringOk=()=>{const im=ringImgs[finish]; return im&&im.complete&&im.naturalWidth>0;};
   function resize(){ const r=stage.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height; cv.width=W*DPR;cv.height=H*DPR; }
   function cover(){ const vw=vid.videoWidth||1280,vh=vid.videoHeight||720,sc=Math.max(W/vw,H/vh); return {sc,dx:(W-vw*sc)/2,dy:(H-vh*sc)/2,vw,vh}; }
-  function drawRing(){ if(!ringReady)return; const w=W*sizeMul,h=w*(ringImg.height/ringImg.width),cx=manual.x*W,cy=manual.y*H;
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotDeg*Math.PI/180); ctx.drawImage(ringImg,-w/2,-h*0.5,w,h); ctx.restore(); }
+  function drawRing(){ const im=ringEl(); if(!im||!im.complete||!im.naturalWidth)return; const w=W*sizeMul,h=w*(im.height/im.width),cx=manual.x*W,cy=manual.y*H;
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotDeg*Math.PI/180); ctx.drawImage(im,-w/2,-h*0.5,w,h); ctx.restore(); }
   function watermark(){ const x=18,y=H-18,r=11; ctx.save(); ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=6; ctx.fillStyle='#fff';
     ctx.beginPath(); for(let i=0;i<6;i++){const a=(-90+i*60)*Math.PI/180,px=x+r*Math.cos(a),py=y-9+r*Math.sin(a);i?ctx.lineTo(px,py):ctx.moveTo(px,py);} ctx.closePath(); ctx.fill();
     ctx.font='800 16px Archivo, sans-serif'; ctx.textBaseline='middle'; ctx.fillText('OBVIOUS', x+r+8, y-9); ctx.restore(); }
@@ -639,7 +652,7 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
     drawRing(); raf=requestAnimationFrame(frame); }
   function dataURLtoBlob(d){ const [meta,b64]=d.split(','),mime=meta.match(/:(.*?);/)[1],bin=atob(b64),n=bin.length,u=new Uint8Array(n); for(let i=0;i<n;i++)u[i]=bin.charCodeAt(i); return new Blob([u],{type:mime}); }
   // capture into a preview first; sharing happens on the explicit Save tap (gesture-safe)
-  function takePhoto(){ if(!running||!ringReady){ toast('One sec — camera loading'); return; }
+  function takePhoto(){ if(!running||!ringOk()){ toast('One sec — camera loading'); return; }
     watermark();  // logo onto the current composited frame
     let dataURL; try{ dataURL=cv.toDataURL('image/jpeg',0.92); }catch(e){ toast('Could not capture'); return; }
     shotBlob=dataURLtoBlob(dataURL);
@@ -656,6 +669,7 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
     else if(ptrs.size===1){ manual.x=clamp((e.clientX-r.left)/r.width,0,1); manual.y=clamp((e.clientY-r.top)/r.height,0,1); } });
   ['pointerup','pointercancel','pointerleave'].forEach(ev=>stage.addEventListener(ev,e=>{ ptrs.delete(e.pointerId); pinchD0=0; }));
   $('#arSnap').addEventListener('click',takePhoto);
+  $('#arFinish').addEventListener('click',e=>{ const b=e.target.closest('[data-f]'); if(!b)return; finish=b.dataset.f; buzz(6); document.querySelectorAll('#arFinish .fin').forEach(c=>c.classList.toggle('on',c===b)); });
   $('#photoSave').addEventListener('click',savePhoto);
   $('#photoRetake').addEventListener('click',()=>{ $('#photoPreview').classList.remove('show'); shotBlob=null; });
   $('#photoPreview').addEventListener('click',e=>{ if(e.target===$('#photoPreview')){ $('#photoPreview').classList.remove('show'); shotBlob=null; } });
