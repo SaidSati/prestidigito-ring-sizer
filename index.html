@@ -257,6 +257,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .cal-toggle{position:absolute;left:50%;top:9px;transform:translateX(-50%);display:flex;gap:6px;z-index:6}
 .cal-toggle .chip{padding:6px 12px;font-size:11.5px;background:rgba(12,12,13,.55);color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.25);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .cal-toggle .chip.on{background:#fff;color:#0c0c0d;border-color:#fff}
+#photoImg{display:block;width:100%;max-height:58vh;object-fit:contain;background:#000;border:1.5px solid var(--ink);border-radius:6px;margin-bottom:14px}
 #s-cal .panel{padding:6px 16px calc(8px + var(--safe-b))}
 .cal-ctl{display:flex;align-items:center;gap:12px}
 .cal-ctl .step-btn{flex:0 0 auto;width:42px;height:42px;font-size:20px}
@@ -336,17 +337,17 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <!-- AR TRY-ON -->
 <section class="screen" id="s-ar">
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Try-On</span><button class="tb-link" id="arBack2">Done</button></div>
-  <div class="stage-head"><h2 class="title">Try it on</h2><p class="body" style="margin-top:6px">Point the rear camera at your hand, then <b>drag the ring</b> onto your finger. Resize and rotate to fit.</p></div>
+  <div class="stage-head"><h2 class="title">Try it on</h2><p class="body" style="margin-top:6px">Point the rear camera at your hand, then <b>drag the ring</b> onto your finger. <b>Pinch</b> to resize, rotate to fit.</p></div>
   <div class="stage-wrap" id="arStage">
     <video id="arVid" playsinline muted></video>
     <canvas id="arCanvas"></canvas>
-    <div class="cam-pill" id="arPill">Drag the ring onto your finger</div>
+    <div class="cam-pill" id="arPill">Drag to place · pinch to resize</div>
     <div class="snap-flash" id="snapFlash"></div>
     <div class="cam-controls"><button class="cam-btn" id="arSnap">📷 Photo</button></div>
     <div class="cam-fail" id="arFail" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2l20 20M9 5h6l2 3h3a1 1 0 011 1v9M2 9v9a1 1 0 001 1h13"/></svg><div id="arFailMsg">Camera unavailable.</div></div>
   </div>
   <div class="panel">
-    <div class="ar-row"><label>Size</label><input type="range" id="arSize" min="0.5" max="2" step="0.01" value="1"></div>
+    <div class="ar-row"><label>Size</label><input type="range" id="arSize" min="0.06" max="0.7" step="0.005" value="0.18"></div>
     <div class="ar-row"><label>Rotate</label><input type="range" id="arRot" min="-45" max="45" step="1" value="0"></div>
     <div class="btnrow" style="margin-top:6px"><button class="btn btn-primary btn-block" id="arMeasureCta">Measure my size →</button></div>
     <p class="privacy-note">🔒 Processed on your device — nothing is uploaded.</p>
@@ -478,6 +479,11 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   <button class="btn btn-primary btn-block" id="installSheetClose">Got it</button></div></div>
 
 <div id="installBar"><svg class="ib-i" viewBox="0 0 48 48" style="color:var(--ink)"><use href="#mark"/></svg><span class="ib-t"><b>Install OBVIOUS</b>Home screen · works offline</span><button class="btn btn-primary btn-sm" id="installYes">Install</button><button class="ib-x" id="installNo" aria-label="Close">×</button></div>
+<div class="overlay" id="photoPreview" role="dialog" aria-modal="true"><div class="sheet"><div class="grab"></div>
+  <h3>Your try-on</h3>
+  <img id="photoImg" alt="Try-on preview">
+  <div class="btnrow"><button class="btn btn-primary btn-block" id="photoSave">Save / Share</button><button class="btn btn-outline btn-block" id="photoRetake">Retake</button></div></div></div>
+
 <div class="zoom-warn" id="zoomWarn">Screen is zoomed — reset to 100% to measure correctly.</div>
 <div id="toast" role="status"></div>
 
@@ -618,12 +624,12 @@ const camMeasure=(()=>{ const stage=$('#camStage'),vid=$('#camVid'),c0=$('#cm0')
 
 /* AR TRY-ON (manual: rear camera, drag the ring, resize/rotate, gesture-safe photo via Web Share) */
 const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas'),ctx=cv.getContext('2d');
-  let stream=null,raf=0,running=false,sizeMul=1,rotDeg=0,DPR=1,W=0,H=0;
-  let manual={x:0.5,y:0.46};
+  let stream=null,raf=0,running=false,sizeMul=0.18,rotDeg=0,DPR=1,W=0,H=0,shotBlob=null;
+  let manual={x:0.5,y:0.46}; const ptrs=new Map(); let pinchD0=0,size0=0;
   const ringImg=new Image(); let ringReady=false; ringImg.onload=()=>ringReady=true; ringImg.src=RING_IMG;
   function resize(){ const r=stage.getBoundingClientRect(); DPR=Math.min(2,devicePixelRatio||1); W=r.width;H=r.height; cv.width=W*DPR;cv.height=H*DPR; }
   function cover(){ const vw=vid.videoWidth||1280,vh=vid.videoHeight||720,sc=Math.max(W/vw,H/vh); return {sc,dx:(W-vw*sc)/2,dy:(H-vh*sc)/2,vw,vh}; }
-  function drawRing(){ if(!ringReady)return; const w=W*0.34*sizeMul,h=w*(ringImg.height/ringImg.width),cx=manual.x*W,cy=manual.y*H;
+  function drawRing(){ if(!ringReady)return; const w=W*sizeMul,h=w*(ringImg.height/ringImg.width),cx=manual.x*W,cy=manual.y*H;
     ctx.save(); ctx.translate(cx,cy); ctx.rotate(rotDeg*Math.PI/180); ctx.drawImage(ringImg,-w/2,-h*0.5,w,h); ctx.restore(); }
   function watermark(){ const x=18,y=H-18,r=11; ctx.save(); ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=6; ctx.fillStyle='#fff';
     ctx.beginPath(); for(let i=0;i<6;i++){const a=(-90+i*60)*Math.PI/180,px=x+r*Math.cos(a),py=y-9+r*Math.sin(a);i?ctx.lineTo(px,py):ctx.moveTo(px,py);} ctx.closePath(); ctx.fill();
@@ -632,21 +638,27 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
     if(vid.readyState>=2){ const c=cover(); ctx.drawImage(vid,c.dx,c.dy,c.vw*c.sc,c.vh*c.sc); }
     drawRing(); raf=requestAnimationFrame(frame); }
   function dataURLtoBlob(d){ const [meta,b64]=d.split(','),mime=meta.match(/:(.*?);/)[1],bin=atob(b64),n=bin.length,u=new Uint8Array(n); for(let i=0;i<n;i++)u[i]=bin.charCodeAt(i); return new Blob([u],{type:mime}); }
-  // capture SYNCHRONOUSLY within the tap gesture (iOS requires it) → Web Share with an image File
+  // capture into a preview first; sharing happens on the explicit Save tap (gesture-safe)
   function takePhoto(){ if(!running||!ringReady){ toast('One sec — camera loading'); return; }
     watermark();  // logo onto the current composited frame
-    let blob; try{ blob=dataURLtoBlob(cv.toDataURL('image/jpeg',0.92)); }catch(e){ toast('Could not capture'); return; }
+    let dataURL; try{ dataURL=cv.toDataURL('image/jpeg',0.92); }catch(e){ toast('Could not capture'); return; }
+    shotBlob=dataURLtoBlob(dataURL);
     $('#snapFlash').classList.remove('go'); void $('#snapFlash').offsetWidth; $('#snapFlash').classList.add('go'); buzz(15);
-    const file=new File([blob],'obvious-try-on.jpg',{type:'image/jpeg'});
-    if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file]}).catch(()=>{}); }
-    else { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='obvious-try-on.jpg'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); toast('Photo saved'); } }
-  // drag to position; ignore taps on the controls so the ring doesn't jump to the button
-  stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.cam-controls'))return; const r=stage.getBoundingClientRect();
-    $('#arPill').style.opacity=0;
-    const set=ev=>{ manual.x=clamp((ev.clientX-r.left)/r.width,0,1); manual.y=clamp((ev.clientY-r.top)/r.height,0,1); }; set(e);
-    const mv=ev=>set(ev); const up=()=>{document.removeEventListener('pointermove',mv);document.removeEventListener('pointerup',up);};
-    document.addEventListener('pointermove',mv);document.addEventListener('pointerup',up); });
+    $('#photoImg').src=dataURL; $('#photoPreview').classList.add('show'); }
+  function savePhoto(){ if(!shotBlob)return; const file=new File([shotBlob],'obvious-try-on.jpg',{type:'image/jpeg'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){ navigator.share({files:[file]}).then(()=>$('#photoPreview').classList.remove('show')).catch(()=>{}); }
+    else { const a=document.createElement('a'); a.href=URL.createObjectURL(shotBlob); a.download='obvious-try-on.jpg'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),4000); toast('Photo saved'); $('#photoPreview').classList.remove('show'); } }
+  // one finger = move the ring; two fingers = pinch to resize. Taps on controls don't move it.
+  stage.addEventListener('pointerdown',e=>{ if(e.target.closest('.cam-controls'))return; e.preventDefault(); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); $('#arPill').style.opacity=0;
+    if(ptrs.size===2){ const [a,b]=[...ptrs.values()]; pinchD0=Math.hypot(a.x-b.x,a.y-b.y); size0=sizeMul; } });
+  stage.addEventListener('pointermove',e=>{ if(!ptrs.has(e.pointerId))return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); const r=stage.getBoundingClientRect();
+    if(ptrs.size>=2 && pinchD0>0){ const [a,b]=[...ptrs.values()]; sizeMul=clamp(size0*Math.hypot(a.x-b.x,a.y-b.y)/pinchD0,0.06,0.9); $('#arSize').value=sizeMul; }
+    else if(ptrs.size===1){ manual.x=clamp((e.clientX-r.left)/r.width,0,1); manual.y=clamp((e.clientY-r.top)/r.height,0,1); } });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>stage.addEventListener(ev,e=>{ ptrs.delete(e.pointerId); pinchD0=0; }));
   $('#arSnap').addEventListener('click',takePhoto);
+  $('#photoSave').addEventListener('click',savePhoto);
+  $('#photoRetake').addEventListener('click',()=>{ $('#photoPreview').classList.remove('show'); shotBlob=null; });
+  $('#photoPreview').addEventListener('click',e=>{ if(e.target===$('#photoPreview')){ $('#photoPreview').classList.remove('show'); shotBlob=null; } });
   $('#arSize').addEventListener('input',e=>sizeMul=+e.target.value);
   $('#arRot').addEventListener('input',e=>rotDeg=+e.target.value);
   $('#arBack2').addEventListener('click',()=>go(lastResult?'s-result':'s-intro'));
@@ -656,7 +668,7 @@ const arTryOn=(()=>{ const stage=$('#arStage'),vid=$('#arVid'),cv=$('#arCanvas')
       if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ fail(); return; }
       try{ stream=await openCamera(vid,'environment'); }catch(e){ fail(); return; }
       raf=requestAnimationFrame(frame); },
-    stop(){ running=false; cancelAnimationFrame(raf); stopStream(stream); stream=null; }, resize };
+    stop(){ running=false; cancelAnimationFrame(raf); stopStream(stream); stream=null; $('#photoPreview').classList.remove('show'); }, resize };
 })();
 
 /* CALIBRATION */
