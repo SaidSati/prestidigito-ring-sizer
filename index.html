@@ -248,14 +248,22 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 .card-guide,.finger-zone{position:absolute;border:2px dashed rgba(255,255,255,.5);display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;color:rgba(255,255,255,.55);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;pointer-events:none;z-index:3}
 .card-guide{border-radius:8px}
 .finger-zone{border-radius:44px;border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.5);align-items:flex-start;padding-top:8px}
-/* maximise the calibration stage so a full upright card fits */
-#s-cal .stage-head{padding-top:0;padding-bottom:6px}
-#s-cal h2.title{font-size:clamp(24px,6.5vw,30px)}
-#s-cal .chiprow{margin:0 0 6px}
-#s-cal .panel{padding-top:8px}
-#s-cal .slider-row{margin:4px 0 2px}
-#s-cal .fine{margin-top:2px}
-#s-cal .scale-note{margin-top:4px}
+/* maximise the calibration stage so a full upright card fits (card long edge ≈ 89mm) */
+#s-cal .topbar{padding-bottom:4px}
+#s-cal .stage-head{padding:0 24px 3px}
+#s-cal h2.title{font-size:clamp(19px,5.2vw,24px)}
+#s-cal .stage-head .body{font-size:11.5px;line-height:1.3}
+#s-cal .stage-wrap{margin:0 8px}
+.cal-toggle{position:absolute;left:50%;top:9px;transform:translateX(-50%);display:flex;gap:6px;z-index:6}
+.cal-toggle .chip{padding:6px 12px;font-size:11.5px;background:rgba(12,12,13,.55);color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.25);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.cal-toggle .chip.on{background:#fff;color:#0c0c0d;border-color:#fff}
+#s-cal .panel{padding:6px 16px calc(8px + var(--safe-b))}
+.cal-ctl{display:flex;align-items:center;gap:12px}
+.cal-ctl .step-btn{flex:0 0 auto;width:42px;height:42px;font-size:20px}
+.cal-ctl input[type=range]{flex:1}
+#s-cal .scale-note{margin:5px 0 7px}
+#s-cal #btnCalDone{padding:13px 22px}
+#s-cal #calBack{display:block;margin:5px auto 0;padding:4px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media (min-width:481px){
   body{padding:0;display:flex;align-items:center;justify-content:center;background:repeating-linear-gradient(0deg,transparent 0 39px,var(--line-2) 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,var(--line-2) 39px 40px),var(--paper-2)}
@@ -349,18 +357,18 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
 <!-- CALIBRATION -->
 <section class="screen" id="s-cal">
   <div class="topbar"><span class="wordmark"><svg><use href="#mark"/></svg> Calibrate</span><span class="step-dots"><i class="on"></i><i></i><i></i></span></div>
-  <div class="stage-head"><h2 class="title">Place your card</h2><p class="body" style="margin-top:5px">Stand your card on the screen, corner on the dot, and resize until the <b>edges line up</b>.</p></div>
-  <div class="chiprow" role="group" aria-label="Reference object"><button class="chip on" id="objCard">🂠 Playing card</button><button class="chip" id="objBank">💳 Bank card</button></div>
+  <div class="stage-head"><h2 class="title">Place your card</h2><p class="body" style="margin-top:3px">Lay your card on the screen, corner on the dot — match the <b>edges</b>.</p></div>
   <div class="stage-wrap" id="calStage">
+    <div class="cal-toggle" role="group" aria-label="Reference object"><button class="chip on" id="objCard">🂠 Playing</button><button class="chip" id="objBank">💳 Bank</button></div>
     <div class="guide-v guide-fixed" id="cgL"></div><div class="guide-v" id="cgR"></div><div class="guide-h guide-fixed" id="cgT"></div><div class="guide-h" id="cgB"></div>
     <div id="calObj"><div class="cardface"><div class="cf-chip"></div><div class="cf-line" style="left:8%;right:8%;top:62%"></div><div class="cf-line" style="left:8%;right:42%;top:74%"></div><div class="cf-mono">O</div></div></div>
     <div class="anchor-dot" id="anchor"></div><span class="stage-note">drag the edge · pinch · or ± below</span>
   </div>
   <div class="panel">
-    <div class="slider-row"><span class="cap">−</span><input type="range" id="calSlider" aria-label="Virtual card size"><span class="cap">+</span></div>
-    <div class="fine"><button class="step-btn" id="calMinus">−</button><span class="fine-cap">fine tune<br>±0.2 mm</span><button class="step-btn" id="calPlus">+</button></div>
+    <div class="cal-ctl"><button class="step-btn" id="calMinus" aria-label="Smaller">−</button><input type="range" id="calSlider" aria-label="Virtual card size"><button class="step-btn" id="calPlus" aria-label="Bigger">+</button></div>
     <p class="scale-note" id="calScale">scale: <b>—</b></p>
-    <div class="btnrow" style="margin-top:12px"><button class="btn btn-primary btn-block" id="btnCalDone">Edges match — continue</button><button class="link" id="calBack">back to start</button></div>
+    <button class="btn btn-primary btn-block" id="btnCalDone">Edges match — continue</button>
+    <button class="link" id="calBack">back to start</button>
   </div>
 </section>
 
